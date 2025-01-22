@@ -1,91 +1,137 @@
-import express from "express";
-import CryptoJs from "crypto-js";
+"use strict"
+
 import axios from "axios";
 import { localStorage,accessToken } from "../../../config.js";
+import { activeDeviceId } from "./Device.controller.js";
 
-export const getTrackById = async(req,res) => {
+// global variables
+  const Market  = "IN";
 
-    const { id } = req.params;
-
-    if (!accessToken) {
-      return res.status(401).send({ message: "Access token not found" });
-    }
+  export const getTrackById = async(req,res) => {
+    
+    const {id} = req.params;
     
     try {
-      const response = await axios.get(`https://api.spotify.com/v1/tracks/${id}`,
-        {
-          headers:{
-            "Content-Type" : "Application/json",  
-            "Authorization": `Bearer ${accessToken}`
-          },
+      
+      const response = await axios.get(`https://api.spotify.com/v1/tracks/${id}`,{
+        params:{
+          market : Market
+        },
+        headers:{
+          "Accept" :"application/json",
+          "Authorization" : `Bearer ${accessToken}`
         }
-      )
-
-      if(response.data){
-        res.redirect(`/tracks/play?context_uri=${encodeURIComponent(response.data.uri)}`)
+      });
+      if(response.status === 200){
+        return res.status(200).send(response.data);
       }
     } catch (error) {
-        res.status(500).send(error)
+      return res.status(500).send({message : error.message});
     }
-  };
+  }
 
-export const getSavedTracks = async(req,res) => {
-
-  const MARKET = "IN";
-  const LIMIT = 20;
-  const OFFSET = 0;
-
-  try{
-
-    const response = await axios.get(`https://api.spotify.com/v1/me/tracks`,{
-      params:{
-        market:MARKET,
-        limit:LIMIT,
-        offset:OFFSET
-      },
-      headers:{
-        "Content-Type" : "application/json",
-        "Authorization" : `Bearer ${accessToken}`
+  export const getUserSavedTracks = async(req, res) => {
+    try {
+      if(!accessToken){
+        return res.status(401).send({message : res.statusText});
       }
-    });
-    res.send(response.data);
-  }
-  catch(error){
-    res.status(500).send(error.name);
-  }
-}
+      const limit = 10
+      const offset = 0
 
-export const play = async(req,res) => {
+      const response = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,{
+        headers:{
+          "Content-Type" : "application/json",
+          "Authorization" : `Bearer ${accessToken}`
+        }
+      });
+      if(response.status === 200){
+        return res.status(200).send(response.data)
+      }
+      return res.status(response.status).send({message : response.statusText});
+    } catch (error) {
+      return res.status(500).send({message : error.message});
+    }
+  }
 
-  const {context_uri} = req.query;
-  console.log(context_uri);
-  console.log("Fuck you Got the Error.");
+  export const saveCurrentTrack = async(req, res) => {
+    try {
+      if(!accessToken){
+        return res.status(401).send({message : res.statusText})
+      }
+      const {ids} = req.params;
+      console.log(ids);
+      
+      const response = await axios.put(`https://api.spotify.com/v1/me/tracks?ids=${ids}`,
+      {
+        "ids":[
+          ids
+        ]
+      },
+      {
+        headers:{
+          "Content-Type" : "application/json",
+          "Authorization" : `Bearer ${accessToken}`
+        }
+      });
+      if(response.status === 200){
+        return res.status(200).send({message : "Track Saved Successfully."});
+      }
+      return res.status(response.status).send({message : response.statusText});
+    } catch (error) {
+      return res.status(500).send({message : error.message});
+    }
+  }
+
   
-
-  if(!accessToken){
-    res.status(401).send({message:"Access Token Not Found..."})
-  }
-
-  if(!context_uri){
-    res.status(404).send({message:"No Context Uri Found..."})
-  }
-
-  try {
-    const response = await axios.put(`https://api.spotify.com/v1/me/player/play`,{
-      headers:{
-        "content-type":"application/json",
-        "authorization":  `Bearer ${accessToken}`
-      },
-      data:{
-        "context_uri" : context_uri,
-        "offset": {
-          "position": 5
-        },
-        "position_ms": 0
+  export const deleteCurrentTrack = async(req, res) => {
+    try {
+      if(!accessToken){
+        return res.status(401).send({message : res.statusText})
       }
-    })
-    res.send(response.data);
-  } catch (error) {
-    res.status(500).send({message:"Not Found."});
+      const {ids} = req.params;
+      console.log(ids);
+      
+      const response = await axios({
+          method: "delete",
+          url: `https://api.spotify.com/v1/me/tracks?ids=${ids}`,
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${accessToken}`,
+          },
+          data: {
+              "ids": [
+                  ids
+              ],
+          },
+      });
+      if(response.status === 200){  
+        return res.status(200).send({message : "Track Deleted Successfully."});
+      }
+      return res.status(response.status).send({message : response.statusText});
+    } catch (error) {
+      return res.status(500).send({message : error.message});
+    }
   }
-}
+
+  export const isUserContainTrack = async(req, res) => {
+    try {
+        if(!accessToken){
+          return res.status(401).send({message : res.statusText});
+        }
+        const {ids}  = req.params;    
+
+        const response = await axios.get(`https://api.spotify.com/v1/me/tracks/contains?ids=${ids}`,{
+          headers:{
+            "Content-Type" : "application/json",
+            "Authorization" : `Bearer ${accessToken}`
+          }
+        });
+        if(response.status === 200){
+          return res.status(200).send(response.data);
+        }
+        return res.status(response.status).send({message : response.statusText});
+    } catch (error) {
+      return res.status(500).send({message : error.message});
+    }
+  }
+

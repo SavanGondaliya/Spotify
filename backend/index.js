@@ -4,21 +4,37 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import CryptoJs from "crypto-js";
+import mysql from "mysql2";
+import {createDatabase,tblUser}from "./db.js";
 
 // .env file configuration
 dotenv.config()
 
-// import configuration variables
-import { PORT,localStorage } from "./config.js";
-import AuthRoutes from "./apis/Spotify/Auth/Token.js"
-import { TrackRouter } from "./apis/Spotify/Routes/Track.Routes.js";
+// Database Configuration
+export let conn = mysql.createConnection({
+  host : "localhost",
+  user : "root",
+  password : "savan_33",
+  database : process.env.DATABASE_NAME
+});
+
+conn.connect((error) => {
+  if(error){
+    console.log(error);
+    return;
+  }
+  console.log("Connected to Database.");
+  createDatabase();
+  tblUser();
+})
 
 // server configuration
 export const app = express();
-app.listen(PORT);
+app.listen(process.env.SERVER_PORT);
+console.log(`server Running on Port ${process.env.SERVER_PORT}`);
 
-console.log(`Server Running on ${PORT}`);
+// Middleware configuration
+app.use(express.json())
 
 // cors configuration
 app.use(cors({
@@ -27,32 +43,26 @@ app.use(cors({
     allowedHeaders : ['Content-type','Authorization']
 }));
 
+// Page Router
+import { AuthRoutes } from "./apis/Spotify/Auth/Token.js"
+import { TrackRouter } from "./apis/Spotify/Routes/Track.Route.js"
+import { searchRoute } from "./apis/Spotify/Routes/Search.Route.js";
+import { deviceRoute } from "./apis/Spotify/Routes/Device.Route.js";
+import { playRoute } from "./apis/Spotify/Routes/Play.Route.js";
+import { userRoute } from "./apis/Spotify/Routes/User.Route.js";
+import { ArtistRoute } from "./apis/Spotify/Routes/Artist.Routes.js";
+import { AlbumRoute } from "./apis/Spotify/Routes/Album.Routes.js";
+import { playListRoute } from "./apis/Spotify/Routes/Playlist.Routes.js";
+
 // Route Configuration
 app.use("/",AuthRoutes);
-app.use("/",TrackRouter)
+app.use("/tracks",TrackRouter);
+app.use("/",searchRoute);
+app.use("/",deviceRoute);
+app.use("/",playRoute);
+app.use("/",userRoute);
+app.use("/",ArtistRoute);
+app.use("/",AlbumRoute);
+app.use("/",playListRoute);
 
-/* Some Necessary Function which is supportive
-   to get the Authentication accessToken. */
-export const generateRandomString  = (length) => {
-
-    // A function that return a encrypted random string for state
-    let randomString = ""
-    const STATESTRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-    const SECRET_KEY = process.env.SECRET_KEY;
-
-    for(let i=0;i<length;i++){
-        randomString += STATESTRING[Math.floor(Math.random()*STATESTRING.length)]
-    }
-    return CryptoJs.AES.encrypt(randomString,SECRET_KEY).toString();
-  }
-
-export const storeTolocalStorage = (accessToken,refreshToken) => {
-    
-    let incryptedAccessToken = CryptoJs.AES.encrypt(accessToken,"ACCESS_TOKEN")
-    let incryptedRefreshAccessToken = CryptoJs.AES.encrypt(refreshToken,"REFRESH_TOKEN")
-
-    localStorage.setItem("ACCESS_TOKEN",incryptedAccessToken);
-    localStorage.setItem("REFRESH_TOKEN",incryptedRefreshAccessToken);
-    console.log("Both Token Successfully setted.");
-  }
-  
+export default conn

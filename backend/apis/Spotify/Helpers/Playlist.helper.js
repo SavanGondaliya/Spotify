@@ -2,6 +2,7 @@ import axios from "axios";
 import path from "path"
 import fs from "fs"
 import { accessToken,localStorage } from "../../../config.js";
+import { match } from "assert";
 
     export const getSnapshotId = async(req,res) => {
         console.log('Function Invoked.');
@@ -47,3 +48,16 @@ import { accessToken,localStorage } from "../../../config.js";
             return "Unable To Convert in Base64"
         }
     }
+
+    export const generatePlaylistId = async() => {
+
+        const elements = "qwertyuioplkjhgfdsazxcvbnm0192837465";
+        const length = 16;
+        let playlistId = ""
+
+        for(let i=0;i<=length;i++){
+            let index = Math.floor(Math.random()*length);
+            playlistId += elements[index];
+        }
+        return playlistId;
+    }   

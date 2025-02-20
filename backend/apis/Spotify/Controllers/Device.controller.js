@@ -1,21 +1,24 @@
 "use strict"
 
 import axios from "axios";
-import { accessToken,localStorage } from "../../../config.js";
 import { userDevices } from "../Helpers/Device.helper.js";
 
+  export const activeDeviceId = async(req,res,authToken) => {
 
-  export const activeDeviceId = async(req,res) => {
+    if(!authToken){
+      return res.status(401).send({message : res.statusText});
+    }
 
     try {
       let activeId = ""
       const response = await axios.get(`https://api.spotify.com/v1/me/player/devices`,{
           headers:{
             "Content-Type":  "application/json",
-            "Authorization" : `Bearer ${accessToken}`
+            "Authorization" : `Bearer ${authToken}`
           }
         },
-      )
+      );
+      
       if(response.status === 200){
         response.data.devices.forEach(element => {
           if(element.is_active == true){

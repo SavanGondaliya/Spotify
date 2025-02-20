@@ -1,11 +1,12 @@
 import express from "express";
-import { play,playBackState,pause,setRepeatMode, PlayingSong,recentlyPlayedSongs,setTrackQueue,getTrackQueue } from "../Controllers/Play.controller.js";
-import { skipToNext,skipToPrevious,setVolume,seekTrack,playBackShuffle } from "../Controllers/Play.controller.js";
+import { playTrack, playAlbum, playBackState, pause, setRepeatMode, PlayingSong, recentlyPlayedSongs, setTrackQueue, getTrackQueue } from "../Controllers/Play.controller.js";
+import { skipToNext, skipToPrevious, setVolume, seekTrack, playBackShuffle } from "../Controllers/Play.controller.js";
 
 export const playRoute = express.Router();
 
-playRoute.get("/play/:id",play)
-playRoute.get("/trackState",playBackState);
+playRoute.get("/play/track/:id",playTrack);
+playRoute.get("/play/album/:id",playAlbum);
+playRoute.get("/playback",playBackState);
 playRoute.get("/pause/:id",pause);
 playRoute.get("/repeat/:id",setRepeatMode);
 playRoute.get("/currently-playing",PlayingSong);

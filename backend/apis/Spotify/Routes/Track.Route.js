@@ -1,11 +1,12 @@
 import express from "express";
-import { getTrackById, getUserSavedTracks, saveCurrentTrack,deleteCurrentTrack, isUserContainTrack } from "../Controllers/Track.controller.js";
+import { getTrackById, getUserSavedTracks, saveCurrentTrack,deleteCurrentTrack, isUserContainTrack, pageTracks } from "../Controllers/Track.controller.js";
 export const TrackRouter = express.Router();
 
-TrackRouter.get("/:id",getTrackById);
-TrackRouter.get("/saved_tracks",getUserSavedTracks);
-TrackRouter.get("/save/:ids",saveCurrentTrack);
-TrackRouter.get("/delete/:ids",deleteCurrentTrack);
-TrackRouter.get("/contain/:ids",isUserContainTrack);
+TrackRouter.get("/tracks/:id",getTrackById);
+TrackRouter.get("/tracks/saved_tracks",getUserSavedTracks);
+TrackRouter.get("/tracks/save/:ids",saveCurrentTrack);
+TrackRouter.get("/tracks/delete/:ids",deleteCurrentTrack);
+TrackRouter.get("/tracks/contain/:ids",isUserContainTrack);
+TrackRouter.get("/testing-route",pageTracks);
 
 export default TrackRouter;

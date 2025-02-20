@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+@theme {
+    --shadow-box: 10px 10px 0px #4949bf; 
+    --shadow-btn: 5px 5px 0px blue; 
+    --shadow-input: 5px 5px 0px blue; 
+    --shadow-register: 10px 10px 0px brown;
+    --bg_form : #f2c178;
+   }
+html, body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+.bg_form_vertical{
+    background: #f2c178;
+    box-shadow: 10px 10px 0px #935d07;
+}
+.bg_form_horizontal{
+    background: #282870;
+    box-shadow: 10px 10px 0px #4949bf;
+}
+.btn_vertical{
+    background: #282870;
+    box-shadow: 5px 5px 0px #4949bf;
+}
+.btn_horizontal{
+    background: white;
+    box-shadow: 5px 5px 0px #4949bf;
+}
+.__container__{
+    width: 100%;
+    height: 100vh;
+}
+
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

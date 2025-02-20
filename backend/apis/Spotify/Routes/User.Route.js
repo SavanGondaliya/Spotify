@@ -1,5 +1,5 @@
 import express from "express";
-import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,followPlaylist,unfollowPlaylist, followArtist, unfollowArtist, unfollowUser, followUser, userLogin, userRegister } from "../Controllers/User.controller.js";
+import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,followPlaylist,unfollowPlaylist, followArtist, unfollowArtist, unfollowUser, followUser } from "../Controllers/User.controller.js";
 
 export const userRoute = express.Router();
 
@@ -14,7 +14,5 @@ userRoute.get("/artist/follow/:artistId",followArtist);
 userRoute.get("/user/follow/:userId",followUser);
 userRoute.get("/artist/unfollow/:artistId",unfollowArtist);
 userRoute.get("/user/unfollow/:userId",unfollowUser);
-userRoute.get("/user/login",userLogin);
-userRoute.get("/user/register",userRegister);
 
 export default userRoute;

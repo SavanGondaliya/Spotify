@@ -1,21 +1,23 @@
 "use strict"
 
 import axios from "axios";
-import { accessToken,localStorage } from "../../../config.js";
-import conn from "../../../index.js";
+import { userToken } from "../Helpers/Auth.helper.js";
 
     export const userProfile = async(req,res) => {
 
+        const userDetails = JSON.parse(req.query.session_details);
+        const authToken = await userToken(userDetails); 
+
         try {
 
-            if(!accessToken){
+            if(!authToken){
                 return res.status(401).send("UnAuthorized User");
             }
 
             const response = await axios.get(`https://api.spotify.com/v1/me`,{
                 headers:{
                     "Content-Type": "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
+                    "Authorization" : `Bearer ${authToken}`
                 }
             })
             if(response.status ===  200){
@@ -38,7 +40,7 @@ import conn from "../../../index.js";
             const response = await axios.get(`https://api.spotify.com/v1/me/top/artists?range=${range}&limit=${limit}&offset=${offset}`,{
                 headers:{
                     "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
+                    "Authorization" : `Bearer ${accessToken.access_token}`
                 }
             });
             if(response.status === 200){
@@ -380,59 +382,3 @@ import conn from "../../../index.js";
         }
 
     }
-
-    export const userLogin = async(req, res) => {
-        try {
-            const { username, password } = req.query;
-            console.log(username, password);
-            
-            if (!username || !password) {
-                return res.status(400).send({ message: "Username and password are required" });
-            }
-    
-            const query = 'SELECT * FROM tbluser WHERE username = ? and password = ?';
-    
-            const rows = await conn.execute(query, [username, password]);
-            
-            if (rows)    {
-                return res.status(200).send({ message: "Login successful", user: rows });
-            } else {
-                return res.status(401).send({ message: "Invalid username or password" });
-            }
-        } catch (error) {
-            console.error("Error during login:", error);
-            return res.status(500).send({ message: "Internal Server Error" });
-        }
-    };
-    
-    export const userRegister = async(req, res) => {
-        try {   
-            const date  =new Date();
-            
-            const userDetail = {
-                userId : 12236651,
-                username : "Santosh Makavana",
-                email : "santoshmakavana@gmail.com",
-                password : "1992",
-                created_at : date.toUTCString(),
-                updated_at : date.toUTCString()
-            };
-            console.log(typeof(userDetail.userId),typeof(userDetail.username),typeof(userDetail.email),typeof(userDetail.password),typeof(userDetail.created_at),typeof(userDetail.updated_at));
-            
-            const row = await conn.execute(`insert into tbluser(user_id,username,email,password,created_at,updated_at) values(?,?,?,?,?,?)`,
-                [userDetail.userId,userDetail.username,userDetail.email,userDetail.password,userDetail.created_at,userDetail.updated_at]);
-
-            console.log(row);
-            
-            if(row){
-                return res.status(200).send({message : "Register successfully."});
-            }
-            else{
-                return res.status(400).send({message : "Fill All the Information"});
-            }
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
-
-    

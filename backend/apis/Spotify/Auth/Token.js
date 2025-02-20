@@ -3,10 +3,8 @@
 
 import request from "request";
 import express from "express";
-import querystring from "querystring"
 import CryptoJS from "crypto-js";
 import { configDotenv } from "dotenv";
-import { generateRandomString,storeTolocalStorage,getScope } from "../Helpers/Auth.helper.js";
 
 // .env File configuration
 configDotenv();
@@ -19,63 +17,46 @@ const client_id = `${process.env.CLIENT_ID}`;
 const redirect_uri = `http://${process.env.SERVER_ADDRESS}:${process.env.SERVER_PORT}/callback`;
 const client_secret = `${process.env.CLIENT_SECRET}`;
 
-
-const login = async(req,res) => {
-
-    let state = generateRandomString(16);
-    let scope = getScope();
-
-    await res.redirect('https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-          response_type: 'code',
-          client_id : client_id,
-          scope: scope,
-          redirect_uri: redirect_uri,
-          state: state
-        })
-    );
-};
-
-const callback  =  async(req, res) => {
-
-    let code = req.query.code || null;
-    let state = req.query.state || null;
+export const callback  =  async(req, res) => {
+    console.log("Function has been came here !");
+    
+    // let code = req.query.code || null;
+    // let state = req.query.state || null;
   
-    if (state === null) {
-        res.redirect('/#' +
-            querystring.stringify({
-            error: 'state_mismatch'
-        }));
-    } else {
+    // if (state === null) {
+    //     res.redirect('/#' +
+    //         querystring.stringify({
+    //         error: 'state_mismatch'
+    //     }));
+    // } else {
 
-        let authOptions = {
-            url: 'https://accounts.spotify.com/api/token',
-            form: {
-                code: code, 
-                redirect_uri: redirect_uri,
-                grant_type: 'authorization_code'
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-            },
-            json: true
-        };
+    //     let authOptions = {
+    //         url: 'https://accounts.spotify.com/api/token',
+    //         form: {
+    //             code: code, 
+    //             redirect_uri: redirect_uri,
+    //             grant_type: 'authorization_code'
+    //         },
+    //         headers: {
+    //             'content-type': 'application/x-www-form-urlencoded',
+    //             'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
+    //         },
+    //         json: true
+    //     };
 
-        await request.post(authOptions, function(error, response, body) {
+        request.post(authOptions, function(error, response, body) {
 
             if (!error && response.statusCode === 200) {
-                let access_token = body.access_token;
-                let  refresh_token = body.refresh_token || refresh_token;
-
-                res.send(body)
-                storeTolocalStorage(access_token,refresh_token);
+                return res.json(body);
             }
         });
-      }
-  };       
+        // const token = req.query.token;
 
-  const refreshToken = async(req,res) => {   
+    // Send the token back to the frontend or another system
+        // res.json({ success: true, token });
+    }
+
+  export const refreshToken = async(req,res) => {   
 
         let authOptions = {
     
@@ -106,8 +87,4 @@ const callback  =  async(req, res) => {
         });
     };      
 
-AuthRoutes.get("/login",login);
-AuthRoutes.get("/callback",callback);
-AuthRoutes.get("/refresh",refreshToken);
-
-export default (AuthRoutes);
+export default AuthRoutes;

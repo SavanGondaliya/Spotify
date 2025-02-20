@@ -1,0 +1,24 @@
+.shadow_input{
+    box-shadow: 5px 5px 0px #282870;
+    background: gray;
+}
+.album_card{
+    box-shadow: 5px 5px 0px #4949bf;
+    background:   #282870;
+}
+
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */
+
+.recently_image{
+    box-shadow: 5px 5px 0px #935d07;
+    
+}
+
+.controller_image{
+    box-shadow: 5px 5px 0px #4949bf;
+}

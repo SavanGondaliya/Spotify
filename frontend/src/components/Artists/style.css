@@ -1,0 +1,20 @@
+.container_shadow{
+    border-radius: 5px;
+    box-shadow: 7.5px 7.5px 0px #4949bf;
+}
+.image_shadow{
+    opacity: 0.5;
+}
+.inner_image_shadow{
+
+    box-shadow: 5px 5px 0px #4949bf;
+}
+.highlight_text{
+    color: #f2c178;
+}
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

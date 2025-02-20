@@ -1,0 +1,20 @@
+.album_shadow{
+    box-shadow: 5px 5px 0px #4949bf;
+}
+
+.rounded_image{
+    border-radius: 50%;
+}
+
+.hover_card:hover{
+    background: #282870;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

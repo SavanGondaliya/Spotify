@@ -1,15 +1,13 @@
 import axios from "axios";
-import { localStorage,accessToken } from "../../../config.js";
-import { activeDeviceId } from "./Device.controller.js";
-console.log(accessToken);
+import userToken from "../Helpers/Auth.helper.js"
+import { login } from "./Auth.controller.js";
 
 const market = "IN";
 
-export const getAlbumUri = async(req) => {
+export const getAlbumUri = async(req,authToken) => {
   
-  const { id } = req.params;
-  
-  if (!accessToken) {
+  const {id} = req.params;
+  if (!authToken) {
     return "Access Not Found...";
   }
 
@@ -18,7 +16,7 @@ export const getAlbumUri = async(req) => {
       {
         headers:{
           "Content-Type" : "Application/json",  
-            "Authorization": `Bearer ${accessToken}`
+            "Authorization": `Bearer ${authToken}`
           },
         }
       );
@@ -35,11 +33,11 @@ export const getAlbumUri = async(req) => {
     }
   };
 
-  export const getArtistUri = async(req) => {
+  export const getArtistUri = async(req,authToken) => {
   
     const { id } = req.params;
     
-    if (!accessToken) {
+    if (!authToken) {
       return "Access Not Found...";
     }
   
@@ -48,7 +46,7 @@ export const getAlbumUri = async(req) => {
         {
           headers:{
             "Content-Type" : "Application/json",  
-              "Authorization": `Bearer ${accessToken}`
+              "Authorization": `Bearer ${authToken}`
             },
           }
         );
@@ -66,11 +64,11 @@ export const getAlbumUri = async(req) => {
     };
 
 
-    export const getTrackUri = async(req,res) => {
+    export const getTrackUri = async(req,authToken) => {
   
       const { id } = req.params;
       
-      if (!accessToken) {
+      if (!authToken) {
         return "Access Not Found...";
       }
     
@@ -79,7 +77,7 @@ export const getAlbumUri = async(req) => {
           {
             headers:{
               "Content-Type" : "Application/json",  
-                "Authorization": `Bearer ${accessToken}`
+                "Authorization": `Bearer ${authToken}`
               },
             }
           );
@@ -95,15 +93,64 @@ export const getAlbumUri = async(req) => {
           return error.message;
         }
       };
+        
+  export const playTrack = async (req, res) => {
       
-export const play = async (req, res) => {
-    
-    try {
+      try {
+        
+        const userDetails = JSON.parse(req.query.session_details);
+        const deviceId =  req.query.deviceId;
+        const authToken = await userToken(userDetails); 
+        const contextUri =  await getTrackUri(req,authToken);
+        console.log(userDetails,deviceId,authToken,contextUri);
+        
+        if (!authToken) {
+          return res.status(401).send({ message: "Access Token Not Found..." });
+        }
+        
+        if (!contextUri) {
+          return res.status(404).send({ message: "No Context Uri Found..." });
+        }
+        
+        const response = await axios.put(
+          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          {
+            uris : [contextUri]
+          },
+          {
+            headers: {
+              "content-type": "application/json",
+              "Authorization": `Bearer ${authToken}`
+            },
+          }
+        );
+      
+      if(response.status === 200 | 204){
+        return res.status(200).send({ message: "Playback started successfully" });
+        
+      }
+      return res.status(404).send({message: "No Song Found"});
+    } catch (error) {
+      if (error.response) {
+        return res
+        .status(error.response.status)
+        .send({ message: error.response.data.error.message });
+      }
+      return res.status(500).send({ message: error.message });
+    }
+  };
 
-      const deviceId = await activeDeviceId(req,res);
-      const contextUri =  await getAlbumUri(req);
+  
+  export const playAlbum = async (req, res) => {
       
-      if (!accessToken) {
+    try {
+      
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId =  req.query.deviceId;
+      const authToken = await userToken(userDetails); 
+      const contextUri =  await getAlbumUri(req,authToken);
+      
+      if (!authToken) {
         return res.status(401).send({ message: "Access Token Not Found..." });
       }
       
@@ -114,23 +161,21 @@ export const play = async (req, res) => {
       const response = await axios.put(
         `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
         {
-          context_uri : contextUri,
-          position_ms: 0
+          contextUri:contextUri
         },
         {
           headers: {
             "content-type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
+            "Authorization": `Bearer ${authToken}`
           },
         }
       );
-      console.log(response.status);
+    
+    if(response.status === 200 | 204){
+      return res.status(200).send({ message: "Playback started successfully" });
       
-      if(response.status === 200 | 204){
-        return res.status(200).send({ message: "Playback started successfully" });
-
-      }
-      return res.status(404).send({message: "No Song Found"});
+    }
+    return res.status(404).send({message: "No Song Found"});
     } catch (error) {
       if (error.response) {
         return res
@@ -145,12 +190,18 @@ export const play = async (req, res) => {
     
     try {
 
-      const deviceId = await activeDeviceId(req,res);
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId =  req.query.deviceId;
+      const authToken = await userToken(userDetails); 
+  
+      if(!authToken){
+        return res.status(401).json({"authorized":false});
+      }
 
       const response = await axios.get(`https://api.spotify.com/v1/me/player?market=${market}&device_id=${deviceId}`,{
         headers:{
           "Content-Type": "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status ===  200){
@@ -171,9 +222,15 @@ export const play = async (req, res) => {
   export const pause = async(req,res) => {
 
     try {
-      const deviceId = await activeDeviceId(req,res);
-      const contextUri = await getAlbumUri(req);
-      
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+      const contextUri = await getAlbumUri(req,authToken);
+
+      if(!authToken){
+        return res.status(401).send({message : "UnAuthorized User."});
+      }
+
       const response = await axios.put(`https://api.spotify.com/v1/me/player/pause/?device_id=${deviceId}`,
         {
           context_uri : contextUri,
@@ -181,7 +238,7 @@ export const play = async (req, res) => {
         },{
           headers:{
             "Content-Type" : "appliaction/json",
-            "Authorization" : `Bearer ${accessToken}`
+            "Authorization" : `Bearer ${authToken}`
           }
       });
       
@@ -194,21 +251,36 @@ export const play = async (req, res) => {
     }
   }
 
-
   export const setRepeatMode = async(req,res) => {
 
     try {
-      const deviceId = await activeDeviceId(req,res);
-      const contextUri = await getAlbumUri(req);
-      const repeatState = "track";
-      
+      const userDetails = JSON.parse(req.query.session_details);
+      const authToken = await userToken(userDetails);
+      const deviceId = req.query.deviceId
+      const repeatState = req.query.state;
+      let contextUri = null;
+
+      if(repeatState == "track"){
+        contextUri = await getTrackUri(req,authToken);
+      }
+      else if(repeatState == "context"){
+        contextUri = await getAlbumUri(req,authToken);
+      }
+      else{
+        contextUri = "off"
+      }
+
+      if(!authToken){
+        return res.status(401).send({message : "UnAuthorized User",user: false});
+      }
+
       const response = await axios.put(`https://api.spotify.com/v1/me/player/repeat?state=${repeatState}&device-id=${deviceId}`,{
         context_uri : contextUri
       },
         {
           headers:{
             "Content-Type":"application/json",
-            "Authorization" : `Bearer ${accessToken}`
+            "Authorization" : `Bearer ${authToken}`
           }
         });
         if(response.status === 200){
@@ -222,21 +294,25 @@ export const play = async (req, res) => {
 
   export const PlayingSong = async(req,res) => {
 
-    try {
-
-      if(!accessToken){
+    try { 
+      console.log("called");
+      
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+  
+      if(!authToken){
         return res.status(401).send({message : "UnAuthorized User"})
       }
-
-      const deviceId = await activeDeviceId(req,res);
       
       const response = await axios.get(`https://api.spotify.com/v1/me/player/currently-playing?market=${market}&device_id=${deviceId}`,{
         headers:{
           "Content-Type" : "application/json",
-          "Authorization": `Bearer ${accessToken}`
+          "Authorization": `Bearer ${authToken}`
         }
-      })
-      if(response.status === 200){
+      });
+      if(response.status === 204|200){
+        console.log(response.data);
         return res.status(200).send(response.data)
       } 
       return res.status(response.status).send({message: response.statusText});
@@ -247,19 +323,21 @@ export const play = async (req, res) => {
 
   export const recentlyPlayedSongs = async(req, res) => {
     try { 
-
-      if(!accessToken){
+      
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+      const before = new Date() - 36000;
+      const limit = 10; 
+      
+      if(!authToken){
         return res.status(401).send({message: "UnAutorized Uaer"});
       }
 
-      const deviceId = await activeDeviceId(req,res);
-      const limit = 10; 
-      const before = 1737015782331
-
-      const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?device_id=${deviceId}&limit=${limit}&before=${before}`,{
+      const response = await axios.get(`https://api.spotify.com/v1/me/player/recently-played?device_id=${deviceId}&before=${before}&limit=${limit}`,{
         headers:{
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
 
@@ -274,20 +352,23 @@ export const play = async (req, res) => {
 
   export const setTrackQueue = async(req,res) => {
     try {
-        
-      if(!accessToken){
+
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : "UnAuthorized Error"});
       }
       
-      const deviceId = await activeDeviceId(req,res);
-      const trackUri  = await getTrackUri(req,res);
+      const trackUri  = await getTrackUri(req,userDetails);
             
       const response = await axios.post(`https://api.spotify.com/v1/me/player/queue?uri=${trackUri}&device_id=${deviceId}`,
        {},
        {
         headers:{
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       
@@ -304,14 +385,18 @@ export const play = async (req, res) => {
   export const getTrackQueue = async(req, res) => {
     try {
 
-      if(!accessToken){
+      const userDetails = JSON.parse(req.query.session_details);
+      const authToken = await userToken(userDetails);
+
+
+      if(!authToken){
         return res.status(401).send({message : "UnAuthorized User"});
       }
 
       const response = await axios.get(`https://api.spotify.com/v1/me/player/queue`,{
         headers:{
           "Content-Type" : "application/json",
-          "Authorization": `Bearer ${accessToken}`
+          "Authorization": `Bearer ${authToken}`
         }
       });
       if(response.status === 200 || 204){
@@ -325,16 +410,20 @@ export const play = async (req, res) => {
 
   export const skipToNext = async(req, res) => {
     try {
-      if(!accessToken){
+
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText});
       }
-      const deviceId = await activeDeviceId(req, res);
       const response = await axios.post(`https://api.spotify.com/v1/me/player/next?device_id=${deviceId}`,
       {},
       {
         headers : {
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status === 404){
@@ -348,16 +437,20 @@ export const play = async (req, res) => {
 
   export const skipToPrevious = async(req, res) => {
     try {
-      if(!accessToken){
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText});
       } 
-      const deviceId = await activeDeviceId(req,res);
+      
       const response = await axios.post(`https://api.spotify.com/v1/me/player/previous?device_id=${deviceId}`,
       {},
       {
         headers:{
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status === 404){
@@ -371,21 +464,22 @@ export const play = async (req, res) => {
 
   export const setVolume = async(req, res) => {
     try {
-      console.log("function Invoked");
-      
-      if(!accessToken){
+
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+      const volume = req.query.volume;
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText});
       }
-      const volume = 90;
-      const deviceId = await activeDeviceId(req, res);
 
       const response = await axios.put(`https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}&deviceId=${deviceId}`,{},{
         headers:{
           "Content-Type" : "application/json",
-          "Authorization": `Bearer ${accessToken}`
+          "Authorization": `Bearer ${authToken}`
         }
       });
-      console.log(response.status);
       
       if(response.status === 404){
         return res.status(404).send({message : "Unable To Set Volume"});
@@ -398,21 +492,22 @@ export const play = async (req, res) => {
 
   export const seekTrack = async(req,res) => {
     try {
-      if(!accessToken){
+
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+      const position_ms = req.query.position_ms;
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText });
       }
-      console.log('Function Invoked !');
-      
-      const deviceId = await  activeDeviceId(req,res);
-      const position_ms = 108000;
-
+    
       const response = await axios.put(`https://api.spotify.com/v1/me/player/seek?position_ms=${position_ms}&device_id=${deviceId}`,{},{
         headers : {
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
-      console.log(response.status);
       
       if(response.status === 404){
         return res.status(404).send({message : response.statusText});
@@ -422,22 +517,25 @@ export const play = async (req, res) => {
       return res.status(500).send({message : res.statusText});
     }
   }
+  
   export const playBackShuffle = async(req, res) => {
     try {
 
-      if(!accessToken){
+      const userDetails = JSON.parse(req.query.session_details);
+      const deviceId = req.query.deviceId;
+      const authToken = await userToken(userDetails);
+      const state = req.query.state;
+
+      if(!authToken){
         return res.status(500).send({message : res.statusText});
       }
-      
-      const deviceId = await activeDeviceId(req, res);
-      const state = false;
-      
+    
       const response = await axios.put(`https://api.spotify.com/v1/me/player/shuffle?state=${state}&device_id=${deviceId}`,
       {},
       {
         headers:{
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`
+          "Authorization": `Bearer ${authToken}`
         }
       });
       

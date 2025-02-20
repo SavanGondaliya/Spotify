@@ -1,17 +1,22 @@
-"use strict"
 
 import axios from "axios";
-import { localStorage,accessToken } from "../../../config.js";
-import { activeDeviceId } from "./Device.controller.js";
+import { userToken } from "../Helpers/Auth.helper.js";
+import conn from "../../../index.js";
 
 // global variables
   const Market  = "IN";
 
   export const getTrackById = async(req,res) => {
-    
-    const {id} = req.params;
-    
+  
     try {
+      const {id} = req.params;
+      const userDetails = JSON.parse(req.query.session_details);
+      const authToken = await userToken(userDetails);
+      console.log(id,userDetails,authToken);
+      
+      if(!authToken){
+        return res.status(401).send({message : res.statusText});
+      }
       
       const response = await axios.get(`https://api.spotify.com/v1/tracks/${id}`,{
         params:{
@@ -19,7 +24,7 @@ import { activeDeviceId } from "./Device.controller.js";
         },
         headers:{
           "Accept" :"application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status === 200){
@@ -32,7 +37,12 @@ import { activeDeviceId } from "./Device.controller.js";
 
   export const getUserSavedTracks = async(req, res) => {
     try {
-      if(!accessToken){
+
+      
+      const userDetails = JSON.parse(req.query.session_details)[0];
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText});
       }
       const limit = 10
@@ -41,7 +51,7 @@ import { activeDeviceId } from "./Device.controller.js";
       const response = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,{
         headers:{
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status === 200){
@@ -55,7 +65,11 @@ import { activeDeviceId } from "./Device.controller.js";
 
   export const saveCurrentTrack = async(req, res) => {
     try {
-      if(!accessToken){
+
+      const userDetails = JSON.parse(req.query.session_details)[0];
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText})
       }
       const {ids} = req.params;
@@ -70,7 +84,7 @@ import { activeDeviceId } from "./Device.controller.js";
       {
         headers:{
           "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${accessToken}`
+          "Authorization" : `Bearer ${authToken}`
         }
       });
       if(response.status === 200){
@@ -85,9 +99,14 @@ import { activeDeviceId } from "./Device.controller.js";
   
   export const deleteCurrentTrack = async(req, res) => {
     try {
-      if(!accessToken){
+      
+      const userDetails = JSON.parse(req.query.session_details)[0];
+      const authToken = await userToken(userDetails);
+
+      if(!authToken){
         return res.status(401).send({message : res.statusText})
       }
+
       const {ids} = req.params;
       console.log(ids);
       
@@ -96,7 +115,7 @@ import { activeDeviceId } from "./Device.controller.js";
           url: `https://api.spotify.com/v1/me/tracks?ids=${ids}`,
           headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${accessToken}`,
+              "Authorization": `Bearer ${authToken}`,
           },
           data: {
               "ids": [
@@ -115,7 +134,11 @@ import { activeDeviceId } from "./Device.controller.js";
 
   export const isUserContainTrack = async(req, res) => {
     try {
-        if(!accessToken){
+
+        const userDetails = JSON.parse(req.query.session_details)[0];
+        const authToken = await userToken(userDetails);
+
+        if(!authToken){
           return res.status(401).send({message : res.statusText});
         }
         const {ids}  = req.params;    
@@ -123,7 +146,7 @@ import { activeDeviceId } from "./Device.controller.js";
         const response = await axios.get(`https://api.spotify.com/v1/me/tracks/contains?ids=${ids}`,{
           headers:{
             "Content-Type" : "application/json",
-            "Authorization" : `Bearer ${accessToken}`
+            "Authorization" : `Bearer ${authToken}`
           }
         });
         if(response.status === 200){
@@ -134,4 +157,27 @@ import { activeDeviceId } from "./Device.controller.js";
       return res.status(500).send({message : error.message});
     }
   }
-
+  
+  export const pageTracks = async (req, res) => {    
+    
+    try {
+      console.log("API Called");
+  
+      const query = "SELECT * FROM tblsongs;";
+  
+      conn.query(query, (error, results) => {
+        if (error) {
+          console.error("Database Error:", error.message);
+          return res.status(400).json({ success: false, message: error.message });
+        }
+  
+        console.log("Query Results:", results);
+        return res.status(200).json(results);
+      });
+  
+    } catch (error) {
+      console.error("Catch Error:", error.message);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  

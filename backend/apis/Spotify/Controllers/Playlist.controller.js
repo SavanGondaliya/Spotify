@@ -1,56 +1,56 @@
 import axios from "axios";
-import { accessToken,localStorage } from "../../../config.js";
+import conn from "../../../index.js";
 import { getTrackUri } from "./Play.controller.js";
-import { convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.js";
+import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.js";
 
-    export const getPlaylistById = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            console.log('full URL : ',req.params);
+    // export const getPlaylistById = async(req, res) => {
+    //     try {
+    //         if(!accessToken){
+    //             return res.status(401).send({message : res.statusText});
+    //         }
+    //         console.log('full URL : ',req.params);
             
-            const  { playlistId }  = req.params;
+    //         const  { playlistId }  = req.params;
             
-            if(!playlistId){
-                return res.status(404).send({message : "Playlist Id is Required."})
-            }
+    //         if(!playlistId){
+    //             return res.status(404).send({message : "Playlist Id is Required."})
+    //         }
             
-            const response = await axios.get(`http://api.spotify.com/v1/playlists/${playlistId}`,{
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
+    //         const response = await axios.get(`http://api.spotify.com/v1/playlists/${playlistId}`,{
+    //             headers:{
+    //                 "Content-Type" : "application/json",
+    //                 "Authorization" : `Bearer ${accessToken}`
+    //             }
+    //         });
             
-            if(response.status === 200){
-                return res.status(200).send(response.data);
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    } 
+    //         if(response.status === 200){
+    //             return res.status(200).send(response.data);
+    //         }
+    //         return res.status(response.status).send({message : response.statusText});
+    //     } catch (error) {
+    //         return res.status(500).send({message : error.message});
+    //     }
+    // } 
 
-    export const getUserPlaylist = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const response = await axios.get(`https://api.spotify.com/v1/me/playlists`,{
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization":  `Bearer ${accessToken}`
-                }
-            });
-            if(response.status === 200){
-                return res.status(200).send(response.data);
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
+    // export const getUserPlaylist = async(req, res) => {
+    //     try {
+    //         if(!accessToken){
+    //             return res.status(401).send({message : res.statusText});
+    //         }
+    //         const response = await axios.get(`https://api.spotify.com/v1/me/playlists`,{
+    //             headers:{
+    //                 "Content-Type" : "application/json",
+    //                 "Authorization":  `Bearer ${accessToken}`
+    //             }
+    //         });
+    //         if(response.status === 200){
+    //             return res.status(200).send(response.data);
+    //         }
+    //         return res.status(response.status).send({message : response.statusText});
+    //     } catch (error) {
+    //         return res.status(500).send({message : error.message});
+    //     }
+    // }
 
     export const updatePlaylistDetails = async(req, res) => {
         try {
@@ -83,27 +83,27 @@ import { convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.
         }
     }
 
-    export const getPlaylistTracks = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const {playlistId} = req.params;
+    // export const getPlaylistTracks = async(req, res) => {
+    //     try {
+    //         if(!accessToken){
+    //             return res.status(401).send({message : res.statusText});
+    //         }
+    //         const {playlistId} = req.params;
 
-            const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,{
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
-            if(response.status === 200){
-                return res.status(200).send(response.data);
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message})
-        }
-    }
+    //         const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,{
+    //             headers:{
+    //                 "Content-Type" : "application/json",
+    //                 "Authorization" : `Bearer ${accessToken}`
+    //             }
+    //         });
+    //         if(response.status === 200){
+    //             return res.status(200).send(response.data);
+    //         }
+    //         return res.status(response.status).send({message : response.statusText});
+    //     } catch (error) {
+    //         return res.status(500).send({message : error.message})
+    //     }
+    // }
 
 
     export const addToPlaylistTracks = async(req, res) => {
@@ -194,42 +194,6 @@ import { convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.
         }
     }
 
-    export const createPlaylist = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const { userId } = req.params;
-            const name = "Heavan"
-            const description = "It What something matter the most"
-            const isPublic = false 
-            console.log(userId,"Function Invoked.");
-
-            const response = await axios.post(`https://api.spotify.com/v1/users/${userId}/playlists`,
-            {
-                name : name,
-                description : description,
-                public : isPublic
-            },
-            {
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
-            console.log(response.status);
-            console.log(response);
-            
-            
-            if(response.status === 201){
-                return res.status(200).send({message : "Playlist Created Successfully."})
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
-
     export const getPlaylistCoverImage = async(req, res) => {
         try {
             if(!accessToken){
@@ -279,3 +243,163 @@ import { convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.
             return res.status(500).send({message :  error.message});
         }
     } 
+
+    // myplaylists APi ::
+
+    
+    export const createPlaylist = async(req, res) => {
+        try {
+                
+            const playlist_id = await generatePlaylistId();
+            const {user_id} = JSON.parse(req.query.session_details)[0];
+            const {playlist_name,bio,status} = req.body;
+            
+            const query  =  `INSERT INTO tblplaylist(playlist_id, user_id,playlist_name, bio, isPublic) 
+                            VALUES('${playlist_id}','${user_id}','${playlist_name}','${bio}',${status});`;
+            
+            conn.query(query,(error,results) => {
+                if(error){
+                    return error
+                }
+                else{
+                    console.log(results);
+                    return res.status(200).send({message:"Playlist Created"});
+                }
+            });
+        } catch (error) {
+            return res.status(500).send({message : error.message});
+        }
+    }
+
+    export const getUserPlaylists = async(req, res) => {
+        try {
+            const {user_id} = JSON.parse(req.query.session_details)[0];
+            
+            const query = `SELECT * FROM tblplaylist WHERE user_id='${user_id}';`;
+            
+            conn.query(query,(error,results,fields) => {
+                if(error){
+                    console.log(error);
+                    return res.status(400).send({message : "Error in the query"});
+                }
+                else{
+                    console.log(results);
+                    res.status(200).send(results);
+                }
+            })
+        } catch (error) {
+            return res.status(500).send({message : error.message});
+        }
+    }    
+
+    export const getPlaylistById = async(req, res) => {
+
+        try {
+            const {user_id} = JSON.parse(req.query.session_details)[0];
+            const {playlist_id} = req.params;
+
+            const query = `SELECT * FROM tbluser WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
+
+            conn.query(query,(error,results,fields) => {
+                if(error){
+                    return res.status(400).send({message:error})
+                }
+                else{
+                    return res.status(200).send(results)
+                }
+            })
+
+        } catch (error) {
+            return res.status(500).send({message : error.message});
+        }
+    }   
+
+    export const deleteUserPlaylist = async(req, res) => {
+        try {
+
+            const {user_id} = JSON.parse(req.query.session_details)[0];
+            const {playlist_id} = req.params;
+
+            const query = `DELETE FROM tblplaylist WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
+
+            conn.query(query,(error,results) => {
+                if(error){
+                    console.log(error);
+                    return res.status(400).send({message: error})
+                }
+                else{
+                    console.log(results);
+                    return res.status(200).send({message : "playlist Deleted"});
+                }
+            })
+        } catch (error) {
+            return res.status(500).send({message: error.message});
+        }
+    } 
+
+    export const updateUserPlaylist = async(req, res) => {
+        try {
+
+            const {user_id} = JSON.parse(req.query.session_details);
+            const {playlist_id} = req.params;
+            const {name,bio,status} = req.body;
+
+            const query = `UPDATE tblplaylist SET playlist_name='${name}',bio='${bio}',status=${status} WHERE user_id='${user_id}' AND playlist_id='${playlist_id}' `;
+
+            conn.query(query,(error,results,fields)=>{
+                if(error){
+                    console.log(error);
+                    return res.status(400).send({message : error})
+                }
+                else{
+                    console.log(results);
+                    return res.status(200).send(results)
+                }
+            })
+        } catch (error) {
+            return res.status(500).send({message : error.message});
+        }
+    }
+
+    export const getPlaylistTracks = async(req, res) => {
+        try {   
+            const {user_id} = JSON.parse(req.query.session_details);
+            const {playlist_id} = req.params;
+
+            const query = `SELECT d.* from tblsongs as d INNER JOIN tblplaylist as s ON d.song_id == s.song_id WHERE play_id=${playlist_id} and user_id=${user_id}`;
+
+            conn.query(query,(error,results) => {
+                if(error){
+                    return res.status(400).send({message : error})
+                }
+                else{
+                    return res.status(200).send(results)
+                }
+            })
+        } catch (error) {
+            return res.send
+        }   
+    }
+
+    export const addTrackToPlaylist = async(req, res) => {
+        try {   
+            
+            const {user_id} = JSON.parse(req.query.session_details);
+            const {playlist_id,id} = req.params;
+
+            const query = `INSERT INTO tblplaylist(song_id) VALUES('${id}') WHERE playlist_id = ${playlist_id} AND user_id=${user_id};`;
+
+            conn.query(query,(error,results) => {
+                if(error){
+                    return res.status(400).send({message:error})
+                }
+                else{
+                    return res.status(200).send(results)
+                }
+            })
+        } catch (error) {
+            return res.status(200).send({message:error.message})
+        }
+    }
+
+    

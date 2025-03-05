@@ -21,7 +21,6 @@ export let conn = mysql.createConnection({
 
 conn.connect((error) => {
   if(error){
-    console.log(error);
     return;
   }
   console.log("Connected to Database.");
@@ -37,8 +36,12 @@ conn.connect((error) => {
 
 // server configuration
 export const app = express();
-app.listen(process.env.SERVER_PORT);
-console.log(`server Running on Port ${process.env.SERVER_PORT}`);
+app.listen(process.env.SERVER_PORT,(err) => {
+  if(err){
+    return err;
+  }
+  console.log(`server Running on Port ${process.env.SERVER_PORT}`);
+});
 
 app.use(cors({
   origin : ["http://localhost:5173","https://accounts.spotify.com/authorize","http://localhost:3000"],
@@ -56,7 +59,6 @@ app.use(session({
   cookie: { secure: false } 
 }));
 
-
 // Page Router
 import { AuthRoutes } from "./apis/Spotify/Auth/Token.js"
 import { TrackRouter } from "./apis/Spotify/Routes/Track.Route.js"
@@ -73,8 +75,7 @@ import { authRoutes } from "./apis/Spotify/Routes/Auth.Routes.js";
 import MailRouter from "./apis/Mail/Mail.Routes.js";
 
 // Lyrics 
-import LyricsRouter from "./apis/Musixmatch/Routes/lyrics.Routes.js";
-
+import LyricsRouter from "./apis/Genius/Routes/lyrics.Routes.js";
 
 // Route Configuration
 app.use("/",AuthRoutes);

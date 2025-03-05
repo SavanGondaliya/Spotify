@@ -1,12 +1,12 @@
 @import 'tailwindcss';
-
+/* 
 @theme {
     --shadow-box: 10px 10px 0px #4949bf; 
     --shadow-btn: 5px 5px 0px blue; 
     --shadow-input: 5px 5px 0px blue; 
     --shadow-register: 10px 10px 0px brown;
     --bg_form : #f2c178;
-   }
+   } */
 html, body{
     margin: 0;
     padding: 0;

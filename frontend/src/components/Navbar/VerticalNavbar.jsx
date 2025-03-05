@@ -1,32 +1,32 @@
 import React, { useState,useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
+import { NavLink, useFetcher } from "react-router-dom";
+import {CreatePlaylist} from "../Playlist/CreatePlaylist.jsx";
+import { UserPlaylist } from "../Playlist/UserPlaylist.jsx";
+import { getUserPlaylist } from "../utility/SongManipulation.jsx";
 
 const VerticalNavbar = () => {
 
-  const session_details = sessionStorage.getItem("session_details")
-  console.log(session_details);
-  
-  const [userPlaylist,setUserPlaylist] = useState([]);
+  const [userPlaylists,setPlaylists] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+
+  const playlists = async() => {
+    let playlist = await getUserPlaylist();
+    setPlaylists(playlist);
+  } 
+
+  document.addEventListener("click",(e) => {
+    if(!e.target.classList.contains("create_playlist")){
+      setShowForm(false)
+    }
+  })
+
+  const addPlaylist = () => {
+    playlists();
+    setShowForm(false); 
+  };
 
   useEffect(() => {
-
-    const getUserPlaylist = async() => {
-      try {
-        const response = await axios.get(`http://localhost:5000/playlist/user?session_details=${session_details}`,{
-          headers:{
-            "Content-Type" : "application/json"
-          }
-        });
-        if(response.status === 200){
-          console.log(response.data);
-          const playlists = response.data;
-          setUserPlaylist(playlists)
-        }
-      } catch (error) {
-        return error
-      }
-    }
+    playlists()
   },[]);
 
   return (
@@ -61,9 +61,14 @@ const VerticalNavbar = () => {
         <div>
           <div className="flex justify-around mt-5">
             <p className="text-white text-2xl">User Playlist</p>
-            <i className="ri-add-line text-white"></i>
+            <i className="create_playlist ri-add-line text-white" onClick={() => setShowForm(true)}></i>
           </div>
-            <h1 className="text-amber-100 text-center">No Playlist</h1>
+          <div className="bg-indigo-400">
+              <UserPlaylist playlists={userPlaylists} />
+          </div>
+        </div>
+        <div className=" absolute top-50 z-10 left-125">
+          {showForm && <CreatePlaylist addPlaylist={addPlaylist} />}
         </div>
       </div>
     </div>

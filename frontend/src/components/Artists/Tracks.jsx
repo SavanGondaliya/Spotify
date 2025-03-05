@@ -1,62 +1,67 @@
-import React, { useEffect,useState } from "react";
-import { useWebPlayback } from "../utility/WebPlayBackSDK";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
-export const Tracks = () => {
-
+const fetchTopTracks = async (setTracks) => {
     const session_details = sessionStorage.getItem("session_details");
-    const player = useWebPlayback();
-    const [deviceId,setDeviceId] = useState(null);
-    const [albumId,setAlbumId] = useState([]);
-    
-    let index = 1261;    
-    const getTrackDetails = async(album_id,delay = 10000) => {
+    if (!session_details) return;
 
-        try {
-            let id = album_id[index].album_id;
-            console.log(id);
-            console.log(index);
-            const response  = await axios.get(`http://localhost:5000/album/tracks/${id}?session_details=${session_details}`,{
-                headers:{
-                    "Content-Type":"application/json"
-                }
-            });
-            if(response.status === 200){
-                console.log(response.data);
-                index += 1
-                setTimeout(() => {
-                    getTrackDetails(album_id)
-                }, delay);
-            }
-        } catch (error) {
-            return error
-        }
+    const cachedData = localStorage.getItem("top_tracks");
+    const cachedTime = localStorage.getItem("tracks_timestamp");
+
+    if (cachedData && cachedTime && Date.now() - cachedTime < 86400000) {
+        setTracks(JSON.parse(cachedData));
+        return;
     }
 
-    useEffect(() => {
-        if(!player) return
-        player.addListener("ready",({device_id}) => {
-            setDeviceId(device_id)
-        });
-
-        axios.get(`http://localhost:5000/albumids`,{
-            headers:{
-                "Content-Type":"application/json"
+    try {
+        const response = await axios.get(
+            `http://localhost:5000/populerTracks?session_details=${session_details}`,
+            {
+                headers: { "Content-Type": "application/json" },
             }
-        }).then((res) => {
-            if(res.status === 200){
-                setAlbumId(res.data);  
-            }
-        })
-    },[player])
+        );
+        if (response.status === 200) {
+            localStorage.setItem("top_tracks", JSON.stringify(response.data));
+            localStorage.setItem("tracks_timestamp", Date.now().toString());
+            setTracks(localStorage.getItem("top_tracks"));
+        }
+    } catch (error) {
+        console.error("Error fetching tracks:", error);
+    }
+};
 
+export const TopHits = () => {
+    const [hitTracks, setTracks] = useState([]);
+    
     useEffect(() => {
-        getTrackDetails(albumId);
-    },[deviceId]);
+        fetchTopTracks(setTracks);
+        const interval = setInterval(() => fetchTopTracks(setTracks), 86);
 
-    return(
+        return () => clearInterval(interval);
+    }, []);
+    
+    return (
         <div>
-            <h1>Tracks</h1>
+            {
+                hitTracks && Array(hitTracks).length > 0 ? (
+                    <div className="w-full h-full flex bg-black">
+                        {
+                            hitTracks?.tracks?.map((track) => (
+                                <div className="p-2">
+                                    <div>
+                                        <img src={track.album.images[0].url} alt="" />
+                                        <p className="text-white">{track.name}</p>                                        
+                                    </div>
+                                </div>
+                            ))
+
+                        }
+                    </div>
+                ):(
+                    <div>Loading...</div>
+                )
+            }            
         </div>
-    )
-}
+    );
+};
+

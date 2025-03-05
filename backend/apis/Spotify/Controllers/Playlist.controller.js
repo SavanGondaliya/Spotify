@@ -2,55 +2,7 @@ import axios from "axios";
 import conn from "../../../index.js";
 import { getTrackUri } from "./Play.controller.js";
 import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpers/Playlist.helper.js";
-
-    // export const getPlaylistById = async(req, res) => {
-    //     try {
-    //         if(!accessToken){
-    //             return res.status(401).send({message : res.statusText});
-    //         }
-    //         console.log('full URL : ',req.params);
-            
-    //         const  { playlistId }  = req.params;
-            
-    //         if(!playlistId){
-    //             return res.status(404).send({message : "Playlist Id is Required."})
-    //         }
-            
-    //         const response = await axios.get(`http://api.spotify.com/v1/playlists/${playlistId}`,{
-    //             headers:{
-    //                 "Content-Type" : "application/json",
-    //                 "Authorization" : `Bearer ${accessToken}`
-    //             }
-    //         });
-            
-    //         if(response.status === 200){
-    //             return res.status(200).send(response.data);
-    //         }
-    //         return res.status(response.status).send({message : response.statusText});
-    //     } catch (error) {
-    //         return res.status(500).send({message : error.message});
-    //     }
-    // } 
-
-    // export const getUserPlaylist = async(req, res) => {
-    //     try {
-    //         if(!accessToken){
-    //             return res.status(401).send({message : res.statusText});
-    //         }
-    //         const response = await axios.get(`https://api.spotify.com/v1/me/playlists`,{
-    //             headers:{
-    //                 "Content-Type" : "application/json",
-    //                 "Authorization":  `Bearer ${accessToken}`
-    //             }
-    //         });
-    //         if(response.status === 200){
-    //             return res.status(200).send(response.data);
-    //         }
-    //         return res.status(response.status).send({message : response.statusText});
-    //     } catch (error) {
-    //         return res.status(500).send({message : error.message});
-    //     }
-    // }
+import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../Helpers/Playlist.helper.js";
 
     export const updatePlaylistDetails = async(req, res) => {
         try {
@@ -83,28 +35,6 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
         }
     }
 
-    // export const getPlaylistTracks = async(req, res) => {
-    //     try {
-    //         if(!accessToken){
-    //             return res.status(401).send({message : res.statusText});
-    //         }
-    //         const {playlistId} = req.params;
-
-    //         const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`,{
-    //             headers:{
-    //                 "Content-Type" : "application/json",
-    //                 "Authorization" : `Bearer ${accessToken}`
-    //             }
-    //         });
-    //         if(response.status === 200){
-    //             return res.status(200).send(response.data);
-    //         }
-    //         return res.status(response.status).send({message : response.statusText});
-    //     } catch (error) {
-    //         return res.status(500).send({message : error.message})
-    //     }
-    // }
-
 
     export const addToPlaylistTracks = async(req, res) => {
         
@@ -134,126 +64,17 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
                 return res.status(500).send({message : error.message})
             }
         }
-    
-    export const deleteFromPlaylistTracks = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const {playlistId} = req.params;
-            const trackUri = await getTrackUri(req, res);
-            const snapshot_id   = await getSnapshotId(req,res,playlistId);
-            console.log(playlistId,trackUri,snapshot_id);
-        
-            const response = await axios({
-                method: "delete",
-                url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
-                },
-                data: {
-                    tracks: [
-                        {
-                            uri: trackUri,
-                        },
-                    ],
-                    snapshot_id: snapshot_id,
-                },
-            });
-        
-            if(response.status === 200){
-                return res.status(200).send({message : "Track Deleted SuccessFully."});
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message})
-        }
-    }
-
-    export const otherUserPlaylist = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-
-            const {userId} = req.params;
-
-            const response = await axios.get(`https://api.spotify.com/v1/users/${userId}/playlists`,{
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
-            if(response.status === 200){
-                res.status(200).send(response.data)
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
-
-    export const getPlaylistCoverImage = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const { playlistId } = req.params; 
-
-            const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/images`,{
-                headers:{
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
-            if(response.status === 200){
-                return res.status(200).send(response.data)
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
-
-    export const setPlaylistCoverImage = async(req, res) => {
-        try {
-            if(!accessToken){
-                return res.status(401).send({message : res.statusText});
-            }
-            const { playlistId } = req.params;
-            const imagePath  = "E:/practice/cards/image/virat_kohli.png"
-            const imageBase64 = await convertImageToBase64(imagePath)
-            console.log(imageBase64,playlistId);
-
-            const response = await axios.put(`https://api.spotify.com/v1/playlists/${playlistId}/images`,imageBase64,
-            {
-                headers : {
-                    "Content-Type" : "image/jpeg",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            });
-            console.log(response.status);
-            
-            if(response.status === 202){
-                return res.status(200).send({message : "Image Set Successfully."})
-            }
-            return res.status(response.status).send({message : response.statusText});
-        } catch (error) {
-            return res.status(500).send({message :  error.message});
-        }
-    } 
 
     // myplaylists APi ::
-
     
     export const createPlaylist = async(req, res) => {
         try {
-                
-            const playlist_id = await generatePlaylistId();
-            const {user_id} = JSON.parse(req.query.session_details)[0];
-            const {playlist_name,bio,status} = req.body;
+            console.log('callled');
             
+            const playlist_id = await generatePlaylistId();
+            const {user_id} = JSON.parse(req.query.session_details);
+            const {playlist_name,bio,status} = req.body;
+
             const query  =  `INSERT INTO tblplaylist(playlist_id, user_id,playlist_name, bio, isPublic) 
                             VALUES('${playlist_id}','${user_id}','${playlist_name}','${bio}',${status});`;
             
@@ -273,7 +94,8 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
 
     export const getUserPlaylists = async(req, res) => {
         try {
-            const {user_id} = JSON.parse(req.query.session_details)[0];
+            
+            const {user_id} = JSON.parse(req.query.session_details);
             
             const query = `SELECT * FROM tblplaylist WHERE user_id='${user_id}';`;
             
@@ -293,8 +115,8 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
     }    
 
     export const getPlaylistById = async(req, res) => {
-
         try {
+
             const {user_id} = JSON.parse(req.query.session_details)[0];
             const {playlist_id} = req.params;
 
@@ -320,7 +142,7 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
             const {user_id} = JSON.parse(req.query.session_details)[0];
             const {playlist_id} = req.params;
 
-            const query = `DELETE FROM tblplaylist WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
+            const query = `UPDATE FROM tblplaylist WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
 
             conn.query(query,(error,results) => {
                 if(error){
@@ -363,11 +185,11 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
 
     export const getPlaylistTracks = async(req, res) => {
         try {   
+            
             const {user_id} = JSON.parse(req.query.session_details);
             const {playlist_id} = req.params;
-
-            const query = `SELECT d.* from tblsongs as d INNER JOIN tblplaylist as s ON d.song_id == s.song_id WHERE play_id=${playlist_id} and user_id=${user_id}`;
-
+            const query = `SELECT song_id FROM tblplaylist WHERE playlist_id = '${playlist_id}' AND user_id='${user_id}';`;
+            
             conn.query(query,(error,results) => {
                 if(error){
                     return res.status(400).send({message : error})
@@ -381,25 +203,74 @@ import { generatePlaylistId,convertImageToBase64, getSnapshotId } from "../Helpe
         }   
     }
 
-    export const addTrackToPlaylist = async(req, res) => {
-        try {   
+    export const addTrackToPlaylist = async(req,res) => {
+        try {
+            console.log("called");
             
             const {user_id} = JSON.parse(req.query.session_details);
             const {playlist_id,id} = req.params;
-
-            const query = `INSERT INTO tblplaylist(song_id) VALUES('${id}') WHERE playlist_id = ${playlist_id} AND user_id=${user_id};`;
-
+            const song_id = await getCurrentTracks(user_id,playlist_id);
+            
+            const newPlaylistTracks = await setPlaylistTracks(song_id,id);
+            
+            const query = `update tblplaylist set song_id='${newPlaylistTracks}' where playlist_id='${playlist_id}' and user_id='${user_id}';`;
+            console.log(newPlaylistTracks,query);
+            
             conn.query(query,(error,results) => {
                 if(error){
-                    return res.status(400).send({message:error})
+                    return res.status(400).send(error)
                 }
-                else{
-                    return res.status(200).send(results)
-                }
+                console.log(results);
+                
+                res.status(200).send(newPlaylistTracks)
             })
+            
         } catch (error) {
-            return res.status(200).send({message:error.message})
+            return res.status(500).send({message:error.message});
         }
     }
 
+    export const deleteTrackFromPlaylist = async (req, res) => {
+        try {
+            console.log("Delete track API called...");
+    
+            // Parse session details
+            const sessionDetails = req.query.session_details ? JSON.parse(req.query.session_details) : {};
+            const { user_id } = sessionDetails;
+            
+            if (!user_id) {
+                return res.status(400).send({ message: "Invalid session details" });
+            }
+            
+            const { playlist_id, id } = req.params;
+            console.log(user_id,playlist_id,id);
+    
+            // Get current tracks
+            const songIds = await getCurrentTracks(user_id, playlist_id);
+            if (!songIds) {
+                return res.status(400).send({ message: "Failed to get playlist tracks" });
+            }
+            console.log(songIds);
+            
+            // Remove the track from playlist
+            const updatedTracks = removeTrackFromPlaylist(songIds, id);
+            console.log(updatedTracks);
+            
+            // Update database
+            const query = `UPDATE tblplaylist SET song_id = ? WHERE playlist_id = ? AND user_id = ?`;
+            const values = [updatedTracks, playlist_id, user_id];
+            console.log(query);
+            
+            conn.query(query, values, (error, results) => {
+                if (error) {
+                    return res.status(400).send(error);
+                }
+                console.log(results);
+                res.status(200).send({ message: "Track removed successfully", updatedTracks });
+            });
+    
+        } catch (error) {
+            return res.status(500).send({ message: error.message });
+        }
+    };
     

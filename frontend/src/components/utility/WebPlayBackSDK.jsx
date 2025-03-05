@@ -19,6 +19,7 @@ const WebPlaybackContext = createContext(null);
 
 export const WebPlaybackProvider = ({ children }) => {
     const [player, setPlayer] = useState(null);
+    const [deviceId, setDeviceId] = useState(null);
 
     useEffect(() => {
         window.onSpotifyWebPlaybackSDKReady = async () => {
@@ -32,13 +33,17 @@ export const WebPlaybackProvider = ({ children }) => {
                 if (success) {
                     console.log("Spotify Player Connected");
                     setPlayer(newPlayer);
+            
                 }
             });
+            newPlayer.addListener("ready",({device_id}) => {
+                setDeviceId(device_id)
+            })
         };
     }, []);
 
     return (
-        <WebPlaybackContext.Provider value={player}>
+        <WebPlaybackContext.Provider value={{ player, deviceId}}>
             {children}
         </WebPlaybackContext.Provider>
     );

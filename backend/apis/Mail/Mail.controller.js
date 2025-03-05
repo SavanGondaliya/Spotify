@@ -1,8 +1,7 @@
-import axios from "axios";
+
 import nodemailer from "nodemailer";
 import CryptoJS from "crypto-js";
 let userEmail;
-
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com", // e.g., smtp.gmail.com, smtp.mailtrap.io
@@ -16,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 export const RegistrationMail = async(req, res) => {
     try {   
-
+        
         const {name,email,dob,password,gender} = JSON.parse(req.query.userDetails);   
         const verifyDetails = CryptoJS.AES.encrypt(JSON.stringify({"name":name,"email":email,"password":password}),"session").toString();
         
@@ -38,7 +37,7 @@ export const RegistrationMail = async(req, res) => {
                             <p>This is an HTML email with Bootstrap styling and an attached image.</p>
                             <img src="cid:unique-image-id" alt="Email Image" width="200 ">
                             <br><br>
-                            <a href="http://localhost:5173/verified?verifyDetails=${verifyDetails}" class="btn btn-success text-center">Verify</a>
+                            <a href="http://localhost:5173/verification?verifyDetails=${verifyDetails}" target="_self" class="btn btn-success text-center">Verify</a>
                         </div>
                     </body>
                 </html> `
@@ -63,10 +62,9 @@ export const RegistrationMail = async(req, res) => {
 
 export const verifyEmail = async(req, res) => {
     try {
-        const {email} = req.query.verifyEmail;
-        console.log(email);
+        const email = req.query.verifyEmail;
         
-        if (verifyEmail = userEmail){
+        if (email){
             return res.status(200).json({success:true})
         }
         return res.status(400).json({success:false});

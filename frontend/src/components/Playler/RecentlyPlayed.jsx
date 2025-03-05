@@ -1,8 +1,7 @@
-import React,{useState, useEffect} from "react";
+import React,{useState, useEffect, useRef} from "react";
 import axios from "axios";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
-import { PlaySong,PauseSong,getCurrentState } from "../utility/SongManipulation";
-import { PlayerController } from "./Controller";
+import { Play,Pause } from "../utility/SongManipulation";
 import { NavLink } from "react-router-dom";
 import './style.css'
 
@@ -10,19 +9,15 @@ import './style.css'
 export const RecenltyPlayed = () => {
 
     const session_details = sessionStorage.getItem("session_details");
-    const [playerDetails,setPlayerDetails] = useState("");
     const [recenltyPlayed,setRecentlyPlayed] = useState([]);
-    const [deviceId,setDeviceId] = useState("");
     const [isPlay,setIsPlay] = useState(false);
-    const player  =  useWebPlayback();  
+    const {player,deviceId}  =  useWebPlayback();  
+    const [positionMs,setPositionMs]  =  useState(0);
+    const [currentState,setCurrentState]  =  useState(0);
     
     useEffect(() => {
 
         if(player){
-
-            player.addListener('ready',({device_id}) => {
-                setDeviceId(device_id);
-            });
             
             axios.get(`http://localhost:5000/recently-played?session_details=${session_details}&deviceId=${deviceId}`,{
                 headers:{
@@ -33,76 +28,52 @@ export const RecenltyPlayed = () => {
                     setRecentlyPlayed(response.data)
                 }
             });        
-            
         }
     },[player]);
 
     useEffect(() => {
-        if (!player) return; 
-    
-        const handlePlayerStateChange = (state) => {
-            if (!state) {
-                console.log("Nothing Playing Currently");
-            }
-            setPlayerDetails(state);
-        };
-    
-        player.addListener("player_state_changed", handlePlayerStateChange);
-        
-        player.addListener("ready",
+        if (!player) return;
             player.getCurrentState().then((state) => {
                 if (!state) {
-                    console.log("Nothing Playing Currently");
-                }
-                setPlayerDetails(state);
-            })
-        )
+                    return;
+                }                
+                setCurrentState(state)
+                setPositionMs(state.position);
+            });
+    },[isPlay]); 
     
-        return () => player.removeListener("player_state_changed", handlePlayerStateChange);
-    }, [isPlay]); 
-    
-    useEffect(() => {
-        if(!player) return;
-        player.addListener("player_state_changed",
-            player.getCurrentState().then((state) => {
-                setPlayerDetails(state)
-            })
-        )
-    },[isPlay])
-
-    const handleMusic = (id) => {
-
-        if(id == isPlay){
-            PauseSong(id,deviceId);
+    const handleMusic = (id,type) => {
+        if(isPlay == id){
+            Pause(id,deviceId)
             setIsPlay(null);
         }else{
-            PlaySong(id,deviceId);
+            Play(id,deviceId,type,positionMs);
             setIsPlay(id);
         }
     }
-    console.log(playerDetails);
+    console.log(currentState);
     
     return(
         <div>
             {
-                (recenltyPlayed || playerDetails )  && Object.keys(recenltyPlayed).length > 0 ? (
+                (recenltyPlayed)  && Object.keys(recenltyPlayed).length > 0 ? (
                     <div className="flex flex-col w-fit max-w-full h-fit">
                         {
                             recenltyPlayed.items.map((tracks,index) => (
                                 <div key={index} className="flex rounded py-2 bg-black hover:bg-indigo-800">
                                     <div
                                         key={index+1}
-                                        onClick={() => handleMusic(tracks.track.id)} 
+                                        onClick={() => handleMusic(tracks.track.id,"track")} 
                                         className="flex justify-center items-center ml-3">
-                                        <div key={index+2} className="absolute">
+                                        {/* <div key={index+2} className="absolute ">
                                             {
-                                             tracks.track.id == isPlay || playerDetails == true ? (
+                                             tracks.track.id == isPlay || currentState.paused == true ? (
                                                     <i className="ri-pause-fill"></i>
                                                 ):(
                                                     <i className="ri-play-fill"></i>
                                                 )
                                             }
-                                        </div>
+                                        </div> */}
                                         <img 
                                             key={index+3}
                                             className="w-10 h-15 rounded recently_image"
@@ -122,7 +93,6 @@ export const RecenltyPlayed = () => {
                                 </div>
                             ))
                         }
-                    <PlayerController />
                     </div>
                 ):( 
                     <div>

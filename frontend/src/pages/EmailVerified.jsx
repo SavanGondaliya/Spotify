@@ -1,69 +1,88 @@
-import React from "react";
-import { useEffect,useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
 
-const EmailVerified = () => {
+const VerifyEmail = () => {
 
-    const [searchParams] = useSearchParams()
+  const verifyStatus = localStorage.getItem("verified");
+  const userDetails = sessionStorage.getItem("user_details");
+  const [message, setMessage] = useState("We have sent you an email.");
+  const [verified, setVerified] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-    const goToHome = () => {
-        try {
-            sessionStorage.setItem("session_details",{"name":name,"password":password});
-            window.open("http://localhost:5173/","_parent")
-        } catch (error) {
-            return 0;            
-        }
+  const sendMail = () => {
+
+    axios.get(`http://localhost:5000/mail/register?userDetails=${userDetails}`,{
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.status === 200) {
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+  console.log(verifyStatus);
+  
+  useEffect(() => {
+    if(verifyStatus == true){
+      navigate("/")
     }
+  })
 
-    useEffect(() => {
+  useEffect(() => {
+    sendMail();
+  },[]);
 
-        const mailToVerify = searchParams.get("verifyDetails")
-        const decryptedMessage = CryptoJS.AES.decrypt(mailToVerify,"session");         
-        const {name,passowrd,email} = decryptedMessage.toString(CryptoJS.enc.Utf8);
-        console.log(name,email,passowrd);
-        
-        if(!mailToVerify){
-            return            
-        }
-                        
-        if(mailToVerify != null){
-            
-            axios.get(`http://localhost:5000/email/verify?verifyEmail=${email}`,{
-                headers:{
-                    "Content-Type":"application/json",
-                }
-            }).then((response) => {
-                if(response.status === 200){
-                   
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-        }else{
-            return;
-        }
-    },[searchParams]);
-    
-    return (
-        <div>
-            <div className="w-full h-full flex flex-col justify-evenly items-center">
-                <div className="mt-5">
-                    <img className="w-50 h-50" src="/logo.svg" alt="" />
-                </div>
-                <div className="flex flex-col bg-indigo-700 p-10 rounded text-center">
-                    <div>
-                        <h1 className="text-2xl text-white">Your Email is Verfied SuccessFully.</h1>
-                        <h1 className="text-2xl text-white">Now You Can Close This Window and Enjoy the Music</h1>
-                    </div>
-                    <div>
-                        <button onClick={goToHome} className="bg-indigo-800">Go To Home</button>
-                    </div>
-                </div>
-            </div> 
-        </div>
-    )
+  useEffect(() => {
+    const token = searchParams.get("verifyDetails");
 
-}
+    if (token) {
+      fetch(`http://localhost:5000/mail/verify?verifyEmail=${token}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setMessage("You are verified, now you can use our features.");
+            setVerified(true);
+          } else {
+            setMessage("Verification failed. Invalid or expired token.");
+          }
+        })
+        .catch(() => setMessage("An error occurred."));
+    }
+  }, [searchParams]); 
 
-export default EmailVerified;
+  const closeAndRedirect = () => {
+    // Notify other tabs to close themselves
+    localStorage.setItem("closeVerificationTab", Date.now());
+  
+    // Redirect this tab to home
+    window.location.href = "/";
+  };
+  
+  useEffect(() => {
+    const handleStorageEvent = (event) => {
+      if (event.key === "closeVerificationTab") {
+        window.close(); // First tab closes itself
+      }
+    };
+  
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
+  }, []);
+  
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <p className="text-lg">{message}</p>
+      {verified && (
+        <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={closeAndRedirect}>
+            Click Here To Go To Home
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default VerifyEmail;

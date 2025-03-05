@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+
 import { useParams } from "react-router-dom";
 import "./style.css";
 
@@ -27,14 +28,13 @@ export const ArtistDetails = () => {
 
     useEffect(() => {
         artist();
-    },[]);
-    console.log(artistDetails);
+    },[id]);
     
     return(
-        <div>
+        <div className="h-full w-full">
             {
             artistDetails && artistDetails.length > 0 ?(
-                <div className="bg-black w-full h-full flex justify-around flex-col">
+                <div className="bg-black  flex justify-around flex-col">
                     <div className="w-100 h-100">
                         <div className="relative inline-block container_shadow">
                             <img 
@@ -54,13 +54,11 @@ export const ArtistDetails = () => {
                     <div className="bg-indigo-800 w-fit h-fit p-10">
                         <p>{artistDetails[0].bio}</p>
                     </div>
-            </div>
-            
+            </div>        
             ):(
                 <p>Loading</p>
             )   
             }
         </div>
     )
-
 }

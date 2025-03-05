@@ -1,11 +1,9 @@
 import axios from "axios";
-import path from "path"
-import fs from "fs"
-import { accessToken,localStorage } from "../../../config.js";
-import { match } from "assert";
+import conn from "../../../index.js";
+
+
 
     export const getSnapshotId = async(req,res) => {
-        console.log('Function Invoked.');
         
         try {
         if(!accessToken){
@@ -26,7 +24,6 @@ import { match } from "assert";
                 if(element.id === playlistId){
                     snapshotId = element.snapshot_id
                 }
-                console.log(snapshotId);
             });
             return snapshotId
         }
@@ -61,3 +58,53 @@ import { match } from "assert";
         }
         return playlistId;
     }   
+    
+    export const getCurrentTracks = (user_id, playlist_id) => {
+        return new Promise((resolve, reject) => {
+            console.log("helper 1 called...");
+    
+            const query = `SELECT song_id FROM tblplaylist WHERE playlist_id = ? AND user_id = ?`;
+    
+            conn.query(query, [playlist_id, user_id], (err, results) => {
+                if (err) {
+                    console.error("DB Error:", err);
+                    return reject(err);
+                }
+    
+                if (results.length === 0 || !results[0].song_id) {
+                    return resolve([]); // Return an empty array if no songs found
+                }
+    
+                const songIds = results[0].song_id.split(",").map(id => id.trim());
+                resolve(songIds);
+            });
+        });
+    };
+    export const setPlaylistTracks = (oldIds, newId) => {
+        console.log("Second helper called...");
+    
+        let playlistArray = Array.isArray(oldIds) ? oldIds : [];
+    
+        if (!playlistArray.includes(newId)) {
+            playlistArray.push(newId);
+        }
+    
+        const newString = playlistArray.join(",");
+        console.log("Updated playlist:", newString);
+    
+        return newString;
+    };
+    
+    export const removeTrackFromPlaylist = (oldIds, trackToRemove) => {
+        console.log("Remove helper called...");
+    
+        let playlistArray = Array.isArray(oldIds) ? oldIds : [];
+    
+        playlistArray = playlistArray.filter(track => track !== trackToRemove);
+    
+        const newString = playlistArray.join(",");
+        console.log("Updated playlist after removal:", newString);
+    
+        return newString;
+    };
+    

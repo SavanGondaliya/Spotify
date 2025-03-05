@@ -3,8 +3,8 @@ import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
 
 export const search = async(req,res) => {
-    
-    console.log(req.query);
+
+    console.log("called...");
     
     const userDetails = JSON.parse(req.query.session_details);
     const authToken = await userToken(userDetails);
@@ -13,10 +13,10 @@ export const search = async(req,res) => {
         return res.status(401).send({message : "UnAuthorized User"})
     }   
     
-    const q = req.query.name;
-    const type = req.query.type;
+    const q = req.query.q;
+    const type = "track,album,artist";
     const market = "IN";
-    const limit = 3;
+    const limit = 10;
     const offset = 0;
     const include_external = "audio"
     
@@ -33,9 +33,9 @@ export const search = async(req,res) => {
             }
         }
     )
-    
+    console.log(response.data,response.status);
+        
     if(response.status == 200){
-        await addArtist(response.data);
         return res.status(200).send(response.data)
     }
     return res.status(400).send({message : "Item Not Found"})
@@ -153,7 +153,6 @@ export const addArtist = async(id) => {
         return error
     }
 }
-
 
 export const getAlbumId = async(req, res) => {
     try {

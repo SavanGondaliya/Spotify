@@ -1,5 +1,5 @@
 import express from "express";
-import { checkAlbumForUser, deleteCurrentAlbum, getAlbum, getAlbumTracks, newRelease, saveCurrentAlbum, userSavedAlbums } from "../Controllers/Album.controller.js";
+import { checkAlbumForUser, deleteCurrentAlbum, getAlbum, getAlbumTracks, newRelease, populerAlbums, saveCurrentAlbum, userSavedAlbums } from "../Controllers/Album.controller.js";
 
 export const AlbumRoute = express.Router();
 
@@ -10,5 +10,6 @@ AlbumRoute.get("/album/tracks/:id",getAlbumTracks);
 AlbumRoute.get("/user/album/contain/:id",checkAlbumForUser);
 AlbumRoute.get("/user/album/add/:id",saveCurrentAlbum);
 AlbumRoute.get("/new-release",newRelease);
+AlbumRoute.get("/albums/populer",populerAlbums);
 
 export default AlbumRoute;

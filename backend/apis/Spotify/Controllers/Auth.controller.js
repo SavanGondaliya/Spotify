@@ -1,4 +1,5 @@
 import conn from "../../../index.js";
+import axios from "axios";
 import request from "request";
 import  querystring from "querystring";
 import CryptoJS from "crypto-js";
@@ -28,7 +29,8 @@ export const createUniqueId = () => {
 export const callback = async (req, res) => {
     
     try {
-
+        console.log("called");
+        
         let code = req.query.code || null;
         let state = req.query.state || null;
         
@@ -67,13 +69,12 @@ export const callback = async (req, res) => {
                         const {name, email, password, dob, gender} = JSON.parse(plaintText);
                         
                         const query = `INSERT INTO tbluser(user_id, name, email, password, dob, gender, session_details) VALUES('${userId}','${name}','${email}','${password}','${dob}','${gender}','${session_details}');`;
+                        console.log(query);
                         
                         if (session_details) {
                             conn.query(query, (err) => {
                                 if (err) {
                                     return res.status(401).json({ message: "Database error" });
-                                } else {
-                                    res.redirect("http://localhost:5173/register")
                                 }
                             });
                         }
@@ -99,14 +100,13 @@ export const login = (req,res) => {
                 return res.status(404).send({message:"Wrong Credentials"});
             }
             if(results != null){
-                return res.status(200).send(results);
+                return res.status(200).send(results[0]);
             }
         });
     } catch (error) {
         return res.status(500).send({message : error.message});
     }
 }
-
 
 export const userToken = async(req,res) => {
    

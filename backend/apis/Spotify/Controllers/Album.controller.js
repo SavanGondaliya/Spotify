@@ -2,6 +2,7 @@ import axios from "axios";
 import { activeDeviceId } from "./Device.controller.js";
 import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
+import { getArtistIds } from "../Helpers/Artist.helper.js";
 
 const Market = "In";
 
@@ -77,7 +78,6 @@ export const getAlbumTracks = async(req, res) => {
         });
         
         if(response.status === 200){
-            await AddTracks(response.data,id);
             return res.status(200).send(response.data);
         }   
         return res.status(404).send({message : response.statusText});
@@ -149,7 +149,6 @@ export const deleteCurrentAlbum = async(req, res) => {
         }
         const {id} = req.params;
         const deviceId = await activeDeviceId(req, res);
-        console.log("Function Invoked",id);
         
         const response = await axios.delete(`https://api.spotify.com/v1/me/albums?ids=${id}&device_id=${deviceId}`,
         {
@@ -225,24 +224,50 @@ export const AddTracks = (album,album_id) => {
     try {
         album.items.forEach(elements => {
             const query = `INSERT INTO tblsongs(song_id,title,track_number,duration,song_url,artist_id,album_id) VALUES('${elements.id}','${elements.name}','${elements.track_number}','${elements.duration_ms}','${elements.uri}','${elements.artists[0].id}','${album_id}')`
-            console.log(query);
             
             return new Promise((resolve,reject) => {
 
                 conn.query(query,(err) => {
                     if(err){
-                        console.log(err);
                         return reject();
                     }
                     resolve();
-                    console.log("inserted.");
                     })
                 }).catch((err) => {
                     console.log(err);
                 })    
         });
-
     } catch (error) {
         return error;
     }
+}
+
+export const populerAlbums = async(req,res) => {
+    try {
+      
+        // const userDetails = req.query.session_details;
+        const userDetails = {"user_id":"4r54fcllruao9y4y"};
+        const authToken = await userToken(userDetails);
+        const ids = await getArtistIds("album_id");
+        let topTrackIds = []
+        let index = 0;
+        
+        for(let i=0;i<10;i++){
+          index = Math.floor(Math.random()*10);
+          topTrackIds.push(ids[index].album_id)
+        }
+  
+        const response = await axios.get(`https://api.spotify.com/v1/albums?ids=${topTrackIds.join(",")}`,{
+          headers:{
+            "Content-Type":"Application/json",
+            "Authorization":`Bearer ${authToken}`
+          }
+        });
+        if(response.status === 200){
+          return res.status(200).send(response.data)
+        }
+        return res.status(400).send({message:response,statusText});
+      } catch (error) {
+        return res.status(500).send({message : error})
+      }
 }

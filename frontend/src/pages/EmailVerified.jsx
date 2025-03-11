@@ -54,10 +54,9 @@ const VerifyEmail = () => {
     }
   }, [searchParams]); 
 
-  const closeAndRedirect = () => {
+    const closeAndRedirect = () => {
     // Notify other tabs to close themselves
-    localStorage.setItem("closeVerificationTab", Date.now());
-  
+    
     // Redirect this tab to home
     window.location.href = "/";
   };

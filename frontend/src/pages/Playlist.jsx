@@ -1,6 +1,6 @@
 import React from "react";
-import { Playlist } from "../components/Playlist/Playlist";
-import { PlayerController } from "../components/Playler/Controller";
+import { Playlist } from "../components/User/Playlist/Playlist";
+import { PlayerController } from "../components/User/Playler/Controller";
 
 export const PlaylistPage = () => {
 
@@ -11,7 +11,6 @@ export const PlaylistPage = () => {
             </div>
                 <Playlist />
             <div>
-
             </div>
             <div>
                 <PlayerController />

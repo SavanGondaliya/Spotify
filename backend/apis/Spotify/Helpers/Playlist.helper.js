@@ -61,18 +61,16 @@ import conn from "../../../index.js";
     
     export const getCurrentTracks = (user_id, playlist_id) => {
         return new Promise((resolve, reject) => {
-            console.log("helper 1 called...");
     
             const query = `SELECT song_id FROM tblplaylist WHERE playlist_id = ? AND user_id = ?`;
     
             conn.query(query, [playlist_id, user_id], (err, results) => {
                 if (err) {
-                    console.error("DB Error:", err);
                     return reject(err);
                 }
     
                 if (results.length === 0 || !results[0].song_id) {
-                    return resolve([]); // Return an empty array if no songs found
+                    return resolve([]);
                 }
     
                 const songIds = results[0].song_id.split(",").map(id => id.trim());
@@ -80,8 +78,8 @@ import conn from "../../../index.js";
             });
         });
     };
+
     export const setPlaylistTracks = (oldIds, newId) => {
-        console.log("Second helper called...");
     
         let playlistArray = Array.isArray(oldIds) ? oldIds : [];
     
@@ -90,20 +88,17 @@ import conn from "../../../index.js";
         }
     
         const newString = playlistArray.join(",");
-        console.log("Updated playlist:", newString);
     
         return newString;
     };
     
     export const removeTrackFromPlaylist = (oldIds, trackToRemove) => {
-        console.log("Remove helper called...");
     
         let playlistArray = Array.isArray(oldIds) ? oldIds : [];
     
         playlistArray = playlistArray.filter(track => track !== trackToRemove);
     
         const newString = playlistArray.join(",");
-        console.log("Updated playlist after removal:", newString);
     
         return newString;
     };

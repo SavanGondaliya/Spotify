@@ -4,9 +4,9 @@ import axios from "axios";
 import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
 import { getArtistIds } from "../Helpers/Artist.helper.js";
-import { getLocalArtistDetails } from "./Artist.controller.js";
-import { getCurrentTracks } from "../Helpers/Playlist.helper.js";
-import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
+import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helper.js";
+import { login } from "./Auth.controller.js";
+
 
 // global variables
   const Market  = "IN";
@@ -41,12 +41,10 @@ import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
 
   export const getSeveralTracks = async(req,res) => {
     try {
-      console.log('called');
       
       const {ids} = req.query;
       const userDetails = JSON.parse(req.query.session_details);
       const authToken = await userToken(userDetails);
-      console.log(ids,authToken);
       
       if(!authToken){
         return res.status(401).send({message : res.statusText});
@@ -60,10 +58,8 @@ import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
           "Authorization" : `Bearer ${authToken}`
         }
       });
-      console.log(response.status);
       
       if(response.status === 200){
-        console.log(response.data);
         
         return res.status(200).send(response.data);
       }
@@ -74,94 +70,69 @@ import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
 
   export const getUserSavedTracks = async(req, res) => {
     try {
-
+      console.log('called saved tracks');
       
-      const userDetails = JSON.parse(req.query.session_details)[0];
-      const authToken = await userToken(userDetails);
+      const {user_id} = JSON.parse(req.query.session_details);
+      const currentLikedIds = await getLikedSongs(user_id);
+      console.log(user_id,currentLikedIds);
+      
+      return res.status(200).send(currentLikedIds);
 
-      if(!authToken){
-        return res.status(401).send({message : res.statusText});
-      }
-      const limit = 10
-      const offset = 0
-
-      const response = await axios.get(`https://api.spotify.com/v1/me/tracks?limit=${limit}&offset=${offset}`,{
-        headers:{
-          "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${authToken}`
-        }
-      });
-      if(response.status === 200){
-        return res.status(200).send(response.data)
-      }
-      return res.status(response.status).send({message : response.statusText});
     } catch (error) {
-      return res.status(500).send({message : error.message});
+      return res.status(500).send({message: error.message})
     }
   }
 
   export const saveCurrentTrack = async(req, res) => {
-    try {
-
-      const userDetails = JSON.parse(req.query.session_details)[0];
-      const authToken = await userToken(userDetails);
-
-      if(!authToken){
-        return res.status(401).send({message : res.statusText})
+      try {
+        console.log("called");
+        
+        const {user_id} = JSON.parse(req.query.session_details);
+        const {ids} = req.params;
+        console.log(user_id,ids);
+        
+        const currentLikedIds = await getLikedSongs(user_id);
+        const LikedTracks = await setLikedTracks(currentLikedIds,ids);
+        
+        const query = `UPDATE tbluser SET liked_songs ='${LikedTracks}' where user_id='${user_id}';`; 
+        console.log(query);
+        
+        conn.query(query,(err) => {
+          if(err){
+            return res.status(400).send({message:err})
+          }
+          return res.status(200).send({message:`Liked by ${user_id}`})
+        })
+  
+      } catch (error) {
+        return res.status(500).send({message: error.message})
       }
-      const {ids} = req.params;
-      console.log(ids);
-      
-      const response = await axios.put(`https://api.spotify.com/v1/me/tracks?ids=${ids}`,
-      {
-        "ids":[
-          ids
-        ]
-      },
-      {
-        headers:{
-          "Content-Type" : "application/json",
-          "Authorization" : `Bearer ${authToken}`
-        }
-      });
-      if(response.status === 200){
-        return res.status(200).send({message : "Track Saved Successfully."});
-      }
-      return res.status(response.status).send({message : response.statusText});
-    } catch (error) {
-      return res.status(500).send({message : error.message});
-    }
   }
 
   
   export const deleteCurrentTrack = async(req, res) => {
+
     try {
       
-      const userDetails = JSON.parse(req.query.session_details)[0];
-      const authToken = await userToken(userDetails);
+      const {user_id} = JSON.parse(req.query.session_details);
+      const {ids} = req.params;
+      const currentLikedIds = await getLikedSongs(user_id);
+      console.log(currentLikedIds);
+      
+      const updatedTracks = await removeTrack(currentLikedIds,ids);
+      console.log(updatedTracks);
+      
+      const query = `UPDATE tbluser SET liked_songs ='${updatedTracks}' where user_id='${user_id}';`; 
+      console.log(query);
+      
+      conn.query(query,(err) => {
+        if(err){
+          return res.status(400).send({message:err})
+        }
+        return res.status(200).send({message:`deleted {ids}`})
+      })
 
-      if(!authToken){
-        return res.status(401).send({message : res.statusText})
-      }
-    
-      const response = await axios({
-          method: "delete",
-          url: `https://api.spotify.com/v1/me/tracks?ids=${ids}`,
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${authToken}`,
-          },
-          data: {
-              "ids": [
-                  ids
-              ],
-          },
-      });
-      if(response.status === 200){  
-        return res.status(200).send({message : "Track Deleted Successfully."});
-      }
-      return res.status(response.status).send({message : response.statusText});
-    } catch (error) {
+      } catch (error) {
       return res.status(500).send({message : error.message});
     }
   }
@@ -194,14 +165,11 @@ import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
 
   export const populerTracks = async(req,res) => {
     try {
-        console.log('called...');
         
       const userDetails = JSON.parse(req.query.session_details);
       const authToken = await userToken(userDetails);
-      console.log(authToken);
       
       const ids = await getArtistIds("song_id");
-      console.log(ids);
       
       let topTrackIds = []
       let index = 0;
@@ -226,25 +194,20 @@ import { getLikedSongs,setLikedTracks } from "../Helpers/Track.helper.js";
     }
   }
 
-  export const likeSong = async(req,res) => {
+  
+  export const getLocalTracks = async(req,res) => {
     try {
 
-      const {user_id} = JSON.parse(req.query.session_details);
-      const {id} = req.params;
-      const currentLikedIds = await getLikedSongs(id);
-      const LikedTracks = await setLikedTracks(currentLikedIds,user_id);
-      
-      const query = `UPDATE tblsongs SET liked_by ='${LikedTracks}' where song_id='${id}';`; 
-      console.log(query);
-      
-      conn.query(query,(err) => {
+      const query = `select song_id from tblsongs`;
+
+      conn.query(query,(err,results,fields)=>{
         if(err){
-          return res.status(400).send({message:err})
+          return res.status(404).send({success : "false"});
         }
-        return res.status(200).send({message:`Liked by ${user_id}`})
+        return res.status(200).send(results);
       })
 
     } catch (error) {
-      return res.status(500).send({message: error.message})
+      return res.status(500).send({message:error.message});
     }
   }

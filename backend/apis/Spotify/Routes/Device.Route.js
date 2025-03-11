@@ -7,5 +7,4 @@ export const deviceRoute = express.Router();
 deviceRoute.get("/transfer/:id",transferPlayback);
 deviceRoute.get("/userdevice",userDevices);
 
-
 export default deviceRoute;

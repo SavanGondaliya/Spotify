@@ -135,8 +135,7 @@ import conn from "./index.js"
                 song_id VARCHAR(255),
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
-                FOREIGN KEY (user_id) REFERENCES tbluser(user_id),
-                FOREIGN KEY (song_id) REFERENCES tblsongs(song_id)
+                FOREIGN KEY (user_id) REFERENCES tbluser(user_id)
         );`;
         conn.query(query,(error) => {
             if(error ){
@@ -146,4 +145,24 @@ import conn from "./index.js"
         });
     }
 
-export default (createDatabase,tblUser,tblAdmin,tblArtist,tblSong,tblPlaylist,tblAlbum);
+    export const tblReport = () => {
+        const query = `CREATE TABLE IF NOT EXISTS tblreport (
+            report_id VARCHAR(255) NOT NULL PRIMARY KEY,
+            report_month VARCHAR(255) NOT NULL,
+            user_id VARCHAR(255) NOT NULL,
+            streaming_time INT NOT NULL,
+            listened_artist JSON NOT NULL,
+            listened_songs JSON NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES tbluser(user_id)
+        );`     
+        conn.query(query,(error) => {
+            if(error){
+                console.log(error);
+            }
+            return;
+        })
+    }
+
+export default (createDatabase,tblUser,tblAdmin,tblArtist,tblSong,tblPlaylist,tblAlbum,tblReport);

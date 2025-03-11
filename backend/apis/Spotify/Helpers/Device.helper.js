@@ -1,8 +1,6 @@
 "use strict"
 
 import axios from "axios";
-import { accessToken,localStorage } from "../../../config.js";
-
 
 export const userDevices = async(req,res) => {
     

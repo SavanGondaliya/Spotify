@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mysql from "mysql2";
 import session from "express-session";
-import {createDatabase, tblAdmin, tblAlbum, tblArtist, tblPlaylist, tblSong, tblUser} from "./db.js";
+import {createDatabase, tblAdmin, tblAlbum, tblArtist, tblPlaylist, tblSong, tblUser,tblReport} from "./db.js";
 
 // .env file configuration
 dotenv.config();
@@ -31,6 +31,7 @@ conn.connect((error) => {
   tblSong();
   tblPlaylist();
   tblAlbum();
+  tblReport();
 })
 
 
@@ -38,7 +39,7 @@ conn.connect((error) => {
 export const app = express();
 app.listen(process.env.SERVER_PORT,(err) => {
   if(err){
-    return err;
+    return err
   }
   console.log(`server Running on Port ${process.env.SERVER_PORT}`);
 });
@@ -76,6 +77,11 @@ import MailRouter from "./apis/Mail/Mail.Routes.js";
 
 // Lyrics 
 import LyricsRouter from "./apis/Genius/Routes/lyrics.Routes.js";
+import {adminRoutes} from "./apis/Admin/Routes.js"
+
+// Artists Routes
+import {ArtistsRoutes} from "./apis/Artist/Routes.js"
+
 
 // Route Configuration
 app.use("/",AuthRoutes);
@@ -92,7 +98,13 @@ app.use("/",authRoutes);
 // Lyrics Routes
 app.use("/",LyricsRouter);
 
-// Mails
+// Mails Routes
 app.use("/",MailRouter);
+
+// Admin Routes
+app.use("/",adminRoutes)
+
+// Artists Routes
+app.use("/",ArtistsRoutes)
 
 export default conn;

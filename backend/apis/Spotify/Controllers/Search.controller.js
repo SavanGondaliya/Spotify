@@ -3,8 +3,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
 
 export const search = async(req,res) => {
-
-    console.log("called...");
     
     const userDetails = JSON.parse(req.query.session_details);
     const authToken = await userToken(userDetails);
@@ -23,7 +21,7 @@ export const search = async(req,res) => {
     const params = new URLSearchParams({
         q,type,market,limit,offset,include_external
     }).toString();
-    console.log(params);
+    
     
     try {
         const response = await axios.get(`https://api.spotify.com/v1/search?${params}`,{
@@ -33,7 +31,7 @@ export const search = async(req,res) => {
             }
         }
     )
-    console.log(response.data,response.status);
+    
         
     if(response.status == 200){
         return res.status(200).send(response.data)
@@ -64,7 +62,7 @@ export const getHindiAlbums = async(req, res) => {
         const params = new URLSearchParams({
             q,type,market,limit,offset,include_external
         }).toString();
-        console.log(params);
+        
         
         const response = await axios.get(`https://api.spotify.com/v1/search?${params}`,{
             headers:{
@@ -104,7 +102,7 @@ export const getSongs = async(req,res) => {
         const params = new URLSearchParams({
             q,type,market,limit,offset,include_external
         }).toString();
-        console.log(params);
+        
     
         const response = await axios.get(`https://api.spotify.com/v1/search?${params}`,{
             headers:{
@@ -113,10 +111,9 @@ export const getSongs = async(req,res) => {
             }
         }
     )
-    console.log(response.status);
     
     if(response.status === 200){
-        console.log(response.data.items);
+        
         return res.status(200).send(response.data)
     }   
     return res.status(response.status).send(response.statusText);
@@ -134,7 +131,7 @@ export const addArtist = async(id) => {
         artist.artists.items.forEach((element) => {
             let genre = JSON.stringify(element.genres);
             const query = `INSERT INTO tblartist(artist_id,artist_name,genre,image,bio,popularity) VALUES('${element.id}','${element.name}','${genre}','${element.images[0].url}','${element.type}','${element.popularity}')`; 
-            console.log(query);
+            
             
             return new Promise((resolve,reject) => {
 
@@ -143,10 +140,10 @@ export const addArtist = async(id) => {
                         reject()
                     }
                     resolve()
-                    console.log("inserted.");
+                    
                 })
             }).catch((err) => {
-                console.log(err);
+                
             })
         });
     } catch (error) {
@@ -161,10 +158,10 @@ export const getAlbumId = async(req, res) => {
 
         conn.query(query, (err, results, fields) => {
             if (err) {
-                console.error("Database error:", err);
+                
                 return res.status(500).send({ success: false, message: err.message });
             }
-            console.log(results);
+            
             return res.status(200).send(results);
         });
     } catch (error) {

@@ -1,14 +1,12 @@
 import React,{useEffect} from "react";
-import VerticalNavbar from "../components/Navbar/VerticalNavbar";
-import HorizontalNavbar from "../components/Navbar/HorizontalNavbar";
-import { ArtistCategory } from "../components/Artists/Artists";
-import { RecenltyPlayed } from "../components/Playler/RecentlyPlayed";
-import { PlayerController } from "../components/Playler/Controller";
-import { TopHits } from "../components/Artists/Tracks.jsx";
+import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
+import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
+import { ArtistCategory } from "../components/User/Artists/Artists";
+import { RecenltyPlayed } from "../components/User/Playler/RecentlyPlayed";
+import { PlayerController } from "../components/User/Playler/Controller";
+import { TopHits } from "../components/User/Artists/Tracks.jsx";
 
 const Home = () => {
-
-    const session_details = sessionStorage.getItem("session_details");
 
     return (
         <div className="w-screen h-screen">

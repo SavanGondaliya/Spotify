@@ -4,10 +4,8 @@ import userToken from "../Helpers/Auth.helper.js"
 const market = "IN";
 
 export const getAlbumUri = async(req,authToken) => {
-  console.log("AlbumUri called");
   
   const {id} = req.params;
-  console.log(id);
   
   if (!authToken) {
     return "Access Not Found...";
@@ -22,11 +20,9 @@ export const getAlbumUri = async(req,authToken) => {
           },
         }
       );
-      console.log(response.data);
       
       if(response.status === 200){  
         const contextUri  = response.data.uri;
-        console.log(contextUri);
         
         if(!contextUri){
           return "No Context uri Found"
@@ -55,8 +51,10 @@ export const getAlbumUri = async(req,authToken) => {
             },
           }
         );
+        console.log(response.data);
+        
         if(response.status === 200){  
-          const contextUri  = response.data.artist.uri;
+          const contextUri  = response?.data?.uri;
           
           if(!contextUri){
             return "No Context uri Found"
@@ -72,7 +70,6 @@ export const getAlbumUri = async(req,authToken) => {
     export const getTrackUri = async(req,authToken) => {
   
       const { id } = req.params;
-      console.log(id);
       
       if (!authToken) {
         return "Access Not Found...";
@@ -87,7 +84,6 @@ export const getAlbumUri = async(req,authToken) => {
               },
             }
           );
-          console.log('');
           
           if(response.status === 200){  
             const contextUri = response.data.uri;
@@ -95,7 +91,7 @@ export const getAlbumUri = async(req,authToken) => {
             if(!contextUri){
               return "No Context uri Found"
             }
-            return decodeURIComponent(contextUri);
+            return contextUri;
           }
         } catch (error) {
           return error.message;
@@ -105,14 +101,12 @@ export const getAlbumUri = async(req,authToken) => {
   export const playTrack = async (req, res) => {
       
       try {
-        console.log(req.query);
         
         const userDetails = JSON.parse(req.query.session_details);
         const deviceId =  req.query.deviceId;
         const authToken = await userToken(userDetails); 
         const contextUri =  await getTrackUri(req,authToken);
         const position_ms = JSON.parse(req.query.position_ms); 
-        console.log(position_ms);
                 
         if (!authToken) {
           return res.status(401).send({ message: "Access Token Not Found..." });
@@ -135,7 +129,6 @@ export const getAlbumUri = async(req,authToken) => {
             },
           }
         );
-        console.log(response.status);
 
       if(response.status === 204){
         return res.status(200).send({ message: "Playback started successfully" });
@@ -160,8 +153,8 @@ export const getAlbumUri = async(req,authToken) => {
         const deviceId =  req.query.deviceId;
         const authToken = await userToken(userDetails); 
         const contextUri =  await getArtistUri(req,authToken);
-        console.log(contextUri);
-        
+        console.log(userDetails,deviceId,authToken,contextUri);
+            
         if (!authToken) {
           return res.status(401).send({ message: "Access Token Not Found..." });
         }
@@ -206,7 +199,6 @@ export const getAlbumUri = async(req,authToken) => {
       const deviceId =  req.query.deviceId;
       const authToken = await userToken(userDetails); 
       const contextUri =  await getAlbumUri(req,authToken);
-      console.log(userDetails,deviceId,authToken,contextUri);
       
       if (!authToken) {
         return res.status(401).send({ message: "Access Token Not Found..." });
@@ -229,7 +221,6 @@ export const getAlbumUri = async(req,authToken) => {
           },
         }
       );
-    console.log(response.status);
     
     if(response.status === 200 | 204){
       return res.status(200).send({ message: "Playback started successfully" });
@@ -318,13 +309,11 @@ export const getAlbumUri = async(req,authToken) => {
       const authToken = await userToken(userDetails);
       const deviceId = req.query.deviceId;
       const repeatState = req.query.state;
-      console.log(userDetails,authToken,deviceId,repeatState);
       
       if(!authToken){
         return res.status(401).send({message : "UnAuthorized User",user: false});
       }
       const url = `https://api.spotify.com/v1/me/player/repeat?state=${repeatState}&device_id=${deviceId}`
-      console.log(url);
       
       const response = await axios.put(url,{},{
           headers:{
@@ -332,7 +321,6 @@ export const getAlbumUri = async(req,authToken) => {
             "Authorization" : `Bearer ${authToken}`
           }
         });
-        console.log(response.statusText);
         
         if(response.status === 200){
           return res.status(200).send({message:"Repeat Mode On"})
@@ -362,7 +350,6 @@ export const getAlbumUri = async(req,authToken) => {
         }
       });
       if(response.status === 204|200){
-        console.log(response.data);
         return res.status(200).send(response.data)
       } 
       return res.status(response.status).send({message: response.statusText});
@@ -402,20 +389,24 @@ export const getAlbumUri = async(req,authToken) => {
 
   export const setTrackQueue = async(req,res) => {
     try {
-      console.log(req.params,req.query);
-      
-      const userDetails = JSON.parse(req.query.session_details);
-      const {deviceId} = req.query.deviceId; 
+      console.log('queue function called');
+      console.log(req.query);
+            
+      const userDetails = JSON.parse(req.query.session_details);  
+      const deviceId = req.query.deviceId; 
       const authToken = await userToken(userDetails);
-
+      console.log(userDetails,deviceId,authToken);
+      
       if(!authToken){
         return res.status(401).send({message : "UnAuthorized Error"});
       }
       
       const trackUri  = await getTrackUri(req,authToken);
       console.log(trackUri);
+      const url = `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}&device_id=${deviceId}`
+      console.log(url);
       
-      const response = await axios.post(`https://api.spotify.com/v1/me/player/queue?uri=${trackUri}&device_id=${deviceId}`,
+      const response = await axios.post(url,{},
        {
         headers:{
           "Content-Type" : "application/json",
@@ -424,8 +415,8 @@ export const getAlbumUri = async(req,authToken) => {
       });
       console.log(response.status);
       
-      if(response.status === 404 ){
-        return res.status(404).send({message : "Unable to Add Item in queue"})
+      if(response.status === 200 ){
+        return res.status(200).send({message : "Added To Track Successfully."})
       }
       return res.status(response.status).send({message : response.statusText});
     } catch (error) {
@@ -544,13 +535,11 @@ export const getAlbumUri = async(req,authToken) => {
 
   export const seekTrack = async(req,res) => {
     try {
-      console.log('called');
-          
+
       const userDetails = JSON.parse(req.query.session_details);
       const deviceId = req.query.deviceId;
       const authToken = await userToken(userDetails);
       const position_ms = req.query.position_ms;
-      console.log(deviceId,authToken,position_ms);
       
       if(!authToken){
         return res.status(401).send({message : res.statusText });

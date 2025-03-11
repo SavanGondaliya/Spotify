@@ -5,6 +5,7 @@ import conn from "../../../index.js";
 
 export const getArtistDetail = async(req,res) => {
     try {
+        console.log("Request Hascome");
         
         const userDetails = JSON.parse(req.query.session_details);
         const authToken = await userToken(userDetails);
@@ -24,7 +25,9 @@ export const getArtistDetail = async(req,res) => {
         if(response.status === 200){
             return res.status(200).send(response.data);
         }
+
         return res.status(response.status).send(response.data);
+
     } catch (error) {
         return res.status(500).send({message : error});
     }
@@ -179,29 +182,29 @@ export const BollywoodArtist = async(req, res) => {
     }
 };
 
-export const addAlbums = async(album) => {
+// export const addAlbums = async(album) => {
     
-    try {
-        album.items.forEach(element => { 
-            const query = `INSERT INTO tblalbum(album_id,album_name,image,total_tracks,artist_id) VALUES('${element.id}','${element.name}','${element.images[0].url}','${element.total_tracks}','${element.artists[0].id}');`;
+//     try {
+//         album.items.forEach(element => { 
+//             const query = `INSERT INTO tblalbum(album_id,album_name,image,total_tracks,artist_id) VALUES('${element.id}','${element.name}','${element.images[0].url}','${element.total_tracks}','${element.artists[0].id}');`;
             
-            return new Promise((resolve,reject) => {
+//             return new Promise((resolve,reject) => {
                 
-                conn.query(query,(err) => {
-                    if(err){
-                        return reject();
-                    }
-                    resolve();
-                })
-            }).catch((err) => {
-                console.log(err);
-            })              
-        });
+//                 conn.query(query,(err) => {
+//                     if(err){
+//                         return reject();
+//                     }
+//                     resolve();
+//                 })
+//             }).catch((err) => {
+//                 console.log(err);
+//             })              
+//         });
         
-    } catch (error) {
-        return error
-    }
-}
+//     } catch (error) {
+//         return error
+//     }
+// }
 
 export const getLocalArtistDetails = async(req,res) => {
     try {
@@ -221,7 +224,7 @@ export const getLocalArtistDetails = async(req,res) => {
         })
         
     } catch (error) {
-        return error;
+        return res.status(500).send({message:error.message})
     }
 }
 
@@ -266,16 +269,13 @@ export const getRelatedArtist = async(req,res) => {
         
         const artist_id = req.query.artist_id;
         const {genre} = await getArtistGenre(artist_id);  
-        console.log(genre);
         
         const query = `SELECT artist_id FROM tblartist WHERE genre LIKE '%${genre}' LIMIT 5 OFFSET 5;`;
-        console.log(query);
         
         conn.query(query,(err,results,fields) => {
             if(err){
                 return res.status(404).send({message : res.statusText});                    
             }else{
-                console.log(results);
                 return res.status(200).send(results)
             }
         })

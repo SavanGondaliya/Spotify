@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react";
-import Register from "../components/Register/Register";
+import Register from "../components/User/Register/Register";
 
 
 const Auth = () => {

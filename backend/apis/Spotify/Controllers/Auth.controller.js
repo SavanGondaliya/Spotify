@@ -115,6 +115,8 @@ export const userToken = async(req,res) => {
         let accessToken = null;  
     
         const userDetails = JSON.parse(req.query.session_details);  
+        console.log(userDetails);
+        
         const isTokenValid = await isTokenExpired(userDetails);
         
         if(isTokenValid){

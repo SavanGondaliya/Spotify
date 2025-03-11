@@ -3,10 +3,8 @@ import conn from "../../../index.js";
 
 export const getArtistGenre = async(id) =>{
     try {   
-        console.log("Artsit Genre called");
         
         const query = `SELECT genre FROM tblartist WHERE artist_id = '${id}';`
-        console.log(query);
         
         return new Promise((resolve,reject) => {
             conn.query(query,(err,results,fields) => {

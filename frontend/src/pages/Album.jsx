@@ -1,8 +1,8 @@
 import React from "react";
-import { AlbumDetails } from "../components/Album/Album";
-import { PlayerController } from "../components/Playler/Controller";
-import VerticalNavbar from "../components/Navbar/VerticalNavbar";
-import HorizontalNavbar from "../components/Navbar/HorizontalNavbar";
+import { AlbumDetails } from "../components/User/Album/Album";
+import { PlayerController } from "../components/User/Playler/Controller";
+import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
+import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 
 export const Album = () => {
 
@@ -24,9 +24,9 @@ export const Album = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="w-[100%] h-[12%] bg-indigo-400">
-                        <PlayerController/>
+                        <div className="w-[100%] h-[12%] bg-indigo-400">
+                            <PlayerController/>
+                        </div>
                     </div>
                 </div>
             </div>

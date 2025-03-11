@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Currently } from "../components/Playler/CurrentPlaying";
-import { PlayerController } from "../components/Playler/Controller";
-import HorizontalNavbar from "../components/Navbar/HorizontalNavbar";
-import VerticalNavbar from "../components/Navbar/VerticalNavbar";
-import { Lyrics } from "../components/Playler/Lyrics";
-import { useWebPlayback } from "../components/utility/WebPlayBackSDK";
+import { Currently } from "../components/User/Playler/CurrentPlaying";
+import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
+import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
+import { Lyrics } from "../components/User/Playler/Lyrics";
+import { useWebPlayback } from "../components/User/utility/WebPlayBackSDK";
 
 export const LyricsPage = () => {
   const { player, deviceId } = useWebPlayback();
   const [currentState, setCurrentState] = useState();
 
   useEffect(() => {
-
     if (!player) return;
 
     const handlePlayerStateChange = (state) => {
@@ -33,33 +31,36 @@ export const LyricsPage = () => {
       player.removeListener("player_state_changed", handlePlayerStateChange);
   }, [player]);
   console.log(currentState);
-  
+
   return (
-    <div className="w-screen h-screen">
-      <div className="flex flex-col flex-wrap w-full h-full">
-        <div className="w-[100%] h-[100%]">
-          <div className="flex w-full h-full">
-            <div className="w-[15%] h-full">
-              <VerticalNavbar />
-            </div>
-            <div className="flex flex-wrap">
-              <div className="w-[100%]">
-                <HorizontalNavbar />
-              </div>
-              <div className="container flex flex-col w-300 h-[100%] overflow-y-scroll">
-                <Currently />
-                {
-                    currentState  ? (
-                        <Lyrics
-                        artist_name={currentState.artists}
-                        song_name={currentState.name}
-                        />
-                    ):(
-                        <div>Loading....</div>
-                    )
-                }
-              </div>
-            </div>
+    <div className="w-screen h-screen flex">
+      {/* Sidebar */}
+      <div className="w-[15%] h-full">
+        <VerticalNavbar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-col w-[85%] h-full">
+        {/* Top Navbar */}
+        <div className="h-[8%] w-full sticky top-0">
+          <HorizontalNavbar />
+        </div>
+
+        {/* Main Content Scrollable Area */}
+        <div className="flex flex-col w-full h-[92%] overflow-y-auto p-4">
+          <div className="my-5">
+            <Currently />
+          </div>
+
+          <div className="my-5 rounded">
+            {currentState ? (
+              <Lyrics
+                artist_name={currentState.artists}
+                song_name={currentState.name}
+              />
+            ) : (
+              <div>Loading....</div>
+            )}
           </div>
         </div>
       </div>

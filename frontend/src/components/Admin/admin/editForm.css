@@ -1,0 +1,138 @@
+/* Global Styles */
+body {
+    font-family: "Teko", sans-serif;
+    background-color: #05040c;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh;
+    width: 100%; */
+  }
+  
+  /* Outer Container */
+  .edit-container {
+    background-color: #282870;
+    /* width: 35em;
+    height: 25em; */
+    display: flex;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 10px 10px 0px 1px #4949bf;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Form Container */
+  .form-signup {
+    background: #f2c178;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 10px 10px 0px 1px #935d07;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .login-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+  }
+  
+  .login-title-detail {
+    font-size: 1rem;
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Input Fields */
+  label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: black;
+    text-align: left;
+  }
+  
+  .login-detail input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 5px 5px 0px 1px #4949bf;
+    font-size: 16px;
+  }
+  
+  .login-detail input:focus {
+    outline: none;
+    box-shadow: 5px 5px 0px 1px #935d07;
+  }
+  
+  /* Buttons */
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .save-btn, .cancel-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 45%;
+    text-align: center;
+  }
+  
+  .save-btn {
+    background-color: #282870;
+    color: white;
+    box-shadow: 5px 5px 0px 1px #4949bf;
+  }
+  
+  .save-btn:hover {
+    background-color: #f2c178;
+    box-shadow: 5px 5px 0px 1px #935d07;
+    color: black;
+  }
+  
+  .cancel-btn {
+    background-color: #ff4c4c;
+    color: white;
+    box-shadow: 5px 5px 0px 1px #b30000;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #b30000;
+    box-shadow: 5px 5px 0px 1px #800000;
+  }
+  
+  /* Responsive Design */
+  /* @media (max-width: 768px) {
+    .edit-container {
+      width: 90%;
+      height: auto;
+      padding: 20px;
+    }
+  
+    .form-signup {
+      width: 90%;
+    }
+  
+    .form-actions {
+      flex-direction: column;
+    }
+  
+    .save-btn, .cancel-btn {
+      width: 100%;
+      margin-top: 10px;
+    }
+  } */
+  

@@ -68,7 +68,7 @@ import { userDevices } from "../Helpers/Device.helper.js";
 
     } catch (error) {
       return res.status(500).send({message: error.message});
-    }
+      }
   }
 
 //   export const updateMonthlyReport = async (req, res) => {

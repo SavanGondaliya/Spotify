@@ -1,12 +1,12 @@
 import React from "react";
-import { ArtistDetails } from "../components/Artists/Artist";
-import { PopulterTracks } from "../components/Artists/PopulerTracks";
-import { PlayerController } from "../components/Playler/Controller";
-import { PopulerAlbum } from "../components/Artists/PopulerAlbum";
-import { FeaturedAlbum } from "../components/Artists/Featured";
-import VerticalNavbar from "../components/Navbar/VerticalNavbar";
-import HorizontalNavbar from "../components/Navbar/HorizontalNavbar";
-import { RelatedArtist } from "../components/Artists/RelatedArtist";
+import { ArtistDetails } from "../components/User/Artists/Artist";
+import { PopulterTracks } from "../components/User/Artists/PopulerTracks";
+import { PlayerController } from "../components/User/Playler/Controller";
+import { PopulerAlbum } from "../components/User/Artists/PopulerAlbum";
+import { FeaturedAlbum } from "../components/User/Artists/Featured";
+import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
+import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
+import { RelatedArtist } from "../components/User/Artists/RelatedArtist";
 
 export const Artist = () => {
 
@@ -18,25 +18,34 @@ export const Artist = () => {
                     <div className="w-[15%] h-full">
                         <VerticalNavbar/>
                     </div>
-                    <div className="flex flex-wrap">
-                        <div className="w-[100%]">
+                    <div className="flex w-[85%] flex-wrap">
+                        <div className="w-[100%] h-[10%]">
                             <HorizontalNavbar/>
                         </div>
-                        <div className="flex w-[100%] h-[88%] overflow-y-scroll bg-black">
-                            <div className="w-[100%] h-[100%]">
+                        <div className="flex w-[100%] h-[90%] overflow-y-scroll">
+                            <div className="w-[100%] h-[90%]">
                                 <ArtistDetails />
                             </div>
                             <div>
-                                <PopulterTracks />
-                                <PopulerAlbum />
-                                <RelatedArtist/>
-                                <FeaturedAlbum />
+                                <div>
+                                    <PopulterTracks />
+                                </div>
+                                <div>
+                                    <PopulerAlbum />
+                                </div>
+                                <div>
+                                    <RelatedArtist/>
+                                </div>
+                                <div>
+
+                                    <FeaturedAlbum />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="w-[100%] h-[12%] bg-indigo-400">
+            <div className="w-[100%] h-[12%]">
                 <PlayerController/>
             </div>
         </div>

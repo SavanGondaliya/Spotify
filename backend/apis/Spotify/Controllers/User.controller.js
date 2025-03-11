@@ -1,7 +1,9 @@
 "use strict"
 
 import axios from "axios";
+import conn from "../../../index.js";
 import { userToken } from "../Helpers/Auth.helper.js";
+import { generateReportId } from "../Helpers/User.helper.js";
 
     export const userProfile = async(req,res) => {
 
@@ -81,7 +83,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
             }
 
             const user_id = req.params;
-            console.log(user_id);
             
             const response = await axios.get(`https://api.spotify.com/v1/users/${user_id}`,{
                 headers:{
@@ -89,7 +90,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
                     "Authorization" : `Bearer ${accessToken}`
                 }
             });
-            console.log(response.status);
             
             if(response.status ===  200){
                 return res.status(200).send(response.data);
@@ -131,7 +131,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
             }
             const { playlistId } = req.params; 
             const isPublic = false
-            console.log(playlistId);
 
             const response = await axios.put(`https://api.spotify.com/v1/playlists/${playlistId}/followers`,{
                 "public": isPublic
@@ -233,7 +232,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
                 return res.status(401).send({message : res.statusText});
             }
             const { userId } = req.params;
-            console.log(userId);
             
             const response = await axios.put(`https://api.spotify.com/v1/me/following?type=user`,
             {
@@ -264,7 +262,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
                 return res.status(401).send({message : res.statusText});
             }
             const { artistId } = req.params;
-            console.log(artistId);
             
             const response = await axios.delete(`https://api.spotify.com/v1/me/following?type=artist`,
             {
@@ -381,4 +378,34 @@ import { userToken } from "../Helpers/Auth.helper.js";
             return res.status(500).send({message :error.message});
         }
 
+    }
+
+
+    export const addToReport = async(req,res) => {
+
+        const report_id = await generateReportId();
+        const report_month = new Date().getMonth();
+        const { streaming_time, listened_artist, listened_songs } = req.body;
+        const {user_id} = JSON.parse(req.query.session_details);
+
+        if (!report_id || !report_month || !user_id) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        
+        const sql = `
+            INSERT INTO tblreport (report_id, report_month, user_id, streaming_time, listened_artist, listened_songs)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+            streaming_time = streaming_time + VALUES(streaming_time),
+            listened_artist = JSON_MERGE_PATCH(listened_artist, VALUES(listened_artist)),
+            listened_songs = JSON_MERGE_PATCH(listened_songs, VALUES(listened_songs)),
+            updated_at = CURRENT_TIMESTAMP
+        `;
+    
+        conn.query(sql, [report_id,report_month, user_id, streaming_time, JSON.stringify(listened_artist), JSON.stringify(listened_songs)], (err, result) => {
+            if (err) {
+                return res.status(500).json({ message: "Database error", error: err });
+            }
+            res.status(200).json({ message: "Report stored successfully" });
+        });   
     }

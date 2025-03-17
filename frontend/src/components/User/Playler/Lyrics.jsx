@@ -5,7 +5,6 @@ import { useWebPlayback } from "../utility/WebPlayBackSDK";
 
 export const Lyrics = ({song_name,artist_name}) => {
 
-    console.log(artist_name);
     
     const [lyrics,setLyrics] = useState();
     const {player,deviceId} = useWebPlayback();
@@ -34,7 +33,6 @@ export const Lyrics = ({song_name,artist_name}) => {
         return () =>
           player.removeListener("player_state_changed", handlePlayerStateChange);
       }, [player]);
-    
     
     const getLyrics = async() => {
         

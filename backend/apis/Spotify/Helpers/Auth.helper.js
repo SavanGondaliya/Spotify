@@ -2,12 +2,11 @@ import conn from "../../../index.js";
 import querystring from "querystring";
 import axios from "axios";
 
-
 const loggedUserDetails = async(columns,userDetails) => {
   try {
 
     const {user_id}  = userDetails;
-    
+      
     const query = `SELECT ${columns} FROM tbluser WHERE user_id='${user_id}';`;
     
     return new Promise((resolve,reject) => {
@@ -28,7 +27,7 @@ export const getAccessToken = async (userDetails) => {
     
     const {session_details} = await loggedUserDetails("session_details", userDetails);
     const accessToken = session_details.access_token;
-
+    
     return accessToken;
     
   } catch (error) {
@@ -41,7 +40,9 @@ export const isTokenExpired = async(userDetails) => {
     
     const expriseIn = 3600000;
     const currentTime = Date.now();
+
     const {updated_at} = await loggedUserDetails("updated_at",userDetails);
+    
     const issuedAt = new Date(updated_at).getTime();
     
     if(currentTime >= (expriseIn + issuedAt)){
@@ -61,7 +62,7 @@ const updateSessionDetails = (tokenDetails,userDetails) => {
     const updatedToken = JSON.stringify(tokenDetails)
     
     const query = `UPDATE tbluser SET session_details = '${updatedToken}' WHERE user_id = '${user_id}';`;
-
+    
     conn.query(query,(error) => {
       if(error){
         return error

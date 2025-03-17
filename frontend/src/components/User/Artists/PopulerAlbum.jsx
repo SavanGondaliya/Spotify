@@ -7,7 +7,7 @@ export const PopulerAlbum = () => {
 
     const session_details = sessionStorage.getItem("secret_key");
     const [populerAlbums,setPopulerAlbums] = useState();
-    const {player,deviceId} = useWebPlayback(); 
+    const {deviceId} = useWebPlayback(); 
     const {id} = useParams();
 
     const getPopulerAlbums = async() => {
@@ -29,8 +29,8 @@ export const PopulerAlbum = () => {
     
     useEffect(() => {
         getPopulerAlbums();
-    },[deviceId]);
-
+    },[deviceId,id]);
+    
     return(
         <div className="w-full h-full">
             <h3>Populer Albums</h3>

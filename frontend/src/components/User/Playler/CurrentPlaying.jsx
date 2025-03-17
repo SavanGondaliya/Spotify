@@ -65,31 +65,32 @@ export const Currently = () => {
   }, [player]);
 
     
-  // const PlayRandom = async() => {
-  //   try {
-  //       console.log("called...");
+  const PlayRandom = async() => {
+    try {
+        console.log("called...");
       
-  //       axios.get(`http://localhost:5000/loacal/tracks`,{
-  //           headers:{
-  //               "Content-Type":"application/json"
-  //           }
-  //       }).then((res) => {
-  //           if(res.status === 200){
-  //               let randomIndex = Math.floor(Math.random()*res.data.length)
-  //               Play(res.data[randomIndex],deviceId,"track",0)
-  //           }
-  //       }).catch((error) => {
-  //         console.log(error);
-  //       });
-  //   } catch (error) {
-  //     console.log(error);
-  //       return error
-  //   }
-  // }
+        axios.get(`http://localhost:5000/local/tracks`,{
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }).then((res) => {
+            if(res.status === 200){
+                let randomIndex = Math.floor(Math.random()*res.data.length)
+                Play(res.data[randomIndex],deviceId,"track",0)
+            }
+        }).catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      console.log(error);
+        return error
+    }
+  }
 
   const handleMusic = (id, type) => {
     if (isPlay == id) {
-      Pause(id, deviceId, type);
+      PlayRandom()
+      // Pause(id, deviceId, type);
       setIsPlay(null);
     } else {
       Play(id, deviceId, type, positionMs);

@@ -6,9 +6,9 @@ import './nav.css'
 const Main = () => {
   return (
     <div className="main-page">
-            <Sidebar />
-                <Navbar />
-        </div>
+        <Sidebar />
+        <Navbar />
+    </div>
   )
 }
 

@@ -22,7 +22,7 @@ export const Artist = () => {
                         <div className="w-[100%] h-[10%]">
                             <HorizontalNavbar/>
                         </div>
-                        <div className="flex w-[100%] h-[90%] overflow-y-scroll">
+                        <div className="flex w-[100%] h-[90%] overflow-y-scroll justify-between">
                             <div className="w-[100%] h-[90%]">
                                 <ArtistDetails />
                             </div>
@@ -37,7 +37,6 @@ export const Artist = () => {
                                     <RelatedArtist/>
                                 </div>
                                 <div>
-
                                     <FeaturedAlbum />
                                 </div>
                             </div>

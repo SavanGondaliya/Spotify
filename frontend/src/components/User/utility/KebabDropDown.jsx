@@ -1,68 +1,75 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { addToQueue } from "./SongManipulation";
 import { useWebPlayback } from "./WebPlayBackSDK";
 import { ArtistDropDown } from "./ArtistDropDown";
 import { PlaylistDropDown } from "../Playlist/PlaylistDropDown";
 
+export const KebabDropDown = ({ playlists, artists, track_id }) => {
+    const { deviceId } = useWebPlayback();
+    const [artistIndex, setArtistIndex] = useState(null);
+    const [playlistIndex, setPlaylistIndex] = useState(null);
+    const [dropdownPosition, setDropdownPosition] = useState("left-full"); // Default to right
 
-export const KebabDropDown = ({playlists,artists,track_id}) => {
-    
-    const {player,deviceId} = useWebPlayback();
+    const dropdownRef = useRef(null);
 
-    const artistRef = useRef();
-    const playlistRef = useRef();
-    const [position,setPosition] = useState({bottom:0, right:0});
-    const [artistIndex,setArtistIndex] =useState();
-    const [playlistIndex,setPlaylistIndex] = useState();
-    const [index,setIndex] = useState(1);
+    useEffect(() => {
+        const updatePosition = () => {
+            if (dropdownRef.current) {
+                const rect = dropdownRef.current.getBoundingClientRect();
+                const windowWidth = window.innerWidth;
+                
+                if (rect.right + 200 > windowWidth) {
+                    setDropdownPosition("right-full"); // Move left if overflow
+                } else {
+                    setDropdownPosition("left-full"); // Default right
+                }
+            }
+        };
 
-    const handleArtistDropDown = (track_id) => {
-        if(artistRef.current){
-            const rect = artistRef.current.getBoundingClientRect();
-            setPosition({bottom: 50,right: 40})
-        }
-        setArtistIndex((prev) => prev === track_id ? null : track_id)
-    }
+        updatePosition();
+        window.addEventListener("resize", updatePosition);
+        return () => window.removeEventListener("resize", updatePosition);
+    }, []);
 
-    
-    const handlePlaylistDropDown = (track_id) => {
-        if(playlistRef.current){
-            const rect = playlistRef.current.getBoundingClientRect();
-            setPosition({bottom: rect.bottom,right: rect.right})
-        }
-        setPlaylistIndex((prev) => prev === track_id ? null : track_id)
-    }
-
-
-    return(
-        <div className="w-100">  
+    return (
+        <div className="relative w-100 bg-gray-800 text-white p-2 rounded-md" ref={dropdownRef}>
+            
             <div 
-                onClick={() => addToQueue(deviceId,track_id)}
-                className="hover:cursor-pointer"
+                onClick={() => addToQueue(deviceId, track_id)}
+                className="hover:cursor-pointer p-2 hover:bg-gray-700"
             >
                 Add To Queue
             </div>
-            <div>    
-                <div 
-                    ref={artistRef} onMouseOver={() => handleArtistDropDown(index)} 
-                    className="z-10 hover:cursor-pointer"  
-                    style={{ bottom: position.bottom, right: position.right }}
-                >
-                Go To Artists
-                    <div className="absolute text-white"> 
-                        {artistIndex === index && <ArtistDropDown artists={artists} /> }
-                    </div>
+
+            <div 
+                className="relative"
+                onMouseEnter={() => setArtistIndex(track_id)} 
+                onMouseLeave={() => setArtistIndex(null)}
+            >
+                <div className="hover:cursor-pointer p-2 hover:bg-gray-700">
+                    Go To Artists
                 </div>
+                {artistIndex === track_id && (
+                    <div className={`absolute top-0 ${dropdownPosition} bg-gray-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
+                        <ArtistDropDown artists={artists} />
+                    </div>
+                )}
             </div>
-            <div>
-                
-            <div ref={playlistRef} onMouseOver={() => handlePlaylistDropDown(index)} className="z-10"  style={{ bottom: position.bottom, right: position.right }}>
-                Add To playlist
-                    <div className="absolute text-white hover:cursor-pointer"> 
-                        {playlistIndex === index && <PlaylistDropDown playlists={playlists} /> }
-                    </div>
+
+            <div 
+                className="relative"
+                onMouseEnter={() => setPlaylistIndex(track_id)}
+                onMouseLeave={() => setPlaylistIndex(null)}
+            >
+                <div className="hover:cursor-pointer p-2 hover:bg-gray-700">
+                    Add To Playlist
                 </div>
+                {playlistIndex === track_id && (
+                    <div className={`absolute top-0 ${dropdownPosition} bg-gray-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
+                        <PlaylistDropDown playlists={playlists} track_id={track_id} />
+                    </div>
+                )}
             </div>
         </div>
-    )
-}
+    );
+};

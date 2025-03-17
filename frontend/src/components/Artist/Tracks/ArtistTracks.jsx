@@ -1,17 +1,18 @@
 import axios from "axios";
-import { set } from "lodash";
 import React from "react";
 import {useState,useEffect} from "react";
-import { NavLink, useParams } from "react-router-dom";
 
 export const ArtistTracks = () => {
 
+    const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
     const [trackDetails,setTrackDetails] = useState([]);
-    const {id} = useParams();
-
+    console.log(artistDetails);
+    
     const getTrackDetails = () => {
-
-        axios.get(`http://localhost:5000/${id}/tracks`,{
+        const url = `http://localhost:5000/${artistDetails[0]?.artist_id}/tracks`
+        console.log(url);
+        
+        axios.get(url,{
             headers:{
                 "Content-Type":"application/json"
             }
@@ -31,22 +32,31 @@ export const ArtistTracks = () => {
 
     return (
         <div>
+            <div class="top-songs">
+            <h2>Top Songs</h2>
             {
-                trackDetails && trackDetails.length > 0 ? (
+                trackDetails ? (
                     trackDetails.map((track) => (
-                            <div>
-                            <div>
-                                <h1>{track.title}</h1>
+                        <div class="songs">
+                            <div class="song">
+                                <img src={`http://localhost:5000${track.image}`} alt="album"/>
+                                <div class="info">
+                                    <div>{track?.title}<p class="artist">{track?.artist_name}</p>
+                                    </div>
+                                    <p class="album-name">{track?.album_name}</p>
+                                </div>
+                                <p>{Math.floor(track?.duration/60)}:{track?.duration%60}</p>
                             </div>
-                            <NavLink to={`http://localhost:5173/track/update/${track.song_id}`}>
-                                <button>Edit</button>
-                            </NavLink>
-                            </div>
+                        </div>
                     ))
                 ):(
                     <div>Loading...</div>
                 )
             }
+            </div>
+            <style>
+
+            </style>
         </div>
     )
 }

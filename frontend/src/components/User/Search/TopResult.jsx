@@ -18,7 +18,6 @@ export const TopResult = ({topResult}) => {
                     return;
                 }                
                 setPositionMs(state.position);
-                getReportData(state.position,state.track_window.current_track.name,state.track_window.current_track.artists[0].name);
             });
     },[isPlay]); 
     
@@ -35,19 +34,20 @@ export const TopResult = ({topResult}) => {
 
     return (
         <div>
+            <h2 className="text-2xl my-2">TopResult</h2>
             {
                 <div className="flex flex-col justify-between w-full mx-5 p-5">
-                    <div>
+                    <div className="flex ">
                         <img 
-                        onClick={() => handleMusic(topResult?.id,"track")}
-                            className="w-30 h-30"
+                            onClick={() => handleMusic(topResult?.id,"track")}
+                            className="w-30 h-30 search_image_shadow"
                             src={topResult?.album?.images[0]?.url} 
                             alt="" 
                             srcset="" 
                             />
-                    </div>
-                    <div>
-                        {topResult?.name}
+                        <div className="mx-10 text-4xl">
+                            {topResult?.name}
+                        </div>
                     </div>
                     <div>
                         {topResult?.type}
@@ -64,6 +64,13 @@ export const TopResult = ({topResult}) => {
                     </div>
                 </div>
             }
+        <style jsx>{`
+                .search_image_shadow{
+                    box-shadow: 8px 8px 0px #4949bf;
+                }
+            `}
+        </style>
         </div>
+
     )
 }

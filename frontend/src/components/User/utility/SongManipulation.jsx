@@ -1,11 +1,13 @@
 import axios from "axios";
+const secret_key = sessionStorage.getItem("secret_key");
 const session_details = sessionStorage.getItem("session_details");
+
 
 export const Play = async(contextUri,device_id,type,position_ms) =>  {
     try {
 
         if(session_details){
-
+            updateReport(device_id);
             const response = await axios.get(`http://localhost:5000/play/${type}/${contextUri}?session_details=${session_details}&deviceId=${device_id}&position_ms=${position_ms}`,{
                 headers:{
                     "Content-Type" :"application/json"
@@ -89,7 +91,7 @@ export const seekSong = async(position_ms,deviceId) => {
     }
 }
 
-export const  getCurrentState = async(device_id) => {
+export const getCurrentState = async(device_id) => {
     try {
         const response = await axios.get(`http://localhost:5000/playback?session_details=${session_details}&deviceId=${device_id}`,{
             headers:{
@@ -203,11 +205,9 @@ export const deleteFromPlaylist = async(playlist_id,id) => {
                 "Content-Type":"application/json"
             }
         });
-
         if(response.status === 200){
             return true;
         }
-
     } catch (error) {
         return error;
     }
@@ -233,7 +233,8 @@ export const addToQueue = async(device_id,id) => {
     }
 }
 
-export const getQueue = async(device_id) => {
+export const getQueue = async() => {
+    
     try {  
         const response = await axios.get(`http://localhost:5000/queue?session_details=${session_details}`,{
             headers:{
@@ -248,29 +249,30 @@ export const getQueue = async(device_id) => {
     }
 }
 
-export const getReportData = async(streaming_time,listened_artist,listened_songs) => {
+export const updateMonthlyReport = async(streaming_time,listened_artist,listened_songs) => {
     try {
-
-        const response = await axios.post(`http://localhost:5000/report?session_details=${session_details}`,
-            {
-                "streaming_time":streaming_time,
-                "listened_artist":listened_artist,
-                "listened_songs":listened_songs
-            },
-            {
-            headers:{
+        console.log(streaming_time,listened_artist,listened_songs);
+        
+        axios.post(`http://localhost:5000/user/report`,{
+            "userId":JSON.parse(session_details)?.user_id,
+            "artists":listened_artist,
+            "song":listened_songs,
+            "timeSpent":streaming_time
+        },{
+            "headers":{
                 "Content-Type":"application/json"
             }
+        }).then((res) => {
+            if(res.status === 200){
+                return res.data            
+            }
+        }).catch((error) => {
+            console.log(error);
         });
-        if(response.status === 200){
-            console.log("Report Stored");
-        }
-
     } catch (error) {
-        return error
+        console.log(error);
     }
 }
-
 
 export const addToLibrary = (ids) => {
     try {
@@ -310,3 +312,36 @@ export const removeFromLibrary = (ids) => {
         return error;
     }
 }
+
+const updateReport = async(device_id) => {
+    
+        console.log("called....");
+        const response = await getCurrentState(device_id);
+        console.log(response);
+        let artists = response?.item?.artists.map((element) => element.id)
+                                    
+        updateMonthlyReport(
+            response?.progress_ms,
+            artists,
+            response?.item?.id
+        )    
+}
+export const PlayRandom = async (device_id) => {
+    try {
+        const res = await axios.get(`http://localhost:5000/local/tracks`, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const listLength = res.data.length;
+        if (listLength === 0) return; // Prevent errors if list is empty
+
+        const randomIndex = Math.floor(Math.random() * listLength);
+        const { song_id } = res.data[randomIndex];
+
+        Play(song_id, device_id, "track", 0);
+    } catch (error) {
+        console.error("Error fetching random track:", error);
+    }
+};

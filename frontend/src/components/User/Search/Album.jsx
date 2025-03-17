@@ -4,8 +4,9 @@ import { NavLink } from "react-router-dom";
 export const Albums = (albums) => {
   return (
     <div>
-      <div>
-        <div className="flex flex-col justify-center items-center px-5 py-5">
+      <div className="px-5 py-5">
+      <h1 className="mx-10 text-2xl">Albums</h1>
+        <div className="flex flex-col justify-center items-center ">
           <div className="flex w-fit h-fit py-5">
             {albums && albums.albums.length > 0 ? (
               albums.albums.map((album) => (

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import logo from "/public/Noizee For Artists.svg";
 import axios from "axios";
 
 const ArtistRegister = () => {
@@ -84,11 +83,11 @@ const ArtistRegister = () => {
         <div class="outer-container">
             <div class="container">
             <div class="left-login-logo">
-                <img src={logo} alt="Logo" class="logo" />
+                <img src="/Artist_For_Noizee.svg" alt="Logo" class="logo" />
                 <p class="slogan">Where Every Beat Hits Different</p>
             </div>
             <div class="right-login-logo">
-                <img src={logo} alt="Logo" class="logo"/>
+                <img src="/Artist_For_Noizee.svg" alt="Logo" class="logo"/>
                 <p class="slogan">Where Every Beat Hits Different</p>
             </div>
             <div class="have-account">

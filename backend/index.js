@@ -5,7 +5,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mysql from "mysql2";
-import session from "express-session";
+import path from "path";
+import { fileURLToPath } from "url";
 import {createDatabase, tblAdmin, tblAlbum, tblArtist, tblPlaylist, tblSong, tblUser,tblReport} from "./db.js";
 
 // .env file configuration
@@ -49,16 +50,13 @@ app.use(cors({
   methods : ['GET','POST','PUT','DELETE'],
   allowedHeaders : ['Content-type','Authorization']
 }));
-
 // Middleware configuration
-app.use(express.json())
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-app.use(session({
-  secret: "userSession",
-  resave: true,
-  saveUninitialized: true,
-  cookie: { secure: false } 
-}));
+app.use(express.json())
+app.use(express.static(path.join(__dirname, "public")));
+
 
 // Page Router
 import { AuthRoutes } from "./apis/Spotify/Auth/Token.js"

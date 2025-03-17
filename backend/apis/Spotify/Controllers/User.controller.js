@@ -3,7 +3,8 @@
 import axios from "axios";
 import conn from "../../../index.js";
 import { userToken } from "../Helpers/Auth.helper.js";
-import { generateReportId } from "../Helpers/User.helper.js";
+import { updateArtist } from "../../Admin/Controller.js";
+
 
     export const userProfile = async(req,res) => {
 
@@ -381,31 +382,126 @@ import { generateReportId } from "../Helpers/User.helper.js";
     }
 
 
-    export const addToReport = async(req,res) => {
-
-        const report_id = await generateReportId();
-        const report_month = new Date().getMonth();
-        const { streaming_time, listened_artist, listened_songs } = req.body;
-        const {user_id} = JSON.parse(req.query.session_details);
-
-        if (!report_id || !report_month || !user_id) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-        
-        const sql = `
-            INSERT INTO tblreport (report_id, report_month, user_id, streaming_time, listened_artist, listened_songs)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE 
-            streaming_time = streaming_time + VALUES(streaming_time),
-            listened_artist = JSON_MERGE_PATCH(listened_artist, VALUES(listened_artist)),
-            listened_songs = JSON_MERGE_PATCH(listened_songs, VALUES(listened_songs)),
-            updated_at = CURRENT_TIMESTAMP
-        `;
+    export const updateMonthlyReport = async (req, res) => {
+        try {
+            console.log("Updating Monthly Report...");
     
-        conn.query(sql, [report_id,report_month, user_id, streaming_time, JSON.stringify(listened_artist), JSON.stringify(listened_songs)], (err, result) => {
-            if (err) {
-                return res.status(500).json({ message: "Database error", error: err });
+            const { userId, artists, song, timeSpent } = req.body;
+            console.log(userId,artists,song,timeSpent);
+            
+            if (!userId || !artists || !song || !timeSpent) {
+                return res.status(400).send({ message: "Missing required fields" });
             }
-            res.status(200).json({ message: "Report stored successfully" });
-        });   
-    }
+    
+            const reportMonth = new Date().toISOString().slice(0, 7);
+            const selectQuery = `SELECT * FROM tblreport WHERE user_id = ? AND report_month = ?`;
+
+            conn.query(selectQuery, [userId, reportMonth], (err, results) => {
+                if (err) return res.status(500).send({ message: "Database error", error: err });
+                
+                let newStreamingTime = timeSpent;
+                let updatedListenedArtists = {};
+                let updatedListenedSongs = {};
+                
+                if (results.length > 0) {
+                    const report = results[0];
+                    
+                    newStreamingTime += parseInt(report.streaming_time || 0);
+    
+                    const existingArtists = report.listened_artist || "{}";
+                    
+                    updatedListenedArtists = { ...existingArtists}
+                    artists.forEach((artist) => {
+                        
+                        updatedListenedArtists[artist] = (updatedListenedArtists[artist] || 0) + 1 
+                    })      
+                    
+                    const existingSongs = report.listened_songs || "{}";
+                    
+                    updatedListenedSongs = { ...existingSongs, [song]: (existingSongs[song] || 0) + 1 };
+                    
+                    const updateQuery = `
+                        UPDATE tblreport 
+                        SET streaming_time = ?, listened_artist = ?, listened_songs = ?
+                        WHERE user_id = ? AND report_month = ?
+                    `;
+
+                    const updateValues = [
+                        newStreamingTime,
+                        JSON.stringify(updatedListenedArtists),
+                        JSON.stringify(updatedListenedSongs),
+                        userId,
+                        reportMonth
+                    ];
+                    
+                    conn.query(updateQuery, updateValues, (updateErr) => {
+                        if (updateErr) return res.status(500).send({ message: "Update error", error: updateErr });
+    
+                        return res.status(200).send({ message: "Report updated successfully" });
+                    });
+    
+                } else {
+                    
+                    artists.forEach((artist) => {
+                        console.log(artist);
+                        
+                        updatedListenedArtists[artist] = 1;
+                    })
+                    updatedListenedSongs[song] = 1;
+    
+                    const insertQuery = `
+                        INSERT INTO tblreport (report_month, user_id, streaming_time, listened_artist, listened_songs)
+                        VALUES (?, ?, ?, ?, ?)
+                    `;
+
+                    const insertValues = [
+                        reportMonth,
+                        userId,
+                        newStreamingTime,
+                        JSON.stringify(updatedListenedArtists),
+                        JSON.stringify(updatedListenedSongs)
+                    ];
+                    conn.query(insertQuery, insertValues, (insertErr) => {
+                        if (insertErr) return res.status(500).send({ message: "Insert error", error: insertErr });
+    
+                        return res.status(200).send({ message: "New report created successfully" });
+                    });
+                }
+            });
+    
+        } catch (error) {
+            res.status(500).send({ message: error.message });
+        }
+    };
+    
+    export const getMonthlyReport = async (req, res) => {
+      try {
+          const { user_id,month_name  } = req.query;
+            console.log(user_id,month_name);
+            
+          if (!user_id) {
+              return res.status(400).send({ message: "User ID is required" });
+          }
+    
+          const reportMonth = month_name || new Date().toISOString().slice(0, 7);
+    
+          const query = `SELECT * FROM tblreport WHERE user_id = ? AND report_month = ?`;
+          conn.query(query, [user_id,reportMonth], (error, results) => {
+              if (error) return res.status(500).send({ message: "Database error", error });
+    
+              if (results.length === 0) {
+                  return res.status(404).send({ message: "No report found for this month" });
+              }
+    
+              const report = results[0];
+              report.listenedArtist = JSON.parse(report.listenedArtist || "{}");
+              report.listenedSongs = JSON.parse(report.listenedSongs || "{}");
+    
+              res.status(200).send(report);
+          });
+    
+      } catch (error) {
+          res.status(500).send({ message: error.message });
+      }
+    };
+    

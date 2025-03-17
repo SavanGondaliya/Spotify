@@ -2,24 +2,23 @@ import { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import querystring from "querystring";
 import axios from "axios";
-import logo from "/public/logo.svg"
+import logo from "/public/logo.svg";
 
 import "./style.css";
 
 const Register = () => {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("");
-  const [dob, setDateofBirth] = useState("");
+  const [dateOfBirth, setDateofBirth] = useState("");
 
   const userDetails = {
     name: name,
     email: email,
     password: password,
     gender: gender,
-    dob: dob,
+    dob: dateOfBirth,
   };
 
   const scopes = [
@@ -67,14 +66,8 @@ const Register = () => {
   };
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
 
   const login = async () => {
-    const userDetails = {
-      name: loginName,
-      password: loginPassword,
-    };
-
     axios
       .post(
         `http://localhost:5000/login`,
@@ -89,6 +82,8 @@ const Register = () => {
         }
       )
       .then((response) => {
+        console.log(response.status);
+        
         if (response.status === 200) {
           sessionStorage.setItem(
             "session_details",
@@ -101,7 +96,7 @@ const Register = () => {
         return error;
       });
   };
-  
+
   useEffect(() => {
     let currentlyVisible = ".form-log-in";
     let currentlyHidden = ".form-signup";
@@ -110,7 +105,10 @@ const Register = () => {
       $(".form-container").toggleClass("active");
       $(currentlyVisible).fadeToggle(150, function () {
         $(currentlyHidden).fadeToggle();
-        [currentlyVisible, currentlyHidden] = [currentlyHidden, currentlyVisible]; // Swap variables
+        [currentlyVisible, currentlyHidden] = [
+          currentlyHidden,
+          currentlyVisible,
+        ]; // Swap variables
       });
     });
 
@@ -162,38 +160,57 @@ const Register = () => {
             />
             <a href="#">Forget Password?</a>
             <br />
-            <div class="btn" onClick={() => login()}>Login</div>
+            <div class="btn" onClick={() => login()}>
+              Login
+            </div>
           </div>
-          <form class="form-signup" style={{"display": "none"}}>
+          <form class="form-signup" style={{ display: "none" }}>
             <p class="login-title">Sign Up Account</p>
             <p class="login-title-detail">
               Enter your personal data to create account
             </p>
             <div class="signup-row name-group">
               <div class="name-field">
-                <label>First Name</label>
-                <input name="FirstName" type="text" placeholder="First Name" />
-              </div>
-              <div class="name-field">
-                <label>Last Name</label>
-                <input name="LastName" type="text" placeholder="Last Name" />
+                <label>Username</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter Your Name" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                />
               </div>
             </div>
-            <label class="login-detail">Email</label>
-            <input name="Email" type="email" placeholder="Enter your email" />
-            <label class="login-detail">Mobile Number</label>
-            <input
-              name="Mobile"
-              type="text"
-              placeholder="Enter your mobile number"
-            />
-            <label class="login-detail">Password</label>
-            <input
-              name="Password"
-              type="password"
-              placeholder="Enter your password"
-            />
-            <div class="btn">Sign Up</div>
+            <div>
+              <input  
+                type="email" 
+                placeholder="Enter your email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <input
+                type="date"
+                placeholder="Enter your mobile number"
+                value={dateOfBirth}
+                onChange={(e) => setDateofBirth(e.target.value)}
+              />
+              <select value={gender} onChange={(e) => setGender(e.target.value)}>
+                <option value="male">MALE</option>
+                <option value="female">FEMALE</option>
+              </select>
+            </div>
+            <div>
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                value={password}
+                placeholder="Enter your password"
+              />
+            </div>
+            <div class="btn" onClick={() => register()}>
+              Sign Up
+            </div>
           </form>
         </div>
       </div>

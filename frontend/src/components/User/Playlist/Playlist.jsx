@@ -4,6 +4,7 @@ import {  useParams } from "react-router-dom";
 import { Play,Pause,songDuration,getCurrentState,deleteFromPlaylist } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 
+
 export const Playlist = () => {
 
     const session_details = sessionStorage.getItem("session_details");
@@ -34,8 +35,8 @@ export const Playlist = () => {
     const getTrackdetails = async() => {
         try {
 
-            const ids = playlistTrackIds;
-            const response = await axios.get(`http://localhost:5000/tracks?ids=${ids}&session_details=${session_details}`,{
+            
+            const response = await axios.get(`http://localhost:5000/tracks?ids=${playlistTrackIds}&session_details=${session_details}`,{
                 headers:{
                     "Content-Type":"application/json"
                 }
@@ -60,7 +61,7 @@ export const Playlist = () => {
         }
     };
 
-    useEffect(() => {getPlaylistTracks();},[])
+    useEffect(() => {getPlaylistTracks();},[playlist_id])
     useEffect(() => {getTrackdetails();},[playlistTrackIds])
     useEffect(() => {
         if (!player) return;
@@ -88,8 +89,8 @@ export const Playlist = () => {
                             {
                                 playlistTracks.tracks.map((track) => (
                                     <div className="w-[100%] h-[100%]">
-                                        <div onClick={() => handleMusic(track.id,"track")}>
-                                            <img className="w-20 h-20" src={track.album.images[0].url} alt="" />
+                                        <div>
+                                            <img onClick={() => handleMusic(track.id,"track")} className="w-20 h-20" src={track.album.images[0].url} alt="" />
                                         </div>
                                         <div className="w-full h-full">
                                             <p>{track.name}</p>

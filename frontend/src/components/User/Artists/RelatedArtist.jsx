@@ -2,7 +2,6 @@ import React,{useEffect,useState} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
-import { addTrackToPlaylist } from "../utility/SongManipulation";
 
 export const RelatedArtist = () => {
 
@@ -14,7 +13,6 @@ export const RelatedArtist = () => {
 
     const getRelatedArtistIds = async() => {
         try {
-            
             
             const response = await axios.get(`http://localhost:5000/relatedArtist?artist_id=${id}`,{
                 headers:{
@@ -56,7 +54,8 @@ export const RelatedArtist = () => {
     
     useEffect(() => {   
         getRelatedArtistIds();
-    },[deviceId]);
+    },[player,id]);
+    
     useEffect(() => {
         getRelatedArtist();
     },[relatedArtistId]);

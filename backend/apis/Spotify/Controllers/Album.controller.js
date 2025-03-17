@@ -1,8 +1,8 @@
 import axios from "axios";
-import { activeDeviceId } from "./Device.controller.js";
+
 import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
-import { getArtistIds } from "../Helpers/Artist.helper.js";
+
 
 const Market = "In";
 
@@ -17,7 +17,6 @@ export const getAlbum = async(req,res) => {
         }
         
         const { id } = req.params;
-        
         const response = await axios.get(`https://api.spotify.com/v1/albums/${id}`,{
             headers:{
                 "Content-Type" : "application",
@@ -45,9 +44,9 @@ export const getMultipleAlbums = async(req, res) => {
         if(!authToken){
             return res.status(401).send({Message : res.statusText});
         }
-        const {ids} = req.params;
+        const {ids} = req.query;
 
-        const response = await axios.get(`https://api.spotify.com/v1/albums/${ids}?market=${Market}`,{
+        const response = await axios.get(`https://api.spotify.com/v1/albums?ids=${ids}?market=${Market}`,{
             headers:{
                 "Content-Type" : "application/json",
                 "Authorization" : `Bearer ${authToken}`
@@ -85,6 +84,48 @@ export const getAlbumTracks = async(req, res) => {
         return res.status(500).send({message : error.message});
     }
 }
+
+export const populerAlbums = async (req, res) => {
+
+    const session_details = req.query.session_details;
+    const query = `SELECT listened_songs FROM tblreport`;
+
+    conn.query(query, (err, results) => {
+        if (err) {
+            return res.status(400).send({ message: err });
+        }
+
+        const mergedArray = {};
+
+        results.forEach((row) => {
+            const listenedSongs = row.listened_songs; 
+            for (const [songId, count] of Object.entries(listenedSongs)) {
+                mergedArray[songId] = (mergedArray[songId] || 0) + count;
+            }
+        });
+
+        const sortedArray = Object.entries(mergedArray)
+            .sort((a, b) => b[1] - a[1])
+            .slice(-8); 
+        
+        const url = `http://localhost:5000/tracks?ids=${sortedArray.map((id) => id[0]).join(",")}&session_details=${session_details}`;
+        
+        axios.get(url,{
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }).then((response) => {
+            if(response.status === 200){
+                return res.status(200).send(response.data);
+            }
+        }).catch((error) => {
+            return error;
+        });
+    });
+};
+
+
+
 
 // export const userSavedAlbums = async(req, res) => {
 //     try {
@@ -241,32 +282,3 @@ export const getAlbumTracks = async(req, res) => {
 //         return error;
 //     }
 // }
-
-export const populerAlbums = async(req,res) => {
-    try {
-      
-        const userDetails = req.query.session_details;
-        const authToken = await userToken(userDetails);
-        const ids = await getArtistIds("album_id");
-        let topTrackIds = []
-        let index = 0;
-        
-        for(let i=0;i<10;i++){
-          index = Math.floor(Math.random()*10);
-          topTrackIds.push(ids[index].album_id)
-        }
-  
-        const response = await axios.get(`https://api.spotify.com/v1/albums?ids=${topTrackIds.join(",")}`,{
-          headers:{
-            "Content-Type":"Application/json",
-            "Authorization":`Bearer ${authToken}`
-          }
-        });
-        if(response.status === 200){
-          return res.status(200).send(response.data)
-        }
-        return res.status(400).send({message:response,statusText});
-      } catch (error) {
-        return res.status(500).send({message : error})
-      }
-}

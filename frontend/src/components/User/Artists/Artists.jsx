@@ -1,8 +1,9 @@
 import React from "react";
 import  KPOP from "./KPOP";
-import { Bollywood } from "./Bollywood";
 import { TopBollywood } from "./TopBollywood";
 import { TopHollywood } from "./TopEnglish";
+import { NewArtist } from "./NewArtist";
+
 
 export const ArtistCategory = () => {
 
@@ -12,7 +13,7 @@ export const ArtistCategory = () => {
                 <KPOP/>
             </div>
             <div>
-                <Bollywood />
+                <NewArtist />
             </div>
             <div>
                 <TopBollywood/>

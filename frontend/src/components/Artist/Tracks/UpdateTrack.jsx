@@ -5,10 +5,11 @@ import { songDuration } from "../../User/utility/SongManipulation";
 
 export const UpdateTrack = () => {
 
+    const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
     const [trackDetails,setTrackDetails] = useState([]);
     const {id} = useParams();
     
-    const artist_id = "008PpLcKUtVXle6JS2kq3I";
+    const artist_id = artistDetails[0]?.artist_id;
     const [trackName,setTrackName] = useState("");
     const [trackId,setTrackId] = useState("");
     const [trackUrl,setTrackUrl] = useState("");
@@ -29,7 +30,7 @@ export const UpdateTrack = () => {
             formData.append("track_number",trackNumber);
             formData.append("duration",trackDuration);
             
-            axios.put(`http://localhost:5000/track/update/${id}`,formData,{
+            axios.put(`http://localhost:5000/track/update/${artist_id}`,formData,{
                 headers:{
                     "Content-Type":"multipart/form-data"
                 }
@@ -67,7 +68,7 @@ export const UpdateTrack = () => {
 
     const artistAlbums = () => {
         try {
-            axios.get(`http://localhost:5000/local/albums`,{
+            axios.get(`http://localhost:5000/local/${artist_id}/albums`,{
                 headers:{
                     "Content-Type":"application/json"
                 }

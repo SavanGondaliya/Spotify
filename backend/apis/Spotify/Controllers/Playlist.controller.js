@@ -94,7 +94,6 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
         try {
             
             const {user_id} = JSON.parse(req.query.session_details);
-            
             const query = `SELECT * FROM tblplaylist WHERE user_id='${user_id}';`;
             
             conn.query(query,(error,results,fields) => {
@@ -142,7 +141,7 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
 
             const query = `UPDATE FROM tblplaylist WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
 
-            conn.query(query,(error,results) => {
+            conn.query(query,(error) => {
                 if(error){
                     return res.status(400).send({message: error})
                 }
@@ -203,7 +202,6 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
             const {user_id} = JSON.parse(req.query.session_details);
             const {playlist_id,id} = req.params;
             const song_id = await getCurrentTracks(user_id,playlist_id);
-            
             const newPlaylistTracks = await setPlaylistTracks(song_id,id);
             
             const query = `update tblplaylist set song_id='${newPlaylistTracks}' where playlist_id='${playlist_id}' and user_id='${user_id}';`;
@@ -226,20 +224,17 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
     
             const sessionDetails = req.query.session_details ? JSON.parse(req.query.session_details) : {};
             const { user_id } = sessionDetails;
-            
             if (!user_id) {
                 return res.status(400).send({ message: "Invalid session details" });
             }
-            
+                        
             const { playlist_id, id } = req.params;
-    
             const songIds = await getCurrentTracks(user_id, playlist_id);
             if (!songIds) {
                 return res.status(400).send({ message: "Failed to get playlist tracks" });
             }
             
             const updatedTracks = removeTrackFromPlaylist(songIds, id);
-            
             const query = `UPDATE tblplaylist SET song_id = ? WHERE playlist_id = ? AND user_id = ?`;
             const values = [updatedTracks, playlist_id, user_id];
             

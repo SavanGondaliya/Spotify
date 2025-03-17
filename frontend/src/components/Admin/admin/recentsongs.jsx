@@ -48,9 +48,13 @@ const SongItem = ({ song }) => {
         <div>
           {song.title} <p className="artist">{song.artist_name}</p>
         </div>
-        <p className="album-name">{song.song_name}</p>
+        <div>
+          <p className="album-name">{song.song_name}</p>
+        </div>
+        <div>
+          <p>{songDuration(song.duration)}</p>
+        </div>
       </div>
-      <p>{songDuration(song.duration)}</p>
     </div>
   );
 };

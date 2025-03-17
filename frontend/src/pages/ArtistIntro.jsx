@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import noizeeLogo from "/public/Noizee For Artists.svg"
+import noizeeLogo from "../../public/Noizee_For_Artists.svg"
 
 const NoizeeForArtists = () => {
   useEffect(() => {

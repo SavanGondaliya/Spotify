@@ -43,7 +43,10 @@ export const removeTrack = (oldIds, newId) => {
     let trackArray = Array.isArray(oldIds) ? oldIds : [];
 
     if (trackArray.includes(newId)) {
-        trackArray.filter(num => num !== newId);
+        let deleteIndex = trackArray.indexOf(newId);
+        if(deleteIndex != -1){
+            trackArray.splice(deleteIndex,1);
+        }
     }
     
     const newString = trackArray.join(",");

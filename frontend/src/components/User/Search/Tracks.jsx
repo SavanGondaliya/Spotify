@@ -1,8 +1,10 @@
 import React,{useState,useEffect} from "react";
 import { Play,Pause } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
-import { getReportData } from "../utility/SongManipulation";
 import { songDuration } from "../utility/SongManipulation";
+import { NavLink } from "react-router-dom";
+import { updateMonthlyReport } from "../utility/SongManipulation";
+import { getCurrentState } from "../utility/SongManipulation";
 
 export const Tracks = (tracks) => {
 
@@ -16,12 +18,11 @@ export const Tracks = (tracks) => {
             player.getCurrentState().then((state) => {
             if (!state) {
                 return;
-            }                
+            }                   
             setPositionMs(state.position);
-            getReportData(state.position,state.track_window.current_track.name,state.track_window.current_track.artists[0].name);
         });
     },[isPlay]); 
-    
+
     const handleMusic = (id,type) => {
         if(isPlay == id){
             Pause(id,deviceId)
@@ -32,42 +33,60 @@ export const Tracks = (tracks) => {
         }
     }
 
-    return (
-        <div>
-            {
-                tracks  ? (
-                    <div className="w-[100%] h-[100%] ">
-                        {
-                            tracks.tracks.map((track,i) => (
-                                <div>
-                                    {   i > 0 && i < 6 ? (
-                                        <div className="w-full flex flex-col">
-                                            <div className="w-full flex my-2 justify-center items-center">
-                                                <div className="w-full player_image">
-                                                    <img onClick={() => handleMusic(track?.id,"track")}  className="w-15 h-15" src={track?.album?.images[0]?.url} alt="" />
-                                                </div>
-                                                <div className="w-full">
-                                                    <h1 className="text-amber-50">{track?.name}</h1>
-                                                </div>
-                                                <div className="w-full">
-                                                    <b>{songDuration(track?.duration_ms)}</b>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        ) :(
-                                            <div></div>
-                                        )
-                                    }           
-                                </div>
-                            ))
-                        }
-                    </div>
-                ):(
-                    <div>
-                        Loading...
-                    </div>
-                )
-            }
-        </div>
+    return (<div className="w-full p-4">
+        {tracks ? (
+           <div className="w-full space-y-4">
+           {tracks.tracks.map((track, i) => (
+               i > 0 && i < 6 && (
+                   <div 
+                       key={track.id} 
+                       className="flex items-center justify-between rounded-lg p-4 transition cursor-pointer"
+                   >
+                       <div className="w-16 h-16 overflow-hidden search_image_shadow">
+                           <img 
+                               onClick={() => handleMusic(track?.id, "track")} 
+                               className="w-full h-full object-cover" 
+                               src={track?.album?.images[0]?.url} 
+                               alt={track?.name} 
+                           />
+                       </div>
+       
+                       <div className="flex-1 ml-4">
+                           <h1 className="text-white text-lg font-semibold">{track?.name}</h1>
+                           <p className="text-sm">{track?.album?.name}</p>
+                       </div>
+       
+                       <div className="flex-1 gap-x-2 text-gray-300 text-sm">
+                           {track?.artists?.map((artist, i) => (
+                               <React.Fragment key={artist?.id}>
+                                   <NavLink 
+                                       to={`http://localhost:5173/artist/${artist?.id}`} 
+                                       className="hover:text-white"
+                                   >
+                                       {artist?.name}
+                                   </NavLink>
+                                   {i < track.artists.length - 1 && <span>,</span>}
+                               </React.Fragment>
+                           ))}
+                       </div>
+       
+                       <div className="text-gray-300 text-sm">
+                           <b>{songDuration(track?.duration_ms)}</b>
+                       </div>
+                   </div>
+               )
+           ))}
+       </div>
+       
+        ) : (
+            <div className="text-center text-gray-400">Loading...</div>
+        )}
+        <style>
+            {`.search_image_shadow{
+                box-shadow: 5px 5px 0px #4949bf;
+            }`}
+        </style>
+    </div>
+    
     )
 }

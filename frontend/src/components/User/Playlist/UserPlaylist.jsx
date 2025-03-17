@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-
+import { PlaylistBase64 } from "./icon/Playlist";
 export const UserPlaylist = ({playlists}) => {
 
     return(
@@ -11,8 +11,10 @@ export const UserPlaylist = ({playlists}) => {
                         <div>
                         {
                             playlists.map((playlist) => (                                 
-                                <NavLink to={`/playlist/${playlist.playlist_id}`} className=" playlist-item">
-                                    <div className="icon">{playlist?.image}</div>
+                                <NavLink to={`http://localhost:5173/playlist/${playlist.playlist_id}`} className="playlist-item">
+                                    <div className="icon">
+                                        <img src={playlist?.image ? (playlist?.image):(PlaylistBase64)} />
+                                    </div>
                                     <div className="text">
                                         <span>
                                             <h3 >{playlist.playlist_name}</h3>

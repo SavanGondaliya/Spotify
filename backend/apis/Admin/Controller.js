@@ -1,4 +1,5 @@
 import conn from "../../index.js"
+import { countAlbum,countArtist,countUser,countSongs } from "./helper.js";
 
 export const getUsers = async(req,res) => {
     try {
@@ -71,11 +72,17 @@ export const updateArtist = async(req, res) => {
 
 export const deleteArtist = async(req, res) => {
     try {
+        console.log('called.');
+                
         const { id } = req.params;
+        console.log(id);
         const sql = "DELETE FROM tblartist WHERE artist_id = ?";
+        console.log(sql);
         
         conn.query(sql, [id], (err, result) => {
           if (err) return res.status(500).json({ error: err.message });
+          console.log(result);
+          
           res.json({ message: "Artist deleted successfully" });
         });       
     } catch (error) {
@@ -129,6 +136,21 @@ export const deleteSong = async(req,res) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: "Song deleted successfully" });
         });    
+    } catch (error) {
+        return res.status(500).send({message:error.message});
+    }
+}
+
+export const getProjectPartner = async(req,res) => {
+    try {
+        
+        const Artists = await countArtist();        
+        const Albums = await countAlbum(req,res);
+        const User = await countUser(req,res);
+        const Songs = await countSongs(req,res);
+
+        return res.status(200).send([Artists,Albums,User,Songs])
+
     } catch (error) {
         return res.status(500).send({message:error.message});
     }

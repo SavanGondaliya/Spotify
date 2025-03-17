@@ -181,11 +181,12 @@ body {
   box-shadow: 5px 5px 0px 1px #4949bf;
   width: 100px;
   height: 100px;
+  padding-left: 17px;
 }
 
-.card h3 {
-  font-size: 35px;
-  margin-bottom: -20px;
+.card h3 {    
+  font-size: 25px;
+  margin-bottom: -10px;
   font-weight: 700;
 }
 

@@ -51,7 +51,7 @@ function App(){
               <Route path="/verification" element={<VerifyEmail />} />
               <Route path="/lyrics" element={<LyricsPage />} />
               <Route path="/search/:q" element={<Search />} />
-              <Route path="/search/" element={<Search />} />  
+              <Route path="/search" element={<Search />} />
               <Route path="/favourite" element={<LikedSongs />} />
 
               {/* Admin Routes */}

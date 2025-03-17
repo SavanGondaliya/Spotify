@@ -5,7 +5,6 @@ import conn from "../../../index.js";
 
 export const getArtistDetail = async(req,res) => {
     try {
-        console.log("Request Hascome");
         
         const userDetails = JSON.parse(req.query.session_details);
         const authToken = await userToken(userDetails);
@@ -127,6 +126,7 @@ export const getMultipleArtits = async(req, res) => {
         const userDetails = JSON.parse(req.query.session_details);
         const authToken = await userToken(userDetails);
         const {ids} = req.query 
+
         if(!authToken){
             return res.status(401).send({message : res.statusText});
         }
@@ -159,7 +159,6 @@ export const kpopArtist = async(req, res) => {
             return res.status(200).send(results);
         });
     } catch (error) {
-        console.error("Error:", error);
         return res.status(500).send({ success: false, message: error.message });
     }
 };
@@ -177,7 +176,6 @@ export const BollywoodArtist = async(req, res) => {
             return res.status(200).send(results);
         });
     } catch (error) {
-        console.error("Error:", error);
         return res.status(500).send({ success: false, message: error.message });
     }
 };
@@ -268,8 +266,7 @@ export const getRelatedArtist = async(req,res) => {
     try {
         
         const artist_id = req.query.artist_id;
-        const {genre} = await getArtistGenre(artist_id);  
-        
+        const {genre} = await getArtistGenre(artist_id);          
         const query = `SELECT artist_id FROM tblartist WHERE genre LIKE '%${genre}' LIMIT 5 OFFSET 5;`;
         
         conn.query(query,(err,results,fields) => {
@@ -282,5 +279,22 @@ export const getRelatedArtist = async(req,res) => {
         
     } catch (error) {
         return res.status(500).send({message:error.message});
+    }
+}
+
+export const getNewArtist = async(req, res) =>{ 
+    try {
+
+        const query = `select * from tblartist order by created_at desc limit 10`;
+
+        conn.query(query,(err,results) => {
+            if(err){
+                return res.status(404).send({message:err});
+            }
+            return res.status(200).send(results)
+        })
+
+    } catch (error) {
+        return res.status(500).send({message : error.message});
     }
 }

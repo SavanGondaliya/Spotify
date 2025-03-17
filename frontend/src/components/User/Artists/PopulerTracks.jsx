@@ -3,7 +3,6 @@ import React, { useEffect, useState,useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { Play,Pause,songDuration, addToLibrary, removeFromLibrary } from "../utility/SongManipulation";
-import { PlaylistDropDown } from "../Playlist/PlaylistDropDown";
 import { getUserPlaylist } from "../utility/SongManipulation";
 import { KebabDropDown } from "../utility/KebabDropDown";
 
@@ -85,7 +84,7 @@ export const PopulterTracks = () => {
         artistTracks();        
         playlist();
         likedSongIds();
-    },[deviceId]);
+    },[deviceId,id]);
 
     
     useEffect(() => {
@@ -108,7 +107,6 @@ export const PopulterTracks = () => {
             setIsPlay(id);
         }
     }
-    console.log(populerTracks);
     
     return(
             populerTracks && Array(populerTracks).length > 0 ? (

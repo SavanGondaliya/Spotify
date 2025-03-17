@@ -5,6 +5,8 @@ import { ArtistCategory } from "../components/User/Artists/Artists";
 import { RecenltyPlayed } from "../components/User/Playler/RecentlyPlayed";
 import { PlayerController } from "../components/User/Playler/Controller";
 import { TopHits } from "../components/User/Artists/Tracks.jsx";
+import { TrendingSong } from "../components/User/Artists/TrendingSong.jsx";
+import { TopAlbum } from "../components/User/Artists/TopAlbums.jsx";
 
 const Home = () => {
 
@@ -23,7 +25,7 @@ const Home = () => {
                             <div className="container flex flex-col w-325 h-[88%] overflow-y-scroll">
                                 <div className="flex justify-around">
                                     <div className="w-[60%] h-full">    
-                                        <h1>Trending Songs</h1>
+                                        <TrendingSong  />                   
                                     </div>
                                     <div className="w-[40%] h-100 overflow-y-scroll">
                                         <RecenltyPlayed/>
@@ -32,6 +34,7 @@ const Home = () => {
                                 <div className="w-full">
                                     <TopHits/>
                                     <ArtistCategory/>
+                                    <TopAlbum/>
                                 </div>
                             </div>
                         </div>

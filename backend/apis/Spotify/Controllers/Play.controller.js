@@ -51,7 +51,6 @@ export const getAlbumUri = async(req,authToken) => {
             },
           }
         );
-        console.log(response.data);
         
         if(response.status === 200){  
           const contextUri  = response?.data?.uri;
@@ -103,6 +102,7 @@ export const getAlbumUri = async(req,authToken) => {
       try {
         
         const userDetails = JSON.parse(req.query.session_details);
+        
         const deviceId =  req.query.deviceId;
         const authToken = await userToken(userDetails); 
         const contextUri =  await getTrackUri(req,authToken);
@@ -153,7 +153,6 @@ export const getAlbumUri = async(req,authToken) => {
         const deviceId =  req.query.deviceId;
         const authToken = await userToken(userDetails); 
         const contextUri =  await getArtistUri(req,authToken);
-        console.log(userDetails,deviceId,authToken,contextUri);
             
         if (!authToken) {
           return res.status(401).send({ message: "Access Token Not Found..." });
@@ -227,11 +226,6 @@ export const getAlbumUri = async(req,authToken) => {
     }
     return res.status(404).send({message: "No Song Found"});
     } catch (error) {
-      if (error.response) {
-        return res
-        .status(error.response.status)
-        .send({ message: error.response.data.error.message });
-      }
       return res.status(500).send({ message: error.message });
     }
   };
@@ -259,12 +253,6 @@ export const getAlbumUri = async(req,authToken) => {
       }
       return res.status(404).send({message: "All Device Off now"})
     } catch (error) {
-      console.error(error.message)
-      if (error.response) {
-        const errorMessage =
-        error.response.data?.error?.message || "Error from Spotify API";
-        return res.status(error.response.status).send({ message: errorMessage });
-      }
       return res.status(500).send({message:error.message});
     }
   }
@@ -313,6 +301,7 @@ export const getAlbumUri = async(req,authToken) => {
       if(!authToken){
         return res.status(401).send({message : "UnAuthorized User",user: false});
       }
+
       const url = `https://api.spotify.com/v1/me/player/repeat?state=${repeatState}&device_id=${deviceId}`
       
       const response = await axios.put(url,{},{
@@ -349,6 +338,7 @@ export const getAlbumUri = async(req,authToken) => {
           "Authorization": `Bearer ${authToken}`
         }
       });
+
       if(response.status === 204|200){
         return res.status(200).send(response.data)
       } 
@@ -389,22 +379,17 @@ export const getAlbumUri = async(req,authToken) => {
 
   export const setTrackQueue = async(req,res) => {
     try {
-      console.log('queue function called');
-      console.log(req.query);
             
       const userDetails = JSON.parse(req.query.session_details);  
       const deviceId = req.query.deviceId; 
       const authToken = await userToken(userDetails);
-      console.log(userDetails,deviceId,authToken);
       
       if(!authToken){
         return res.status(401).send({message : "UnAuthorized Error"});
       }
       
       const trackUri  = await getTrackUri(req,authToken);
-      console.log(trackUri);
-      const url = `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}&device_id=${deviceId}`
-      console.log(url);
+      const url = `https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(trackUri)}&device_id=${deviceId}`;
       
       const response = await axios.post(url,{},
        {
@@ -413,7 +398,6 @@ export const getAlbumUri = async(req,authToken) => {
           "Authorization" : `Bearer ${authToken}`
         }
       });
-      console.log(response.status);
       
       if(response.status === 200 ){
         return res.status(200).send({message : "Added To Track Successfully."})
@@ -427,10 +411,10 @@ export const getAlbumUri = async(req,authToken) => {
 
   export const getTrackQueue = async(req, res) => {
     try {
-
+      
       const userDetails = JSON.parse(req.query.session_details);
       const authToken = await userToken(userDetails);
-
+      
       if(!authToken){
         return res.status(401).send({message : "UnAuthorized User"});
       }

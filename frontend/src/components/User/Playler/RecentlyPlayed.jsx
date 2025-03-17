@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useRef} from "react";
+import React,{useState, useEffect} from "react";
 import axios from "axios";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { Play,Pause } from "../utility/SongManipulation";
@@ -23,14 +23,20 @@ export const RecenltyPlayed = () => {
                 headers:{
                     "Content-Type":"appliction/json"
                 }
-            }).then((response) => {
-                if(response.status === 200){
-                    setRecentlyPlayed(response.data)
+            }).then((res) => {
+                if(res.status === 200){
+                    
+                    // setRecentlyPlayed(
+                    //     res.data.items.filter((track, index, self) =>
+                    //         index === self.findIndex(t => t.id === track.id)
+                    //     )
+                    // );
+                    setRecentlyPlayed(res.data.items)
                 }
             });        
         }
     },[player]);
-
+    
     useEffect(() => {
         if (!player) return;
             player.getCurrentState().then((state) => {
@@ -51,7 +57,6 @@ export const RecenltyPlayed = () => {
             setIsPlay(id);
         }
     }
-    console.log(currentState);
     
     return(
         <div>
@@ -59,7 +64,7 @@ export const RecenltyPlayed = () => {
                 recenltyPlayed  && Object.keys(recenltyPlayed).length > 0 ? (
                     <div className="flex flex-col w-fit max-w-full h-fit">
                         {
-                            recenltyPlayed.items.map((tracks,index) => (
+                            recenltyPlayed.map((tracks,index) => (
                                 <div key={index} className="flex rounded py-2 bg-black hover:bg-indigo-800">
                                     <div
                                         key={index}

@@ -5,9 +5,10 @@ import { parseFile} from "music-metadata";
 import { setImageFile } from "./helper.js";
 import fs from "fs";
 import path from "path";
+import { log } from "util";
 
-const imageUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/media/images/");
-const trackUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/media/audio/");
+const imageUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/public/images/");
+const trackUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/public/audio/");
 
 export const RegisterArtist =  async(req, res) => {
     
@@ -226,7 +227,8 @@ export const getArtistAlbums = async(req, res) => {
     try {
 
     const {id} = req.params;
-
+    console.log(id,"request has come");
+    
     const query = "SELECT tblalbum.image AS albumImage,tblartist.image AS artistImage,tblalbum.*,tblartist.* from tblalbum inner join tblartist on tblalbum.artist_id = tblartist.artist_id where tblartist.artist_id = ?";
 
     conn.query(query,[id],(err,results,fields) => {
@@ -259,7 +261,7 @@ export const addTrack = async(req, res) => {
             return res.status(400).json({ message: "Error parsing form" });
             }
             
-            const artist_id = "008PpLcKUtVXle6JS2kq3I";
+            const {artist_id} = req.query;
             const track_id = await generateRandomId();
             const album_id = fields.album_id[0];
             const track_name = fields.track_name[0];
@@ -294,7 +296,6 @@ export const deleteTrack = async(req, res) => {
     try {
     
         const {id}  = req.params;
-        // const song_id = "yuuhjfrykywpfqgul";
 
         const query = `delete from tblsongs where song_id=?`;
 
@@ -316,7 +317,7 @@ export const getArtistTracks = async(req, res) => {
 
         const {id} = req.params;
 
-        const query = `select * from tblsongs where artist_id = ?`;
+        const query = `select tblsongs.*,tblartist.*,tblalbum.* from tblsongs join tblalbum on tblsongs.album_id = tblalbum.album_id join tblartist on tblsongs.artist_id = tblartist.artist_id where tblartist.artist_id = ?`;
 
         conn.query(query,[id],(err,results,fields) =>{
             if(err){
@@ -361,10 +362,7 @@ export const updateTrack = async(req,res) => {
                 console.error("Error parsing form:", err);
             return res.status(400).json({ message: "Error parsing form" });
             }
-            
-            console.log(fields);
-            console.log(files);
-            
+                
             const artist_id = "008PpLcKUtVXle6JS2kq3I";
             const track_id = fields?.track_id[0];
             const album_id = fields?.album_id[0];
@@ -400,20 +398,41 @@ export const getArtistById = async(req, res) => {
     try {
 
         const {id} = req.params;
+        console.log("called",id); 
 
-
-        const query = `select * from tblartist where artist_id = '${id}';`;
-        console.log(query);
+        const query = `SELECT 
+                tblartist.*, 
+                (SELECT COUNT(*) FROM tblsongs WHERE tblsongs.artist_id = ?) AS total_songs
+                FROM tblsongs 
+                INNER JOIN tblartist ON tblsongs.artist_id = tblartist.artist_id 
+                WHERE tblartist.artist_id = ? group by tblartist.artist_id;`
         
-        conn.query(query,(err,results,fields) => {
+        conn.query(query,[id,id],(err,results,fields) => {
             if(err){
                 return res.status(404).send({message:err})
             }
+            console.log(results);
             return res.status(200).send(results)
-        })
-
+        });
 
     } catch (error) {
         return res.status(500).send({message:error.message});        
+    }
+}
+
+export const topTracks = async(req,res) => {
+    try {
+        const {artist_id} = req.query;
+        const query = `Select tblalbum.*,tblsongs.*,tblartist.* from tblsongs inner join tblalbum on tblsongs.album_id = tblalbum.album_id inner join tblartist on tblsongs.artist_id = tblartist.artist_id where tblartist.artist = ${artist_id} limit 5`;
+
+        conn.query(query,(err,results) => {
+            if(err){
+                return res.status(404).send({message:err})
+            }
+            return res.status(200).send(results);
+        })
+
+    } catch (error) {
+        return res.status(500).send({message :error.message});
     }
 }

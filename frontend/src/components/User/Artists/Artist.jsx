@@ -8,6 +8,7 @@ import "./style.css";
 export const ArtistDetails = () => {
 
     const session_details = sessionStorage.getItem("secret_key");
+    
     const {id} = useParams();
     const [artistDetails,setArtistDetails] = useState("");
     const [localArtist,setLocalArtist] = useState("");
@@ -78,6 +79,7 @@ export const ArtistDetails = () => {
     useEffect(() => {
         artist();
     },[id]);
+
     return(
         <div>
             {
@@ -115,7 +117,6 @@ export const ArtistDetails = () => {
                         </div>
                     </div>
                     <div className="bg-indigo-900 w-100 h-100 rounded p-5 text-start container_shadow">
-                        
                         <div className="bg-indigo-400 w-[100%] h-[100%] p-5 rounded overflow-y-scroll lyrics_container">
                         {
                             localArtist ? 

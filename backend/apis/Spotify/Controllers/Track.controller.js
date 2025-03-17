@@ -5,7 +5,6 @@ import { userToken } from "../Helpers/Auth.helper.js";
 import conn from "../../../index.js";
 import { getArtistIds } from "../Helpers/Artist.helper.js";
 import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helper.js";
-import { login } from "./Auth.controller.js";
 
 
 // global variables
@@ -14,9 +13,12 @@ import { login } from "./Auth.controller.js";
   export const getTrackById = async(req,res) => {
   
     try {
+      console.log("called Tracks");
+      
       const {id} = req.params;
       const userDetails = JSON.parse(req.query.session_details);
       const authToken = await userToken(userDetails);
+      console.log(id,userDetails,authToken);
       
       if(!authToken){
         return res.status(401).send({message : res.statusText});
@@ -117,13 +119,10 @@ import { login } from "./Auth.controller.js";
       const {user_id} = JSON.parse(req.query.session_details);
       const {ids} = req.params;
       const currentLikedIds = await getLikedSongs(user_id);
-      console.log(currentLikedIds);
       
       const updatedTracks = await removeTrack(currentLikedIds,ids);
-      console.log(updatedTracks);
       
       const query = `UPDATE tbluser SET liked_songs ='${updatedTracks}' where user_id='${user_id}';`; 
-      console.log(query);
       
       conn.query(query,(err) => {
         if(err){
@@ -185,6 +184,7 @@ import { login } from "./Auth.controller.js";
           "Authorization":`Bearer ${authToken}`
         }
       });
+
       if(response.status === 200){
         return res.status(200).send(response.data)
       }
@@ -200,14 +200,79 @@ import { login } from "./Auth.controller.js";
 
       const query = `select song_id from tblsongs`;
 
-      conn.query(query,(err,results,fields)=>{
+      conn.query(query,(err,results) => {
         if(err){
           return res.status(404).send({success : "false"});
         }
         return res.status(200).send(results);
-      })
+      });
 
     } catch (error) {
       return res.status(500).send({message:error.message});
     }
   }
+
+
+  export const trendingSong = async(req, res) => {
+    try {
+      const query = `
+      SELECT * FROM tblreport 
+      WHERE updated_at = (SELECT MAX(updated_at) FROM tblreport) 
+      AND TIMESTAMPDIFF(SECOND, updated_at, NOW()) <= 3600;
+    `;
+    
+      conn.query(query, (err, results) => {
+        if (err) {
+          return res.status(400).send({ message: err });
+        }
+    
+        if (results.length === 0) {
+          return res.status(200).send({ message: "No reports for the last day" });
+        }
+    
+        const resultLength = results.length;
+        let mergedArray = { ...results[0]?.listened_songs };
+    
+        for (let i = 1; i < resultLength; i++) {
+          for (const [songId, count] of Object.entries(results[i]?.listened_songs)) {
+            mergedArray[songId] = (mergedArray[songId] || 0) + count;
+          }
+        }
+    
+        const sortedArray = Object.entries(mergedArray).sort((a, b) => b[1] - a[1]);
+        return res.status(200).send(sortedArray[0]);
+      });
+    } catch (error) {
+      return res.status(500).send({ message: error.message });
+    }    
+  }
+
+  export const topHits = async(req, res) => {
+    try {
+      
+      const query = `select listened_songs from tblreport`;
+      
+      conn.query(query,(err,results) => {
+        if(err){
+          return res.status(400).send({message:err})
+        }
+        const ressultLength = results.length;
+
+        const mergedArray = {...results[0].listened_songs}
+        
+        for(let i=1;i<ressultLength;i++){
+          for(const [songId,count] of Object.entries(results[i].listened_songs)){
+            mergedArray[songId] = (mergedArray[songId] || 0) + count
+          }
+        }
+        const sortedArray =  Object.entries(mergedArray).sort((a,b) => b[1] - a[1]);
+
+        return res.status(200).send(sortedArray.splice(0,8));
+      }); 
+    
+    } catch (error) { 
+      return res.status(500).send({message:error.message});
+    }
+  }
+
+

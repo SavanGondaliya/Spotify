@@ -1,23 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import { addTrackToPlaylist } from "../utility/SongManipulation";
 
-export const PlaylistDropDown = ({playlists,track_id}) => {
-
-    return(
-        <div>
-            <div className="w-[100]% h-[100]% p-5 rounded-2xl bg-amber-300">
-                <ul>
-                    {
-                        playlists && playlists.length > 0 ? (
-                            playlists.map((playlist) => (
-                                <li className="text-2xl hover:bg-amber-50" onClick={() => addTrackToPlaylist(playlist.playlist_id,track_id)}>{playlist.playlist_name}</li>
-                            ))        
-                        ):(
-                            <div></div>
-                        )
-                    }
-                </ul>
-            </div>
+export const PlaylistDropDown = ({ playlists, track_id }) => {
+    return (
+        <div className="bg-gray-800 p-2 rounded-md shadow-md">
+            <ul>
+                {playlists && playlists.length > 0 ? (
+                    playlists.map((playlist) => (
+                        <li 
+                            key={playlist.playlist_id} 
+                            className="text-white p-2 hover:bg-gray-700 cursor-pointer"
+                            onClick={() => addTrackToPlaylist(playlist.playlist_id, track_id)}
+                        >
+                            {playlist.playlist_name}
+                        </li>
+                    ))
+                ) : (
+                    <div>No Playlists Available</div>
+                )}
+            </ul>
         </div>
-    )
-}
+    );
+};

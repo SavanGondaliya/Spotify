@@ -1,5 +1,5 @@
 import express from "express";
-import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,followPlaylist,unfollowPlaylist, addToReport,followArtist, unfollowArtist, unfollowUser, followUser } from "../Controllers/User.controller.js";
+import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,followPlaylist,unfollowPlaylist,followArtist, unfollowArtist, unfollowUser, followUser, updateMonthlyReport, getMonthlyReport } from "../Controllers/User.controller.js";
 
 export const userRoute = express.Router();
 
@@ -14,6 +14,8 @@ userRoute.get("/artist/follow/:artistId",followArtist);
 userRoute.get("/user/follow/:userId",followUser);
 userRoute.get("/artist/unfollow/:artistId",unfollowArtist);
 userRoute.get("/user/unfollow/:userId",unfollowUser);
-userRoute.post("/report",addToReport)
+userRoute.post("/user/report",updateMonthlyReport);
+userRoute.get("/user/report",getMonthlyReport);
+
 
 export default userRoute;

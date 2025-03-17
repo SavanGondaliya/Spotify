@@ -30,7 +30,7 @@ export const TopHollywood = () => {
   return (
     <div>
       <div className="flex flex-col justify-center  items-center px-5 py-5">
-        <div className="flex w-fit h-fi py-5">
+        <div className="flex w-fit h-fit py-5">
           {topHollywoodArtist && topHollywoodArtist.length > 0 ? (
             topHollywoodArtist.map((artist) => (
               <NavLink to={`http://localhost:5173/artist/${artist.artist_id}`} key={artist.artist_id} className="w-full h-full flex flex-col justify-center items-center rounded_image hover_card">

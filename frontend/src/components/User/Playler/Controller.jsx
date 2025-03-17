@@ -1,9 +1,10 @@
 import React,{useState,useEffect,useRef} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
-import { Play,Pause,skipToNext,skipToPrevious,songDuration,RepeatMode,seekSong,setVolume, addToQueue } from "../utility/SongManipulation";
+import { Play,Pause,skipToNext,skipToPrevious,songDuration,RepeatMode,seekSong,setVolume } from "../utility/SongManipulation";
 import "./style.css";
 import { NavLink } from "react-router-dom";
 import { Queue } from "./Queue";
+import { PlayRandom } from "../utility/SongManipulation";
 
 export const PlayerController = () => {
     
@@ -12,7 +13,7 @@ export const PlayerController = () => {
     const intervalRef = useRef(null);
     const trackerRef = useRef(null);
     const volumeRef = useRef(100);
-
+    
     const {player,deviceId} = useWebPlayback();
     const [currentlyPlaying,setCurrentlyPlaying] = useState();
     const [currentTime,setCurrenTime] =  useState("");
@@ -21,6 +22,7 @@ export const PlayerController = () => {
     const [isPlay,setIsPlay] = useState();
     const [volume,getVolume] = useState(100);
     const [queue,setQueue] = useState(false)
+    const [hasPlayedNext, setHasPlayedNext] = useState(false);
     
     useEffect(() => {
         if (!player) return; 
@@ -39,36 +41,37 @@ export const PlayerController = () => {
                 return;
             }
             setCurrentlyPlaying(state);
-            localStorage.setItem("player_details",JSON.stringify(state));
+            localStorage.setItem("player_details",JSON.stringify(state));            
+            
         })
         return () => player.removeListener("player_state_changed", handlePlayerStateChange);
     },[player]); 
 
-    useEffect(() => {
-
+    useEffect(() => { 
         if (!player) return;
 
         intervalRef.current = setInterval(() => {
             player.getCurrentState().then((state) => {
-                if (!state) {
-                    return;
-                }
+                if (!state) return;
                 
-                let currentMinute = Math.floor((state.position / 1000) / 60);
-                let currentSecond = Math.floor((state.position / 1000) % 60);
-                
-                let formattedMinute = currentMinute < 10 ? `0${currentMinute}` : currentMinute;
-                let formattedSecond = currentSecond < 10 ? `0${currentSecond}` : currentSecond;
-                
-                setCurrenTime(`${formattedMinute}:${formattedSecond}`);
+                setCurrenTime(state.position);
                 setPositionMs(state.position);
                 setRepeatMode(state.repeat_mode);
                 trackerRef.current.value = state.position;
+
+                if (state.paused === true && state.position === 0 && !hasPlayedNext) {  
+                    setHasPlayedNext(true); 
+                    PlayRandom(deviceId);
+                } else if (state.paused === false) {
+                    setHasPlayedNext(false);
+                }
             });
         }, 900);
-        
+
         return () => clearInterval(intervalRef.current);
-    },[player]); 
+}, [player, hasPlayedNext]);
+
+    
     
     const handleMusic = (id,type) => {
         if(isPlay == id){
@@ -87,7 +90,6 @@ export const PlayerController = () => {
     }
 
     const changeVolume = (volume,deviceId) => {
-            
         volumeRef.current.value = volume;
         getVolume(volume)
         setVolume(volume,deviceId)
@@ -104,7 +106,20 @@ export const PlayerController = () => {
                                 src={currentlyPlaying.track_window.current_track.album.images[0].url} 
                                 alt={"Nothing"} 
                             />
-                            <p className="font-bold ml-5">{currentlyPlaying.track_window.current_track.name}</p>
+                            
+                            <div className="flex flex-col">
+                                <div>
+                                    <p className="font-bold ml-5">{currentlyPlaying?.track_window?.current_track?.name}</p>
+                                </div>
+                                {currentlyPlaying?.track_window?.current_track?.artists.map(
+                                    (artist,i) => (
+                                    <React.Fragment key={artist?.id}>
+                                        <NavLink to={`http://localhost:5173/artist/${artist?.id}`}>{artist?.name}</NavLink>
+                                    {i < currentlyPlaying?.track_window?.current_track?.artists.length - 1 && ', '}
+                                    </React.Fragment>
+                                    )
+                                )}
+                            </div>
                         </div>
                         <div className="flex w-[50]% h-[100]% justify-evenly items-center px-5">
                             <div onClick={() => skipToPrevious(deviceId)} className="text_highlight">
@@ -133,7 +148,7 @@ export const PlayerController = () => {
                                 />
                             </div>
                             <div className="w-full h-full  mx-2 ">
-                                <p>{currentTime}/{songDuration(currentlyPlaying.duration)}</p>
+                                <p>{songDuration(currentTime)}/{songDuration(currentlyPlaying.duration)}</p>
                             </div>
                         </div>
                         <div className="flex w[20]% h[100]% justify-center items-center px-5">
@@ -186,16 +201,22 @@ export const PlayerController = () => {
                                     )}
                                 </div>
                             </div>
-                            <div 
-                                className="mx-1"
-                                onClick={() => addToQueue(deviceId,currentlyPlaying.track_window.current_track.id)}>
+                            <div className="mx-1">
                                 <i class="ri-order-play-line"></i>
+                                <Queue  />
                             </div>
                             <div className="mx-1">
                                 <NavLink to={`http://localhost:5173/lyrics`}>
                                     <i className="ri-closed-captioning-line"></i>
                                 </NavLink>
                             </div>
+                            {
+                                queue && queue == true ? (
+                                    <Queue />
+                                ): (
+                                    <div></div>
+                                )
+                            }
                         </div>
                     </div>
                 ):(
@@ -206,7 +227,19 @@ export const PlayerController = () => {
                                 src={playerDetails?.track_window?.current_track?.album?.images[0]?.url} 
                                 alt={"Nothing"} 
                             />
-                            <p className="font-bold ml-5">{playerDetails?.track_window?.current_track?.name}</p>
+                            <div className="flex flex-col">
+                                <div>
+                                    <p className="font-bold ml-5">{playerDetails?.track_window?.current_track?.name}</p>
+                                </div>
+                                {playerDetails?.track_window?.current_track?.artists.map(
+                                    (artist,i) => (
+                                    <React.Fragment key={artist?.id}>
+                                        <NavLink to={`http://localhost:5173/artist/${artist?.id}`}>{artist?.name}</NavLink>
+                                    {i < playerDetails?.track_window?.current_track?.artists.length - 1 && ', '}
+                                    </React.Fragment>
+                                    )
+                                )}
+                            </div>
                         </div>
                         <div className="flex w-[50]% h-[100]% justify-evenly items-center px-5">
                             <div onClick={() => skipToPrevious(deviceId)} className="text_highlight">
@@ -288,9 +321,7 @@ export const PlayerController = () => {
                                     )}
                                 </div>
                             </div>
-                            <div 
-                                className="mx-1"
-                                onClick={() => setQueue((prev) => !prev)}>
+                            <div className="mx-1">
                                 <i class="ri-order-play-line"></i>
                                 {
                                     queue && queue == true ? (
@@ -301,7 +332,7 @@ export const PlayerController = () => {
                                 }
                             </div>
                             <div className="mx-1">
-                                <NavLink to={`http://localhost:5173/lyrics`}>
+                                <NavLink>
                                     <i className="ri-closed-captioning-line"></i>
                                 </NavLink>
                             </div>

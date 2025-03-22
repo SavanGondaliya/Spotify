@@ -1,5 +1,5 @@
 import express from "express";
-import { getTrackById, saveCurrentTrack,deleteCurrentTrack,getUserSavedTracks,getLocalTracks, isUserContainTrack,getSeveralTracks, populerTracks, trendingSong, topHits } from "../Controllers/Track.controller.js";
+import { getTrackById, saveCurrentTrack,deleteCurrentTrack,getUserSavedTracks,getLocalTracks, isUserContainTrack,getSeveralTracks, populerTracks, trendingSong, topHits, Songs } from "../Controllers/Track.controller.js";
 export const TrackRouter = express.Router();
 
 TrackRouter.get("/tracks/:id",getTrackById);
@@ -12,5 +12,6 @@ TrackRouter.get("/tracks/populer",populerTracks);
 TrackRouter.get('/local/tracks',getLocalTracks);
 TrackRouter.get('/trending',trendingSong);
 TrackRouter.get('/top-hits',topHits);
+TrackRouter.get('/music',Songs);
 
 export default TrackRouter;

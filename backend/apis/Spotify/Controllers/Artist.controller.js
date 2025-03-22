@@ -32,6 +32,7 @@ export const getArtistDetail = async(req,res) => {
     }
 }
 
+
 export const getArtistAlbum = async(req, res) => {
     try {
         
@@ -296,5 +297,13 @@ export const getNewArtist = async(req, res) =>{
 
     } catch (error) {
         return res.status(500).send({message : error.message});
+    }
+}
+
+export const getLocalArtistTracks = async(req,res) => {
+    try {
+        
+    } catch (error) {
+        return res.status(500).send({message:error})
     }
 }

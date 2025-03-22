@@ -5,7 +5,7 @@ import { parseFile} from "music-metadata";
 import { setImageFile } from "./helper.js";
 import fs from "fs";
 import path from "path";
-import { log } from "util";
+
 
 const imageUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/public/images/");
 const trackUploadDir = path.join("E:/projects/NoizeeMusicApp/backend/public/audio/");
@@ -20,6 +20,7 @@ export const RegisterArtist =  async(req, res) => {
         imageUploadDir,
         keepExtensions: true,
     });
+    
     
     form.parse(req, async (err, fields, files) => {
 
@@ -254,13 +255,13 @@ export const addTrack = async(req, res) => {
             trackUploadDir,
             keepExtensions: true,
         });
-    
+        console.log("called...");
         form.parse(req, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form:", err);
             return res.status(400).json({ message: "Error parsing form" });
             }
-            
+                        
             const {artist_id} = req.query;
             const track_id = await generateRandomId();
             const album_id = fields.album_id[0];
@@ -423,9 +424,9 @@ export const getArtistById = async(req, res) => {
 export const topTracks = async(req,res) => {
     try {
         const {artist_id} = req.query;
-        const query = `Select tblalbum.*,tblsongs.*,tblartist.* from tblsongs inner join tblalbum on tblsongs.album_id = tblalbum.album_id inner join tblartist on tblsongs.artist_id = tblartist.artist_id where tblartist.artist = ${artist_id} limit 5`;
-
-        conn.query(query,(err,results) => {
+        const query = `Select tblalbum.*,tblsongs.*,tblartist.* from tblsongs inner join tblalbum on tblsongs.album_id = tblalbum.album_id inner join tblartist on tblsongs.artist_id = tblartist.artist_id where tblartist.artist_id = ? limit 5;`;
+        
+        conn.query(query,[artist_id],(err,results) => {
             if(err){
                 return res.status(404).send({message:err})
             }
@@ -434,5 +435,22 @@ export const topTracks = async(req,res) => {
 
     } catch (error) {
         return res.status(500).send({message :error.message});
+    }
+}
+
+export const getAlbumTracks = async(req, res) => {
+    try {
+        const {id} = req.params;
+        
+        const query = `SELECT tblalbum.image as AlbumImage,tblsongs.*,tblalbum.*,tblartist.* from tblsongs inner join tblalbum on tblsongs.album_id = tblalbum.album_id inner join tblartist on tblsongs.artist_id = tblartist.artist_id where tblalbum.album_id = ?;`;
+        
+        conn.query(query,[id],(err,results)=> {
+            if(!err){
+                return res.status(200).send(results);
+            }
+            return res.status(400).send({success:false});
+        })
+    } catch (error) {
+        return error;
     }
 }

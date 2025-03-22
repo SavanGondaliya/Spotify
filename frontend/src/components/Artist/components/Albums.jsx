@@ -2,11 +2,11 @@ import axios from "axios";
 import React from "react";
 import { useState,useEffect } from "react";
 import { NavLink } from "react-router-dom";
-
+import MusicLoader from "../../User/utility/Loader";
 export const ArtistAlbums = () => {
 
     const [albums,setAlbums] = useState([]);
-    
+    const [refresh,setRefresh] = useState(0);
     
     const getArtistAlbums = () => {
         const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"))[0];
@@ -25,9 +25,24 @@ export const ArtistAlbums = () => {
 
     useEffect(() => {
         getArtistAlbums();
-    },[])
-    console.log(albums);
-    
+    },[refresh])
+
+    const deleteAlbum = (id) => {
+        try {
+            axios.delete(`http://localhost:5000/local/album/delete/${id}`,{
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            }).then((res) => {
+                if(res.status === 200){
+                    setRefresh((prev) =>  prev+1)
+                }
+            })
+        } catch (error) {
+            return error
+        }
+    }
+
     return(
         <div className="container"> 
             <div className="top-songs">
@@ -35,7 +50,6 @@ export const ArtistAlbums = () => {
                 {
                     albums && albums.length > 0 ? (
                         albums.map((album) => (                            
-                            <NavLink to={`http://localhost:5173/albums/${album?.album_id}`} className="songs">
                                 <div className="song">
                                     <img src={`http://localhost:5000${album.albumImage}`} alt="album"/>
                                     <div className="info">
@@ -43,11 +57,17 @@ export const ArtistAlbums = () => {
                                         </div>
                                         <p className="album-name">{album.total_tracks}</p>
                                     </div>
+                                    <div>
+                                        <button onClick={() =>  deleteAlbum(album.album_id)}>
+                                            delete
+                                        </button>
+                                    </div>
                                 </div>
-                            </NavLink>
                         ))
                     ):(
-                        <div>Loading...</div>
+                        <div>
+                            <MusicLoader/>
+                        </div>
                     )
                 }
                 </div>

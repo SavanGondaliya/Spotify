@@ -32,7 +32,7 @@ export const KebabDropDown = ({ playlists, artists, track_id }) => {
     }, []);
 
     return (
-        <div className="relative w-100 bg-gray-800 text-white p-2 rounded-md" ref={dropdownRef}>
+        <div className="relative w-30 text-center bg-gray-800 text-white p-2 rounded-md" ref={dropdownRef}>
             
             <div 
                 onClick={() => addToQueue(deviceId, track_id)}

@@ -93,8 +93,8 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
     export const getUserPlaylists = async(req, res) => {
         try {
             
-            const {user_id} = JSON.parse(req.query.session_details);
-            const query = `SELECT * FROM tblplaylist WHERE user_id='${user_id}';`;
+            const {id} = req.params
+            const query = `SELECT * FROM tblplaylist WHERE user_id='${id}';`;
             
             conn.query(query,(error,results,fields) => {
                 if(error){
@@ -250,3 +250,15 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
         }
     };
     
+    export const playlistDetails = async(req, res) => {
+        try {
+            
+            const {id} = req.params;
+            const {user_id} = JSON.parse(req.query.session_details);
+
+            const query =   `SELECT `
+
+        } catch (error) {
+            return
+        }
+    }

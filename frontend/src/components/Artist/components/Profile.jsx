@@ -1,10 +1,12 @@
 import React from "react";
 import axios from "axios";
 import { useState,useEffect } from "react";
+import { AddTrack } from "./AddTrack";
 
-export const ArtistProfile = () => {
+const ArtistProfile = () => {
 
     const [artist,setArtist] = useState();
+    const [showForm,setShowForm] = useState(false)
     
     const getArtistDetails = () => {
         try {
@@ -27,7 +29,6 @@ export const ArtistProfile = () => {
             return error;
         }
     }
-    console.log(artist);
     
     useEffect(()=> {
         getArtistDetails();
@@ -35,7 +36,7 @@ export const ArtistProfile = () => {
     
     return(
         <div className="container">
-            {/* {artist?.map((artist) => (
+            {artist?.map((artist) => (
                 <div className="artist-header" key={artist.artist_id}>
                     <img 
                         src={`http://localhost:5000${artist?.image}`} 
@@ -44,24 +45,14 @@ export const ArtistProfile = () => {
                     />
                     <div className="artist-info">
                         <h1>{artist?.artist_name}</h1>
-                        <button className="add-song">Add Song</button>
+                        <button className="add-song" onClick={() => setShowForm((prev) => !prev)}>Add Song</button>
+                        {showForm && <AddTrack visible={showForm} setVisible={setShowForm} />}
                     </div>
                     <div className="song-count">
                         {artist?.total_songs ?? 0} <br/> Songs
                     </div>
                 </div>
-            ))} */}
-            <div className="bg-indigo-800 text-yellow-400 p-6 flex items-center justify-between shadow-lg">
-            <div className="flex items-center">
-                <img src="/artist.jpg" alt="Artist" className="w-24 h-24 bg-yellow-400 shadow-md" />
-                <div className="ml-4">
-                <h1 className="text-3xl font-bold">Arijit Singh</h1>
-                <p>42,906,817 monthly listeners</p>
-                <button className="mt-2 px-4 py-2 bg-yellow-400 text-black rounded">Add Song</button>
-                </div>
-            </div>
-            <div className="bg-yellow-400 px-4 py-2 text-black font-bold shadow-md">1.5k Songs</div>
-            </div>
+            ))}
             <style>
                 {
                 `   
@@ -139,3 +130,4 @@ export const ArtistProfile = () => {
         </div>        
     )
 }
+export default ArtistProfile

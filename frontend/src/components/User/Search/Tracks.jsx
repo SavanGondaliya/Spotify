@@ -3,8 +3,6 @@ import { Play,Pause } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { songDuration } from "../utility/SongManipulation";
 import { NavLink } from "react-router-dom";
-import { updateMonthlyReport } from "../utility/SongManipulation";
-import { getCurrentState } from "../utility/SongManipulation";
 
 export const Tracks = (tracks) => {
 
@@ -15,11 +13,12 @@ export const Tracks = (tracks) => {
     useEffect(() => {
         
         if (!player) return;
+            
             player.getCurrentState().then((state) => {
             if (!state) {
                 return;
             }                   
-            setPositionMs(state.position);
+            // setPositionMs(state.position);
         });
     },[isPlay]); 
 

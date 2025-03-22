@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import {
   Play,
   Pause,
@@ -7,11 +8,12 @@ import {
   songDuration,
   RepeatMode,
   seekSong,
-  setVolume
+  setVolume,
 } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { getUserPlaylist } from "../utility/SongManipulation";
-import axios from "axios";
+import MusicLoader from "../utility/Loader";
+
 
 export const Currently = () => {
 
@@ -28,16 +30,16 @@ export const Currently = () => {
   const [isPlay, setIsPlay] = useState();
   const [volume, getVolume] = useState(100);
 
-   const playlist = async() => {
-        let playlist  = await getUserPlaylist();
-        setUserPlaylists(playlist)
-    }
-  
-    useEffect(() => {
-        playlist();
-    },[]);
+  const playlist = async () => {
+    let playlist = await getUserPlaylist();
+    setUserPlaylists(playlist);
+  };
 
-    useEffect(() => {
+  useEffect(() => {
+    playlist();
+  }, []);
+
+  useEffect(() => {
     if (!player) return;
 
     intervalRef.current = setInterval(() => {
@@ -53,43 +55,45 @@ export const Currently = () => {
           currentMinute < 10 ? `0${currentMinute}` : currentMinute;
         let formattedSecond =
           currentSecond < 10 ? `0${currentSecond}` : currentSecond;
-          
-          setCurrenTime(`${formattedMinute}:${formattedSecond}`);
-          setPositionMs(state.position);
-          setRepeatMode(state.repeat_mode);
-          trackerRef.current.value = state.position;
+
+        setCurrenTime(`${formattedMinute}:${formattedSecond}`);
+        setPositionMs(state.position);
+        setRepeatMode(state.repeat_mode);
+        trackerRef.current.value = state.position;
       });
     }, 900);
 
     return () => clearInterval(intervalRef.current);
   }, [player]);
 
-    
-  const PlayRandom = async() => {
+  const PlayRandom = async () => {
     try {
-        console.log("called...");
-      
-        axios.get(`http://localhost:5000/local/tracks`,{
-            headers:{
-                "Content-Type":"application/json"
-            }
-        }).then((res) => {
-            if(res.status === 200){
-                let randomIndex = Math.floor(Math.random()*res.data.length)
-                Play(res.data[randomIndex],deviceId,"track",0)
-            }
-        }).catch((error) => {
+      console.log("called...");
+
+      axios
+        .get(`http://localhost:5000/local/tracks`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            let randomIndex = Math.floor(Math.random() * res.data.length);
+            Play(res.data[randomIndex], deviceId, "track", 0);
+          }
+        })
+        .catch((error) => {
           console.log(error);
         });
     } catch (error) {
       console.log(error);
-        return error
+      return error;
     }
-  }
+  };
 
   const handleMusic = (id, type) => {
     if (isPlay == id) {
-      PlayRandom()
+      PlayRandom();
       // Pause(id, deviceId, type);
       setIsPlay(null);
     } else {
@@ -110,7 +114,6 @@ export const Currently = () => {
   };
 
   useEffect(() => {
-
     if (!player) return;
 
     const handlePlayerStateChange = (state) => {
@@ -126,13 +129,13 @@ export const Currently = () => {
       if (!state) {
         return;
       }
-      
+
       setCurrentState(state);
     });
     return () =>
       player.removeListener("player_state_changed", handlePlayerStateChange);
   }, [player]);
-  
+
   return (
     <div className="w-full h-full">
       <div>
@@ -156,7 +159,8 @@ export const Currently = () => {
                 <img
                   className="w-40 h-40 inner_image_shadow"
                   src={
-                    currentState?.track_window?.current_track?.album?.images[0]?.url
+                    currentState?.track_window?.current_track?.album?.images[0]
+                      ?.url
                   }
                   alt=""
                 />
@@ -164,121 +168,158 @@ export const Currently = () => {
                   {currentState?.track_window?.current_track?.name}
                 </p>
                 {currentState?.track_window?.current_track?.artists.map(
-                  (artist,i) => (
+                  (artist, i) => (
                     <React.Fragment key={artist?.id}>
-                          {artist.name}
-                      {i < currentState?.track_window?.current_track?.artists.length - 1 && ', '}
-                      </React.Fragment>
+                      {artist.name}
+                      {i <
+                        currentState?.track_window?.current_track?.artists
+                          .length -
+                          1 && ", "}
+                    </React.Fragment>
                   )
                 )}
               </div>
             </div>
-            <div className="bg-indigo-800 w-200 h-25 bottom-0 absolute rounded-bl rounded-br">
-                <div className="flex justify-center items-center">
-                    <div>   
-                        <div className="h-full my-2">
-                            <span className="mx-2">
-                                {currentTime}
-                            </span>
-                            <input
-                                type="range"
-                                ref={trackerRef}
-                                className="tracker w-100 music-slider"
-                                max={currentState.duration}
-                                onMouseUp={() =>
-                                    skipSong(trackerRef.current.value, deviceId)
-                                }
-                                color="text_highlight"
-                            />
-                            <span className="mx-2">
-                                {songDuration(currentState.duration)}
-                            </span>
-                        </div>
-                        <div>
-                            <div className="flex w-full h-full justify-around items-center px-5">
-                                <div className="">
-                                    <i className="ri-add-fill"></i>
-                                </div>
-                                <div className="flex justify-center items-center">
-                                    <div className="mx-2 ">
-                                        <i class="ri-shuffle-line"></i>
-                                    </div>
-                                    <div
-                                        onClick={() => skipToPrevious(deviceId)}
-                                        className="text_highlight"
-                                    >
-                                        <i className="ri-skip-left-fill text-4xl"></i>
-                                    </div>
-                                    <div
-                                        onClick={() =>
-                                            handleMusic(
-                                                currentState.track_window.current_track.id,
-                                                "track",
-                                                positionMs
-                                            )
-                                        }
-                                    >
-                                        {currentState && currentState.paused == false ? (
-                                        <i className="ri-pause-circle-fill text-4xl text_highlight"></i>
-                                        ) : (
-                                        <i className="ri-play-circle-fill text-4xl text_highlight"></i>
-                                        )}
-                                    </div>
-                                    <div onClick={() => skipToNext(deviceId)}>
-                                        <i className="ri-skip-right-fill text-4xl text_highlight"></i>
-                                    </div>
-                                    <div className="hover:cursor-pointer">
-                                        {repeatMode == 0 ? (
-                                            <div onClick={() => RepeatMode(deviceId, "context")}>
-                                            <i class="ri-repeat-fill"></i>
-                                            </div>
-                                        ) : repeatMode == 1 ? (
-                                            <div onClick={() => RepeatMode(deviceId, "track")}>
-                                            <i class="ri-repeat-2-fill"></i>
-                                            </div>
-                                        ) : (
-                                            <div onClick={() => RepeatMode(deviceId, "off")}>
-                                            <i class="ri-repeat-one-fill"></i>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="w-full h-full mx-2">
-                                    <span>
-                                        {volume > 50 ? (
-                                            <i className="ri-volume-up-line"></i>
-                                        ) : volume == 0 ? (
-                                            <i className="ri-volume-mute-line"></i>
-                                        ) : (
-                                            <i className="ri-volume-down-line"></i>
-                                        )}
-                                    </span>
-                                    <input
-                                    type="range"
-                                    ref={volumeRef}
-                                    className="music-slider"
-                                    min={0}
-                                    max={100}
-                                    onMouseUp={() =>
-                                        changeVolume(volumeRef.current.value, deviceId)
-                                    }
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="w-full h-full text-5xl">
-                            <i className="ri-heart-line"></i>
-                        </div>
-                    </div>
-                </div>  
+            <div className="bg-indigo-800 w-full p-4 absolute bottom-0 rounded-b-lg flex flex-col items-center">
+              {/* Progress Bar */}
+              <div className="w-[90%] flex items-center justify-between">
+                <span className="text-white text-sm">{currentTime}</span>
+                <input
+                  type="range"
+                  ref={trackerRef}
+                  className="w-full mx-4 music-slider"
+                  max={currentState.duration}
+                  onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
+                />
+                <span className="text-white text-sm">
+                  {songDuration(currentState.duration)}
+                </span>
+              </div>
+
+              {/* Music Controls */}
+              <div className="flex items-center justify-between w-full mt-3 px-6">
+                <i className="ri-add-fill text-white text-xl cursor-pointer"></i>
+
+                <div className="flex items-center space-x-4">
+                  <i className="ri-shuffle-line text-white text-xl cursor-pointer"></i>
+                  <i
+                    className="ri-skip-left-fill text-3xl text-white cursor-pointer"
+                    onClick={() => skipToPrevious(deviceId)}
+                  ></i>
+                  <i
+                    className={`ri-${
+                      currentState.paused ? "play" : "pause"
+                    }-circle-fill text-4xl text-white cursor-pointer`}
+                    onClick={() =>
+                      handleMusic(
+                        currentState.track_window.current_track.id,
+                        "track",
+                        positionMs
+                      )
+                    }
+                  ></i>
+                  <i
+                    className="ri-skip-right-fill text-3xl text-white cursor-pointer"
+                    onClick={() => skipToNext(deviceId)}
+                  ></i>
+
+                  {/* Repeat Button */}
+                  <div className="cursor-pointer">
+                    {repeatMode === 0 ? (
+                      <i
+                        className="ri-repeat-fill text-white"
+                        onClick={() => RepeatMode(deviceId, "context")}
+                      ></i>
+                    ) : repeatMode === 1 ? (
+                      <i
+                        className="ri-repeat-2-fill text-white"
+                        onClick={() => RepeatMode(deviceId, "track")}
+                      ></i>
+                    ) : (
+                      <i
+                        className="ri-repeat-one-fill text-white"
+                        onClick={() => RepeatMode(deviceId, "off")}
+                      ></i>
+                    )}
+                  </div>
+                </div>
+
+                {/* Volume & Favorite */}
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    <i
+                      className={`text-white text-xl  ${
+                        volume > 50
+                          ? "ri-volume-up-line"
+                          : volume === 0
+                          ? "ri-volume-mute-line"
+                          : "ri-volume-down-line"
+                      }`}
+                    ></i>
+                    <input
+                      type="range"
+                      ref={volumeRef}
+                      className="ml-2 music-slider"
+                      min={0}
+                      max={100}
+                      onMouseUp={() =>
+                        changeVolume(volumeRef.current.value, deviceId)
+                      }
+                    />
+                  </div>
+                  <i className="ri-heart-line text-3xl text-white cursor-pointer"></i>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        <div>Loading...</div>
+        <div>
+
+        </div>
       )}
+      <style>
+        {`  
+          .music-slider {
+              height: 5px;
+              appearance: none;
+              outline: none;
+              background: #555; /* Default background for unfilled portion */
+              cursor: pointer;
+          }
+          
+          /* Style the filled progress */
+          .music-slider::-webkit-slider-runnable-track {
+              height: 5px;
+              background: #f2c178; /* Filled portion */
+          }
+          
+          /* Style the thumb (circle) */
+          .music-slider::-webkit-slider-thumb {
+              appearance: none;
+              width: 12px;
+              height: 12px;
+              background: white;
+              border-radius: 50%;
+              margin-top: -3px;
+              box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+          }
+          
+          /* Firefox styles */
+          .music-slider::-moz-range-track {
+              height: 6px;
+              border-radius: 5px;
+              background: #555;
+          }
+          
+          .music-slider::-moz-range-progress {
+              background: linear-gradient(90deg, #1db954, #1ed760);
+              height: 6px;
+              border-radius: 5px;
+          }
+        `          
+        }
+      </style>
     </div>
   );
 };

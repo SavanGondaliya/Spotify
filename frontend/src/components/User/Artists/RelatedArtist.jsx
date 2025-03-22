@@ -61,25 +61,21 @@ export const RelatedArtist = () => {
     },[relatedArtistId]);
     
     return(
-        <div>
-            {
-                relatedArtists && Array(relatedArtists).length > 0 ? (
-                    <div className="w-[100]% w-[100]% flex justify-between">
-                        {
-                            relatedArtists.artists.map((artist) => (
-                                <div>
-                                    <NavLink to={`http://localhost:5173/artist/${artist.id}`}>
-                                        <img src={artist.images[0].url} className="w-20 h-20" alt="" />
-                                        <p>{artist.name}</p>
-                                    </NavLink>
-                                </div>
-                            ))   
-                        }
-                    </div>
-                ):(
-                    <div>Loading...</div>
-                )
-            }
+        <div className="w-full">
+            {relatedArtists?.artists?.length > 0 ? (
+                <div className="grid grid-cols-4 gap-4">
+                    {relatedArtists.artists.map((artist) => (
+                        <div key={artist.id} className="flex flex-col items-center">
+                            <NavLink to={`http://localhost:5173/artist/${artist.id}`}>
+                                <img src={artist.images[0]?.url} className="w-20 h-20 rounded-full" alt={artist.name} />
+                                <p className="text-white text-center mt-2">{artist.name}</p>
+                            </NavLink>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-white">Loading...</div>
+            )}
         </div>
     )
 }

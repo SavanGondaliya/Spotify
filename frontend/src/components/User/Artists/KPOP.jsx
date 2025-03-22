@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { Play,Pause } from "../utility/SongManipulation";
+import MusicLoader from "../utility/Loader";
 
 export const KPOP = () => {
 
@@ -42,17 +43,20 @@ export const KPOP = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-center  items-center px-5 py-5">
-        <div className="flex w-fit h-fit bg-black py-5">
+       <div className="text-4xl mx-5 ">
+        Korean POP
+      </div>
+      <div className="flex flex-col justify-center items-center px-5 py-5 overflow-scroll">
+        <div className="flex w-full h-full py-5">
           {kpopAlbum && kpopAlbum.length > 0 ? (
             kpopAlbum.map((artist) => (
               <NavLink to={`http://localhost:5173/artist/${artist.artist_id}`} key={artist.artist_id} className="w-full h-full flex flex-col justify-center items-center rounded_image hover_card">
                 <div className="mx-5 py-5 group">
-                  <div className="relative w-full h-full ">
+                  <div className="relative w-30 h-30">
                     <img
-                      className="w-20 h-20 object-cover shadow-lg album_shadow rounded_image"
+                      className="w-full h-full object-cover shadow-lg __artist_image__ rounded_image"
                       src={artist.image}
-                      alt=""
+                      
                     />
                   </div>
                   <div className="w-full h-full text-amber-100 my-2">
@@ -63,10 +67,22 @@ export const KPOP = () => {
               </NavLink>
             ))
           ) : (
-            <div>Loading...</div>
+            <div>
+              <MusicLoader/>
+            </div>
           )}
         </div>
       </div>
+      
+      <style>
+        {
+          `
+            .__artist_image__{
+              box-shadow: 8px 8px 0px #4949bf;
+            }
+          `
+        }
+      </style>
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-export const Sidebar = () => {
+const Sidebar = () => {
 
     const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
 
     return(
         <div>
-            {/* <div className="sidebar">
+            <div className="sidebar">
                 <img src="/Noizee_For_Artists.svg" className="logo" alt="Noizee" />
                 <div className="menu">
                     <NavLink to={`http://localhost:5173/artist/dashboard`} className="menu-item active">
@@ -19,21 +19,7 @@ export const Sidebar = () => {
                         Albums
                     </NavLink>
                 </div>
-            </div> */}
-
-{/* const Sidebar = () => { */}
-  {/* return ( */}
-            <div className="h-screen bg-indigo-900 p-4 text-white">
-            <div className="mb-6">
-                <img src="/logo.png" alt="Noizee" className="w-16" />
             </div>
-            <nav className="space-y-4">
-                <button className="w-full py-2 bg-yellow-600 rounded">ARTISTS</button>
-                <button className="w-full py-2 bg-transparent hover:bg-indigo-700">MUSIC</button>
-            </nav>
-            </div>
-  {/* ); */}
-{/* }; */}
 
             <style>
                 {
@@ -93,3 +79,4 @@ export const Sidebar = () => {
     )
 
 }
+export default Sidebar;

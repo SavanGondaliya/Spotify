@@ -5,7 +5,8 @@ const session_details = sessionStorage.getItem("session_details");
 
 export const Play = async(contextUri,device_id,type,position_ms) =>  {
     try {
-
+        console.log(contextUri,device_id,type,position_ms);
+        
         if(session_details){
             updateReport(device_id);
             const response = await axios.get(`http://localhost:5000/play/${type}/${contextUri}?session_details=${session_details}&deviceId=${device_id}&position_ms=${position_ms}`,{
@@ -162,7 +163,9 @@ export const getUserPlaylist = async() => {
     try {
         
         if(session_details){
-            const  response = await axios.get(`http://localhost:5000/playlist/user?session_details=${session_details}`,{
+            const {user_id} = JSON.parse(sessionStorage.getItem("session_details"));
+            
+            const  response = await axios.get(`http://localhost:5000/playlist/${user_id}`,{
                 headers:{
                     "Content-Type":"application/json"
                 }

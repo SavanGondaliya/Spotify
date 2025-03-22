@@ -33,26 +33,24 @@ export const PopulerAlbum = () => {
     
     return(
         <div className="w-full h-full">
-            <h3>Populer Albums</h3>
-            {
-                populerAlbums && Array(populerAlbums).length > 0 ? (
-                    <div className="grid grid-cols-3 place-items-center">
-                        {
-                            populerAlbums.items.map((albums) => (
-                                <div className="flex justify-center w-full h-full">
-                                    <NavLink
-                                        to={`http://localhost:5173/album/${albums.id}`}>
-                                        <img className="w-20 h-20 populer_album_image rounded" src={albums.images[0].url} alt="" />
-                                        <p className="font-light text-white text-center">{albums.name}</p>
-                                    </NavLink>       
-                                </div>
-                            ))
-                        }
-                    </div>
-                ):(
-                    <div>Loading</div>
-                )
-            }
-        </div>
+        <h3 className="text-white text-lg mb-6 text-center">Populer Albums</h3>
+      
+        {populerAlbums?.items?.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 px-4">
+            {populerAlbums.items.map((album) => (
+              <div key={album.id} className="flex flex-col items-center w-full">
+                <NavLink to={`http://localhost:5173/album/${album.id}`} className="flex flex-col items-center w-full">
+                  <img className="w-28 h-28 md:w-32 md:h-32 rounded-lg shadow-lg" src={album.images[0].url} alt={album.name} />
+                  <p className="font-light text-white text-center mt-3 px-2">{album.name}</p>
+                </NavLink>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-white text-center mt-6">Loading...</div>
+        )}
+      </div>
+      
+    
     )
 }

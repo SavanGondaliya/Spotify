@@ -4,6 +4,7 @@ import "./style.css";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
+import MusicLoader from "../utility/Loader";
 
 export const TopBollywood = () => {
 
@@ -28,15 +29,18 @@ export const TopBollywood = () => {
 
   return (
     <div>
-      <div className="flex flex-col justify-center items-center px-5 py-5">
+      <div className="text-2xl mx-5 ">
+        Classic Bollywood
+      </div>
+      <div className="flex flex-col justify-center items-center px-5 py-5 overflow-scroll">
         <div className="flex w-fit h-fit py-5">
           {topBollywoodArtist && topBollywoodArtist.length > 0 ? (
             topBollywoodArtist.map((artist) => (
               <NavLink to={`http://localhost:5173/artist/${artist.artist_id}`} key={artist.artist_id} className="w-full h-full flex flex-col justify-center items-center rounded_image hover_card">
                 <div className="mx-5 py-5">
-                  <div className="w-full h-full">
+                  <div className="relative w-30 h-30 ">
                     <img
-                      className="w-20 h-20 object-cover shadow-lg  album_shadow rounded_image"
+                      className="w-full h-full object-cover shadow-lg __artist_image__ rounded_image"
                       src={artist.image}
                       alt=""
                     />
@@ -49,10 +53,22 @@ export const TopBollywood = () => {
               </NavLink>
             ))
           ) : (
-            <div>Loading...</div>
+            <div>
+              <MusicLoader/>
+            </div>
           )}
         </div>
       </div>
+      
+      <style>
+        {
+          `
+            .__artist_image__{
+                box-shadow: 5px 5px 0px #4949bf;
+            }
+          `
+        }
+      </style>
     </div>
   );
 };

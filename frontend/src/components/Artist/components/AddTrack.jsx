@@ -61,11 +61,10 @@ export const  AddTrack = ({visible,setVisible}) => {
         document.body.classList.remove('fade-background');
     }
 
-
     return(
         <div>
             {
-                    <div className="form-container" id="songForm">
+                <div className="form-container" id="songForm">
                         <div>
                             <label for="songTitle">Song Name</label>
                             <input 

@@ -3,11 +3,11 @@ import axios from "axios";
 import { useState } from "react";
 // import { AddTrack } from "./Tracks/AddTrack";
 // import { ArtistTracks } from "./Tracks/ArtistTracks";
-import { Sidebar } from "./NavBar/Sidebar";
-import { ArtistProfile } from "./Auth/Profile";
-import { ArtistAlbums } from "./Album/Albums";
+import { Sidebar } from "./Sidebar";
+import { ArtistProfile } from "./Profile";
 import { ArtistAlbumPage } from "./ArtistAlbum";
-import { AboutSection } from "./Album/About";
+import { AboutSection } from "./About";
+import { TopTracks } from "./TopTracks";
 
 const ArtistDashboard = () => {
 
@@ -39,21 +39,34 @@ const ArtistDashboard = () => {
       });
   });
 
+  return(
 
-  return (
-    <div className="flex h-screen w-screen">
-      <div className="w-[15%] h-full">
-        <Sidebar />
-      </div>
-      <div className="w-[85%] h-full">
-        <ArtistProfile />
-        <ArtistAlbums/>
-        <ArtistAlbumPage/>
-        <AboutSection/>
-      </div>
-    </div>
   
-  );
+  <div className="flex h-screen w-screen  text-white">
+
+      <aside className="w-60 h-full  p-4">
+        <Sidebar />
+      </aside>
+
+      <main className="flex-1 overflow-y-auto p-6 space-y-8">
+
+        <section className="w-full">
+          <ArtistProfile />
+        </section>
+
+        <div>
+          <TopTracks />
+        </div>
+        <div>
+          <ArtistAlbumPage />
+        </div>
+
+        <section className="w-full">
+          <AboutSection />
+        </section>
+      </main>
+    </div>
+  )
 };
 
 export default ArtistDashboard;

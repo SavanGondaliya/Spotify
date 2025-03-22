@@ -4,7 +4,10 @@ import { PlayerController } from "../components/User/Playler/Controller";
 import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 
+
 export const PlaylistPage = () => {
+
+    
 
     return(
         <div className="w-screen h-screen">

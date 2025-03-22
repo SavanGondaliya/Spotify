@@ -1,7 +1,6 @@
 import React, { createContext, useContext,useState, useEffect } from "react";
 import axios from "axios";
 
-
 const WebPlaybackContext = createContext(null);
 
 export const WebPlaybackProvider = ({ children }) => {
@@ -56,3 +55,5 @@ export const WebPlaybackProvider = ({ children }) => {
 };
 
 export const useWebPlayback = () => useContext(WebPlaybackContext);
+
+export default useWebPlayback;

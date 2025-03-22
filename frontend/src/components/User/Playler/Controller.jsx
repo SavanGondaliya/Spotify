@@ -96,250 +96,166 @@ export const PlayerController = () => {
     }
     
     return(
-        <div className="w-screen h-full">
-            {
-                currentlyPlaying && Object.keys(currentlyPlaying).length > 0 ? (                  
-                    <div key={currentlyPlaying.track_window.current_track.name} className="flex items-center w-full h-full py-5 player_container">
-                        <div className="flex items-center w-[30%] h-full px-5">
-                            <img 
-                                className="w-10 h-10 controller_image rounded"    
-                                src={currentlyPlaying.track_window.current_track.album.images[0].url} 
-                                alt={"Nothing"} 
-                            />
-                            
-                            <div className="flex flex-col">
-                                <div>
-                                    <p className="font-bold ml-5">{currentlyPlaying?.track_window?.current_track?.name}</p>
-                                </div>
-                                {currentlyPlaying?.track_window?.current_track?.artists.map(
-                                    (artist,i) => (
-                                    <React.Fragment key={artist?.id}>
-                                        <NavLink to={`http://localhost:5173/artist/${artist?.id}`}>{artist?.name}</NavLink>
-                                    {i < currentlyPlaying?.track_window?.current_track?.artists.length - 1 && ', '}
-                                    </React.Fragment>
-                                    )
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex w-[50]% h-[100]% justify-evenly items-center px-5">
-                            <div onClick={() => skipToPrevious(deviceId)} className="text_highlight">
-                                <i className="ri-skip-left-fill text-4xl"></i>
-                            </div>
-                            <div onClick={() => handleMusic(currentlyPlaying.track_window.current_track.id,"track",positionMs)}>
-                                {
-                                    currentlyPlaying && currentlyPlaying.paused == false ?(
-                                        <i className="ri-pause-circle-fill text-4xl text_highlight"></i>
-                                    ):(
-                                        <i className="ri-play-circle-fill text-4xl text_highlight"></i>
-                                    )
-                                }
-                            </div>
-                            <div onClick={() => skipToNext(deviceId)} >
-                                <i className="ri-skip-right-fill text-4xl text_highlight"></i>
-                            </div>
-                            <div className="h-full">
-                                <input 
-                                    type="range" 
-                                    ref={trackerRef}
-                                    className="tracker w-100 music-slider"
-                                    max={currentlyPlaying.duration}
-                                    onMouseUp={() => skipSong(trackerRef.current.value,deviceId)}
-                                    color="text_highlight"
-                                />
-                            </div>
-                            <div className="w-full h-full  mx-2 ">
-                                <p>{songDuration(currentTime)}/{songDuration(currentlyPlaying.duration)}</p>
-                            </div>
-                        </div>
-                        <div className="flex w[20]% h[100]% justify-center items-center px-5">
-                            <div className="w-full h-full mx-2 ">
-                                <i className="ri-heart-line"></i>
-                            </div>
-                            <div className="w-full h-full">
-                                {
-                                    volume > 50 ? (
-                                        <i className="ri-volume-up-line"></i>
-                                    ):(
-                                        volume == 0 ? (
-                                            <i className="ri-volume-mute-line"></i>
-                                        ):(
-                                            <i className="ri-volume-down-line"></i>
-                                        )
-                                    )
-                                }
-                            </div>
-                            <div className="w-full h-full mx-2">
-                                <input 
-                                    type="range" 
-                                    ref={volumeRef}
-                                    className="music-slider"
-                                    min={0}
-                                    max={100}
-                                    onMouseUp={() => changeVolume(volumeRef.current.value,deviceId)}
-                                    />
-                            </div>
-                            <div className="mx-1">
-                                <i class="ri-shuffle-line"></i>
-                            </div>
-                            <div className="mx-1">
-                                <div className="hover:cursor-pointer">
-                                {
-                                    repeatMode == 0 ?(
-                                        <div onClick={() => RepeatMode(deviceId,"context")}>
-                                            <i class="ri-repeat-fill"></i>  
-                                        </div>
-                                    ):(
-                                        repeatMode == 1 ? (
-                                            <div onClick={() => RepeatMode(deviceId,"track")}>
-                                                <i class="ri-repeat-2-fill"></i>
-                                            </div>
-                                            ):(
-                                                <div onClick={() => RepeatMode(deviceId,"off")}>
-                                                    <i class="ri-repeat-one-fill"></i>
-                                            </div>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                            <div className="mx-1">
-                                <i class="ri-order-play-line"></i>
-                                <Queue  />
-                            </div>
-                            <div className="mx-1">
-                                <NavLink to={`http://localhost:5173/lyrics`}>
-                                    <i className="ri-closed-captioning-line"></i>
-                                </NavLink>
-                            </div>
-                            {
-                                queue && queue == true ? (
-                                    <Queue />
-                                ): (
-                                    <div></div>
-                                )
-                            }
-                        </div>
-                    </div>
-                ):(
-                    <div key={playerDetails?.track_window?.current_track?.name} className="flex items-center w-full h-full py-5 player_container">
-                        <div className="flex items-center w-[30%] h-full px-5">
-                            <img 
-                                className="w-10 h-10 controller_image rounded"    
-                                src={playerDetails?.track_window?.current_track?.album?.images[0]?.url} 
-                                alt={"Nothing"} 
-                            />
-                            <div className="flex flex-col">
-                                <div>
-                                    <p className="font-bold ml-5">{playerDetails?.track_window?.current_track?.name}</p>
-                                </div>
-                                {playerDetails?.track_window?.current_track?.artists.map(
-                                    (artist,i) => (
-                                    <React.Fragment key={artist?.id}>
-                                        <NavLink to={`http://localhost:5173/artist/${artist?.id}`}>{artist?.name}</NavLink>
-                                    {i < playerDetails?.track_window?.current_track?.artists.length - 1 && ', '}
-                                    </React.Fragment>
-                                    )
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex w-[50]% h-[100]% justify-evenly items-center px-5">
-                            <div onClick={() => skipToPrevious(deviceId)} className="text_highlight">
-                                <i className="ri-skip-left-fill text-4xl"></i>
-                            </div>
-                            <div onClick={() => handleMusic(playerDetails?.track_window?.current_track?.id,"track",positionMs)}>
-                                {
-                                    playerDetails && currentlyPlaying?.paused == false ?(
-                                        <i className="ri-pause-circle-fill text-4xl text_highlight"></i>
-                                    ):(
-                                        <i className="ri-play-circle-fill text-4xl text_highlight"></i>
-                                    )
-                                }
-                            </div>
-                            <div onClick={() => skipToNext(deviceId)} >
-                                <i className="ri-skip-right-fill text-4xl text_highlight"></i>
-                            </div>
-                            <div className="h-full">
-                                <input 
-                                    type="range" 
-                                    ref={trackerRef}
-                                    className="tracker w-100 music-slider"
-                                    max={playerDetails?.duration}
-                                    onMouseUp={() => skipSong(trackerRef.current.value,deviceId)}
-                                    color="text_highlight"
-                                />
-                            </div>
-                            <div className="w-full h-full  mx-2 ">
-                                <p>{currentTime}/{songDuration(playerDetails?.duration)}</p>
-                            </div>
-                        </div>
-                        <div className="flex w[20]% h[100]% justify-center items-center px-5">
-                            <div className="w-full h-full mx-2 ">
-                                <i className="ri-heart-line"></i>
-                            </div>
-                            <div className="w-full h-full">
-                                {
-                                    volume > 50 ? (
-                                        <i className="ri-volume-up-line"></i>
-                                    ):(
-                                        volume == 0 ? (
-                                            <i className="ri-volume-mute-line"></i>
-                                        ):(
-                                            <i className="ri-volume-down-line"></i>
-                                        )
-                                    )
-                                }
-                            </div>
-                            <div className="w-full h-full mx-2">
-                                <input 
-                                    type="range" 
-                                    ref={volumeRef}
-                                    className="music-slider"
-                                    min={0}
-                                    max={100}
-                                    onMouseUp={() => changeVolume(volumeRef.current.value,deviceId)}
-                                    />
-                            </div>
-                            <div className="mx-1">
-                                <i class="ri-shuffle-line"></i>
-                            </div>
-                            <div className="mx-1">
-                                <div className="hover:cursor-pointer">
-                                {
-                                    repeatMode == 0 ?(
-                                        <div onClick={() => RepeatMode(deviceId,"context")}>
-                                            <i class="ri-repeat-fill"></i>  
-                                        </div>
-                                    ):(
-                                        repeatMode == 1 ? (
-                                            <div onClick={() => RepeatMode(deviceId,"track")}>
-                                                <i class="ri-repeat-2-fill"></i>
-                                            </div>
-                                            ):(
-                                                <div onClick={() => RepeatMode(deviceId,"off")}>
-                                                    <i class="ri-repeat-one-fill"></i>
-                                            </div>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                            <div className="mx-1">
-                                <i class="ri-order-play-line"></i>
-                                {
-                                    queue && queue == true ? (
-                                        <Queue  />
-                                    ):(
-                                        <div></div>
-                                    )
-                                }
-                            </div>
-                            <div className="mx-1">
-                                <NavLink>
-                                    <i className="ri-closed-captioning-line"></i>
-                                </NavLink>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-        </div>
+
+      <div className="w-screen h-full">
+        {currentlyPlaying && Object.keys(currentlyPlaying).length > 0 ? (
+          <div
+            key={currentlyPlaying.track_window.current_track.name}
+            className="flex justify-between items-center w-full h-full py-5 player_container"
+          >
+
+            <div className="flex items-center w-[25%] px-5 space-x-3">
+              <img
+                className="w-12 h-12 rounded"
+                src={currentlyPlaying.track_window.current_track.album.images[0].url}
+                alt="Album Art"
+              />
+              <div className="flex flex-col">
+                <p className="font-bold">{currentlyPlaying?.track_window?.current_track?.name}</p>
+                <div className="text-sm">
+                  {currentlyPlaying?.track_window?.current_track?.artists.map((artist, i) => (
+                    <React.Fragment key={artist?.id}>
+                      <NavLink to={`/artist/${artist?.id}`} className="hover:underline">
+                        {artist?.name}
+                      </NavLink>
+                      {i < currentlyPlaying?.track_window?.current_track?.artists.length - 1 && ", "}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex w-[45%] items-center justify-center space-x-5">
+              <i onClick={() => skipToPrevious(deviceId)} className="ri-skip-left-fill text-3xl cursor-pointer"></i>
+
+              <i
+                onClick={() => handleMusic(currentlyPlaying.track_window.current_track.id, "track", positionMs)}
+                className={`text-4xl cursor-pointer ${
+                  currentlyPlaying.paused ? "ri-play-circle-fill" : "ri-pause-circle-fill"
+                }`}
+              ></i>
+
+              <i onClick={() => skipToNext(deviceId)} className="ri-skip-right-fill text-3xl cursor-pointer"></i>
+
+              <input
+                type="range"
+                ref={trackerRef}
+                className="w-[50%] music-slider"
+                max={currentlyPlaying.duration}
+                onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
+              />
+
+              <p className="text-sm">
+                {songDuration(currentTime)} / {songDuration(currentlyPlaying.duration)}
+              </p>
+            </div>
+
+            <div className="flex w-[30%] items-center justify-center space-x-3">
+              <i className="ri-heart-line cursor-pointer"></i>
+
+              <i className={`cursor-pointer ${volume > 50 ? "ri-volume-up-line" : volume === 0 ? "ri-volume-mute-line" : "ri-volume-down-line"}`}></i>
+              <input
+                type="range"
+                ref={volumeRef}
+                className="w-[80px] music-slider"
+                min={0}
+                max={100}
+                onMouseUp={() => changeVolume(volumeRef.current.value, deviceId)}
+              />
+
+              <i className="ri-shuffle-line cursor-pointer"></i>
+
+              <div className="cursor-pointer" onClick={() => RepeatMode(deviceId, repeatMode === 0 ? "context" : repeatMode === 1 ? "track" : "off")}>
+                <i className={`ri-repeat${repeatMode === 1 ? "-2" : repeatMode === 2 ? "-one" : ""}-fill`}></i>
+              </div>
+
+              <i className="ri-order-play-line cursor-pointer"></i>
+              <Queue />
+
+              <NavLink to="/lyrics">
+                <i className="ri-closed-captioning-line cursor-pointer"></i>
+              </NavLink>
+            </div>
+          </div>
+        ) : (
+          <div
+            key={playerDetails.track_window.current_track.name}
+            className="flex justify-between items-center w-full h-full py-5 player_container"
+          >
+            <div className="flex items-center w-[25%] px-5 space-x-3">
+              <img
+                className="w-12 h-12 rounded"
+                src={playerDetails.track_window.current_track.album.images[0].url}
+                alt="Album Art"
+              />
+              <div className="flex flex-col">
+                <p className="font-bold">{playerDetails?.track_window?.current_track?.name}</p>
+                <div className="text-sm">
+                  {playerDetails?.track_window?.current_track?.artists.map((artist, i) => (
+                    <React.Fragment key={artist?.id}>
+                      <NavLink to={`/artist/${artist?.id}`} className="hover:underline">
+                        {artist?.name}
+                      </NavLink>
+                      {i < playerDetails?.track_window?.current_track?.artists.length - 1 && ", "}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex w-[45%] items-center justify-center space-x-5">
+              <i onClick={() => skipToPrevious(deviceId)} className="ri-skip-left-fill text-3xl cursor-pointer"></i>
+
+              <i
+                onClick={() => handleMusic(playerDetails.track_window.current_track.id, "track", positionMs)}
+                className={`text-4xl cursor-pointer ${
+                  playerDetails.paused ? "ri-play-circle-fill" : "ri-pause-circle-fill"
+                }`}
+              ></i>
+
+              <i onClick={() => skipToNext(deviceId)} className="ri-skip-right-fill text-3xl cursor-pointer"></i>
+
+              <input
+                type="range"
+                ref={trackerRef}
+                className="w-[50%] music-slider"
+                max={playerDetails.duration}
+                onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
+              />
+
+              <p className="text-sm">
+               {songDuration(playerDetails.duration)}
+              </p>
+            </div>
+
+            <div className="flex w-[30%] items-center justify-center space-x-3">
+              <i className="ri-heart-line cursor-pointer"></i>
+
+              <i className={`cursor-pointer ${volume > 50 ? "ri-volume-up-line" : volume === 0 ? "ri-volume-mute-line" : "ri-volume-down-line"}`}></i>
+              <input
+                type="range"
+                ref={volumeRef}
+                className="w-[80px] music-slider"
+                min={0}
+                max={100}
+                onMouseUp={() => changeVolume(volumeRef.current.value, deviceId)}
+              />
+
+              <i className="ri-shuffle-line cursor-pointer"></i>
+
+              <div className="cursor-pointer" onClick={() => RepeatMode(deviceId, repeatMode === 0 ? "context" : repeatMode === 1 ? "track" : "off")}>
+                <i className={`ri-repeat${repeatMode === 1 ? "-2" : repeatMode === 2 ? "-one" : ""}-fill`}></i>
+              </div>
+
+              <i className="ri-order-play-line cursor-pointer"></i>
+              <Queue />
+
+              <NavLink to="/lyrics">
+                <i className="ri-closed-captioning-line cursor-pointer"></i>
+              </NavLink>
+            </div>
+          </div>
+        )}
+      </div>
     )
 }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Play,Pause } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { useParams } from "react-router-dom";
+import MusicLoader from "../utility/Loader";
 import "./style.css";
 
 export const ArtistDetails = () => {
@@ -100,22 +101,20 @@ export const ArtistDetails = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex">
-                        <div onClick={() => handleMusic(artistDetails?.id,"artist")}>
-                            {currentState && currentState?.paused == true ? (
-                                <i class="ri-play-circle-fill"></i>
-                            ):(
-                                <i class="ri-pause-circle-fill"></i>
-                            )
-                         }
+                   
+
+                    <div className="grid grid-cols-3  text-3xl">
+                        <div onClick={() => handleMusic(artistDetails?.id, "artist")}>
+                            {currentState?.paused ? <i className="ri-play-circle-fill"></i> : <i className="ri-pause-circle-fill"></i>}
                         </div>
                         <div>
-                            <i class="ri-shuffle-fill"></i>
+                            <i className="ri-shuffle-fill"></i>
                         </div>
                         <div>
-                            <i class="ri-more-2-fill"></i>
+                            <i className="ri-more-2-fill"></i>
                         </div>
                     </div>
+
                     <div className="bg-indigo-900 w-100 h-100 rounded p-5 text-start container_shadow">
                         <div className="bg-indigo-400 w-[100%] h-[100%] p-5 rounded overflow-y-scroll lyrics_container">
                         {
@@ -130,9 +129,10 @@ export const ArtistDetails = () => {
                     </div>
             </div>        
             ):(
-                <p>Loading</p>
+                <MusicLoader/>               
             )   
             }
         </div>
     )
 }
+

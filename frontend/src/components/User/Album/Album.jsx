@@ -4,6 +4,7 @@ import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { Play, Pause, songDuration } from "../utility/SongManipulation";
 import { PlaylistDropDown } from "../Playlist/PlaylistDropDown";
 import { getUserPlaylist } from "../utility/SongManipulation";
+import MusicLoader from "../utility/Loader";
 import "./style.css";
 import axios from "axios";
 
@@ -150,14 +151,7 @@ export const AlbumDetails = () => {
                   className="flex justify-center items-center w-full h-full"
                   onClick={() => handleMusic(tracks.id, "track")}
                 >
-                  {/* <div className=" absolute">
-                    {isPlay == tracks.id ? (
-                      <i className="ri-pause-fill"></i>
-                    ) : (
-                      <i className="ri-play-fill"></i>
-                    )}
-                  </div> */}
-                  <img
+                <img
                     className="w-10 h-10"
                     src={albumDetails.images[0].url}
                     alt=""
@@ -192,7 +186,9 @@ export const AlbumDetails = () => {
           </div>
         </div>
       ) : (
-        <div>Loading...</div>
+        <div>
+            <MusicLoader/>
+        </div>
       )}
     </div>
   );

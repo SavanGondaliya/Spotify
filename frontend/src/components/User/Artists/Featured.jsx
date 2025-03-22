@@ -2,6 +2,7 @@ import React,{useState,useEffect} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { useParams,NavLink } from "react-router-dom";
 import axios from "axios";
+import MusicLoader from "../utility/Loader";
 
 export const FeaturedAlbum = () => {
 
@@ -37,27 +38,26 @@ export const FeaturedAlbum = () => {
     },[deviceId]);
 
     return(
-        <div>
-            <h3>Featured Albums</h3>
-            {
-                featuredAlbums && Array(featuredAlbums).length > 0 ? (
-                    <div className="flex w-full h-full">
-                        {
-                            featuredAlbums.items.map((albums) => (
-                                <div className="w-20 h-20">
-                                    <NavLink
-                                        to={`http://localhost:5173/album/${albums.id}`}>
-                                        <img className="w-fit h-fit rounded" src={albums.images[0].url} alt="" />
-                                        <p className="font-light">{albums.name}</p>
-                                    </NavLink>       
-                                </div>
-                            ))
-                        }
-                    </div>
-                ):(
-                    <div>Loading</div>
-                )
-            }
+        <div className="w-full h-full">
+    <h3 className="text-white text-lg mb-4">Featured Albums</h3>
+
+    {featuredAlbums?.items?.length > 0 ? (
+        <div className="grid grid-cols-4 gap-6">
+            {featuredAlbums.items.map((album) => (
+                <div key={album.id} className="flex flex-col items-center">
+                    <NavLink to={`http://localhost:5173/album/${album.id}`}>
+                        <img className="w-24 h-24 rounded" src={album.images[0].url} alt={album.name} />
+                        <p className="font-light text-white text-center mt-2">{album.name}</p>
+                    </NavLink>       
+                </div>
+            ))}
         </div>
+    ) : (
+        <div className="text-white">
+            <MusicLoader/>
+        </div>
+    )}
+</div>
+
     )
 }

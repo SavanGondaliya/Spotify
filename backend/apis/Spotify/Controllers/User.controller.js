@@ -2,31 +2,25 @@
 
 import axios from "axios";
 import conn from "../../../index.js";
-import { userToken } from "../Helpers/Auth.helper.js";
-import { updateArtist } from "../../Admin/Controller.js";
-
 
     export const userProfile = async(req,res) => {
 
-        const userDetails = JSON.parse(req.query.session_details);
-        const authToken = await userToken(userDetails); 
+        try{
 
-        try {
-
-            if(!authToken){
-                return res.status(401).send("UnAuthorized User");
-            }
-
-            const response = await axios.get(`https://api.spotify.com/v1/me`,{
-                headers:{
-                    "Content-Type": "application/json",
-                    "Authorization" : `Bearer ${authToken}`
-                }
-            })
-            if(response.status ===  200){
-                return res.status(200).send(response.data);
-            }
-            return res.status(404).send({message : "No User Found"})
+            const {id} = req.params;
+            
+            const query = `SELECT COUNT(tblplaylist.playlist_id) AS totalPlaylist, tbluser.* 
+                            FROM tbluser 
+                            INNER JOIN tblplaylist ON tblplaylist.user_id = tbluser.user_id 
+                            WHERE tbluser.user_id = ?;`;
+            console.log(query);
+            
+            conn.query(query,[id],(err,results) => {
+                if(!err){
+                    return res.status(200).send(results);
+                }        
+            });
+        
         } catch (error) {
             return res.status(500).send({message : error.message})
         }
@@ -476,29 +470,45 @@ import { updateArtist } from "../../Admin/Controller.js";
     
     export const getMonthlyReport = async (req, res) => {
       try {
-          const { user_id,month_name  } = req.query;
-            console.log(user_id,month_name);
             
-          if (!user_id) {
-              return res.status(400).send({ message: "User ID is required" });
-          }
+            const { user_id  } = JSON.parse(req.query.session_details);
+                
+            if (!user_id) {
+                return res.status(400).send({ message: "User ID is required" });
+            }
     
-          const reportMonth = month_name || new Date().toISOString().slice(0, 7);
+            // const reportMonth = month_name || new Date().toISOString().slice(0, 7);
     
-          const query = `SELECT * FROM tblreport WHERE user_id = ? AND report_month = ?`;
-          conn.query(query, [user_id,reportMonth], (error, results) => {
-              if (error) return res.status(500).send({ message: "Database error", error });
+            const query = `SELECT * FROM tblreport WHERE user_id = ?`;
+
+            conn.query(query, [user_id], (error, results) => {
+                if (error) return res.status(500).send({ message: "Database error", error });
+        
+                if (results.length === 0) {
+                    return res.status(404).send({ message: "No report found for this month" });
+                }
     
-              if (results.length === 0) {
-                  return res.status(404).send({ message: "No report found for this month" });
-              }
-    
-              const report = results[0];
-              report.listenedArtist = JSON.parse(report.listenedArtist || "{}");
-              report.listenedSongs = JSON.parse(report.listenedSongs || "{}");
-    
-              res.status(200).send(report);
-          });
+                const report = results;
+                const reportArray = [];
+                report.forEach((user) => {
+                    
+                    const topSongs = {...user.listened_songs}
+                    const topArtist = {...user.listened_artist}
+                    const sortedSongs =  Object.entries(topSongs).sort((a,b) => b[1] - a[1]).splice(0,5);
+                    const sortedArtists =  Object.entries(topArtist).sort((a,b) => b[1] - a[1]).splice(0,5);
+                    
+                    const reportObject = {
+                        "user_id":user?.user_id,
+                        "report_month":new Date().getMonth(user?.report_month.slice(6)),
+                        "topArtists":sortedArtists,
+                        "topSongs":sortedSongs,
+                        "timeSpent":user.streaming_time
+                    }
+                    reportArray.push(reportObject)
+                });
+
+                res.status(200).send(reportArray);
+            });
     
       } catch (error) {
           res.status(500).send({ message: error.message });

@@ -3,7 +3,7 @@ import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,follo
 
 export const userRoute = express.Router();
 
-userRoute.get('/user/profile',userProfile);
+userRoute.get('/user/profile/:id',userProfile);
 userRoute.get('/user/topArtist',userTopArtist);
 userRoute.get('/user/topTracks',userTopTracks);
 userRoute.get('/user/profile/:id',getUserProfile);

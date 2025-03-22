@@ -215,11 +215,7 @@ import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helpe
 
   export const trendingSong = async(req, res) => {
     try {
-      const query = `
-      SELECT * FROM tblreport 
-      WHERE updated_at = (SELECT MAX(updated_at) FROM tblreport) 
-      AND TIMESTAMPDIFF(SECOND, updated_at, NOW()) <= 3600;
-    `;
+      const query = `SELECT * FROM tblreport WHERE updated_at >= NOW() - INTERVAL 24 HOUR;`;
     
       conn.query(query, (err, results) => {
         if (err) {
@@ -275,4 +271,46 @@ import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helpe
     }
   }
 
+  export const Songs = async(req, res) =>{
+    try {
+      
+      const query = `select listened_songs from tblreport`;
+      const session_details = req.query.session_details;
 
+      conn.query(query,(err,results) => {
+        if(err){
+          return res.status(400).send({message:err})
+        }
+        const ressultLength = results.length;
+
+        const mergedArray = {...results[0].listened_songs}
+        
+        for(let i=1;i<ressultLength;i++){
+          for(const [songId,count] of Object.entries(results[i].listened_songs)){
+            mergedArray[songId] = (mergedArray[songId] || 0) + count
+          }
+        }
+        const sortedArray =  Object.entries(mergedArray).sort((a,b) => b[1] - a[1]);
+        sortedArray.splice(0,Math.floor(sortedArray/2).length);
+
+        const url = `http://localhost:5000/tracks?ids=${sortedArray.map((song_id) => song_id[0]).join(",")}&session_details=${session_details}`;
+        console.log(url);
+        
+        axios.get(url,{
+          headers:{
+            "Content-Type":"application/json"
+          }
+        }).then((response) => {
+          if(response.status === 200){
+            return res.status(200).send(response.data)
+          }
+        }).catch((error) => {
+          return res.status(500).send({message:error.message});
+        })
+
+      }); 
+    
+    } catch (error) { 
+      return res.status(500).send({message:error.message});
+    }
+  }

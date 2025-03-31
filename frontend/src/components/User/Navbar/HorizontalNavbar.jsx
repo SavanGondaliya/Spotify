@@ -73,11 +73,11 @@ const HorizontalNavbar = () => {
     <div className="__navbar__ w-full  py-3 px-6 shadow-md">
       <nav className="flex justify-between items-center">
         {/* Search Bar */}
-        <div className="__search__ flex items-center gap-2 bg-black px-4 py-2 rounded-lg w-[40%]">
+        <div className="__search__ flex items-center gap-2 bg-black px-4 py-2 rounded w-[40%]">
           <input
             type="text"
             placeholder="Search your favorites..."
-            className="bg-transparent text-white outline-none w-full"
+            className="bg-transparent text-white outline-none w-full "
             onChange={(e) => {
               setSearchQuery(e.target.value);
               updateSearch();
@@ -98,7 +98,7 @@ const HorizontalNavbar = () => {
             LOGIN/SIGN IN
           </a>
           <NavLink to={`/user/${session_details?.user_id}`}>
-            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center __profile_icon__">
               <i className="ri-user-line text-white text-xl"></i>
             </div>
           </NavLink>
@@ -110,8 +110,13 @@ const HorizontalNavbar = () => {
             background-color: #0c0925;
           }
           .__search__{
-            box-shadow:10px 10px 0px 0px #0c0925;
+            box-shadow:5px 5px 0px 0px #4949bf;
+            background-color: #303030;
           }
+            .__profile_icon__{
+              background-color: #f2c178;
+              box-shadow: 3px 3px 0px 0px #935d07;
+            }
         `
         }
       </style>
@@ -121,6 +126,12 @@ const HorizontalNavbar = () => {
 
 export default HorizontalNavbar;
 
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */
 
 // import React, { useState, useEffect } from "react";
 // import { debounce } from "lodash";

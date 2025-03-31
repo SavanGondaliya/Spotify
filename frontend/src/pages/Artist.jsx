@@ -12,26 +12,25 @@ export const Artist = () => {
 
   return (
     <div className="w-screen h-screen">
-      <div className="flex flex-col flex-wrap w-full h-full">
+      <div className="flex flex-col w-full h-full">
         <div className="w-[100%] h-[88%]">
           <div className="flex w-full h-full">
             <div className="w-[15%] h-full">
               <VerticalNavbar />
             </div>
-            <div className="flex w-[85%] flex-wrap">
-              <div className="w-[100%] h-[10%]">
+            <div className="w-full h-full flex flex-col items-center">
+              <div className="w-[100%] h-[12%]">
                 <HorizontalNavbar />
               </div>
-              <div className="flex w-full h-[90%] overflow-y-scroll justify-between gap-x-6 p-4">
-                <div className="w-[65%]">
+              <div className="flex w-full h-[100%] overflow-scroll">
+                <div className="w-full h-full">
                   <ArtistDetails />
                 </div>
-
-                <div className="w-[35%] flex flex-col gap-y-6">
-                  <PopulerTracks />
-                  <PopulerAlbum />
-                  <RelatedArtist />
-                  <FeaturedAlbum />
+                <div className="w-full flex flex-col gap-4">
+                  <PopulerTracks className="w-full" />
+                  <PopulerAlbum className="w-full" />
+                  <RelatedArtist className="w-full" />
+                  <FeaturedAlbum className="w-full" />
                 </div>
               </div>
             </div>
@@ -42,15 +41,5 @@ export const Artist = () => {
         </div>
       </div>
     </div>
-
-
-    // <div className="flex">
-    //     <div className="flex flex-col">
-    //         <PlayerController />
-    //     </div>
-    //     <div>
-    //
-    //     </div>
-    // </div>
   );
 };

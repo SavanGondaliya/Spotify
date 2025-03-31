@@ -1,5 +1,6 @@
 import express from "express";
-import { userProfile,userTopArtist,userTopTracks,getUserProfile,userArtist,followPlaylist,unfollowPlaylist,followArtist, unfollowArtist, unfollowUser, followUser, updateMonthlyReport, getMonthlyReport } from "../Controllers/User.controller.js";
+import { userProfile,userTopArtist,userTopTracks,userReports,getUserProfile,userArtist,followPlaylist,unfollowPlaylist,followArtist, unfollowArtist, unfollowUser, followUser, updateMonthlyReport, getMonthlyReport, updatePassword } from "../Controllers/User.controller.js";
+import { verifyOtp } from "../Controllers/User.controller.js";
 
 export const userRoute = express.Router();
 
@@ -16,6 +17,8 @@ userRoute.get("/artist/unfollow/:artistId",unfollowArtist);
 userRoute.get("/user/unfollow/:userId",unfollowUser);
 userRoute.post("/user/report",updateMonthlyReport);
 userRoute.get("/user/report",getMonthlyReport);
-
+userRoute.get("/reports",userReports)
+userRoute.post("/otp/verify",verifyOtp)
+userRoute.post("/password/update",updatePassword)
 
 export default userRoute;

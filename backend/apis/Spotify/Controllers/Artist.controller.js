@@ -75,7 +75,7 @@ export const getFeaturedAlbum = async(req, res) => {
         }
         
         const type = "appears_on";
-        const limit = 5;     
+        const limit = 4;     
         const offset = 6;
         
         const response  = await axios.get(`https://api.spotify.com/v1/artists/${id}/albums?type=${type}&limit=${limit}&offset=${offset}`,{
@@ -268,7 +268,7 @@ export const getRelatedArtist = async(req,res) => {
         
         const artist_id = req.query.artist_id;
         const {genre} = await getArtistGenre(artist_id);          
-        const query = `SELECT artist_id FROM tblartist WHERE genre LIKE '%${genre}' LIMIT 5 OFFSET 5;`;
+        const query = `SELECT artist_id FROM tblartist WHERE genre LIKE '%${genre}' LIMIT 4 OFFSET ${Math.floor(Math.random()*6)};`;
         
         conn.query(query,(err,results,fields) => {
             if(err){
@@ -276,12 +276,13 @@ export const getRelatedArtist = async(req,res) => {
             }else{
                 return res.status(200).send(results)
             }
-        })
+        });
         
     } catch (error) {
         return res.status(500).send({message:error.message});
     }
 }
+
 
 export const getNewArtist = async(req, res) =>{ 
     try {

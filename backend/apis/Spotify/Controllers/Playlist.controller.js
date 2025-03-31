@@ -115,7 +115,7 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
         try {
 
             const {user_id} = JSON.parse(req.query.session_details)[0];
-            const {playlist_id} = req.params;
+            const {playlistId} = req.params;
 
             const query = `SELECT * FROM tbluser WHERE user_id='${user_id}' AND playlist_id='${playlist_id}';`;
 
@@ -256,9 +256,16 @@ import { getCurrentTracks,setPlaylistTracks,removeTrackFromPlaylist } from "../H
             const {id} = req.params;
             const {user_id} = JSON.parse(req.query.session_details);
 
-            const query =   `SELECT `
+            const query =   `SELECT * from tblplaylist where playlist_id = ? AND user_id = ?`;
+
+            conn.query(query,[id,user_id],(err,results) => {
+                if(!err){
+                    return res.status(200).send(results);
+                }
+                return res.status(400).send(err);
+            })
 
         } catch (error) {
-            return
+            return res.status(500).send({message:error.message});
         }
     }

@@ -3,7 +3,7 @@ import Sidebar from '../sidebar';
 import TopBar from '../adminNav';
 import SearchBar from './searchBar';
 import UsersTable from './userTable';
-import "./user.css";
+// import "./user.css";
 
 const UsersDashboard = () => {
   return (

@@ -1,61 +1,63 @@
 import React, { useState, useEffect } from "react";
 import "./admin.css";
+import axios from "axios";
 
 const Songs = () => {
   const [songs, setSongs] = useState([]);
+  const session_details = sessionStorage.getItem("secret_key");
 
-  // ✅ Fetch songs from API (Limit: 20)
   useEffect(() => {
-    fetch("http://localhost:5000/api/songs?limit=20")
-      .then((res) => res.json())
-      .then((data) => {
-        // Remove duplicate songs based on song_id
-        const uniqueSongs = data.filter((song, index, self) =>
-          index === self.findIndex((s) => s.song_id === song.song_id)
-        );
-        setSongs(uniqueSongs);
+    
+    axios.get(`http://localhost:5000/music?session_details=${session_details}`)
+      .then((res) => {
+        if(res.status === 200){
+          setSongs(res.data)
+        }
       })
       .catch((err) => console.error("Error fetching songs:", err));
   }, []);
-
+  console.log(songs);
+  
   return (
     <div className="songs">
       <h3>Most Streamed Songs</h3>
-      {console.log(songs)}
-      {songs.map((song) => (
-        <SongItem key={song.song_id} song={song} />
+      {songs?.tracks?.map((song) => (
+        <SongItem key={song?.song_id} song={song} />
       ))}
       <div className="show-all">Show all</div>
     </div>
   );
-};
-
-
-const songDuration = (position) => {
-      
-  let minute = Math.floor((position/1000) / 60)
-  let second = Math.floor((position/1000) % 60)
-  
-  return `${minute} : ${second < 10 ? '0'+second : second}`
- 
-}
+};  
 
 const SongItem = ({ song }) => {
-  return (
-    <div className="song">
-      <img src={song.artist_image} alt="album" />
-      <div className="info">
-        <div>
-          {song.title} <p className="artist">{song.artist_name}</p>
-        </div>
-        <div>
-          <p className="album-name">{song.song_name}</p>
-        </div>
-        <div>
-          <p>{songDuration(song.duration)}</p>
-        </div>
-      </div>
+
+  
+  const songDuration = (position) => {
+    let minute = Math.floor((position / 1000) / 60);
+    let second = Math.floor((position / 1000) % 60);
+    return `${minute}:${second < 10 ? '0' + second : second}`;
+  };
+  console.log(song);
+  
+
+  return (<div className="song">
+    <div className="song-image">
+      <img src={song?.album?.images[0]?.url} alt="album" />
     </div>
+    <div className="song-title">
+      <p>{song?.name}</p>
+    </div>
+    <div className="song-artist">
+      <p>{song?.artists?.map((artist) => artist.name).join(", ")}</p>
+    </div>
+    <div className="song-album">
+      <p>{song?.album?.name}</p>
+    </div>
+    <div className="song-duration">
+      <p>{songDuration(song?.duration_ms)}</p>
+    </div>
+  </div>
+  
   );
 };
 

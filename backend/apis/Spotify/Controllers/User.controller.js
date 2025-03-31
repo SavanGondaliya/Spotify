@@ -49,27 +49,6 @@ import conn from "../../../index.js";
         }
     }
 
-    export const userTopTracks = async(req,res) => {
-        try {
-            const range = "medium_range";
-            const limit = 10;
-            const offset = 0;
-
-            const response = await axios.get(`https://api.spotify.com/v1/me/top/tracks?range=${range}&limit=${limit}&offset=${offset}`,{
-                headers : {
-                    "Content-Type" : "application/json",
-                    "Authorization" : `Bearer ${accessToken}`
-                }
-            })
-            if(response.status  ===  200){
-                return res.status(200).send(response.data);
-            }
-            return res.status(404).send({message : "No Data Found"});
-        } catch (error) {
-            return res.status(500).send({message : error.message});
-        }
-    }
-
     export const getUserProfile = async(req, res) => {
         try {
 
@@ -378,10 +357,8 @@ import conn from "../../../index.js";
 
     export const updateMonthlyReport = async (req, res) => {
         try {
-            console.log("Updating Monthly Report...");
     
             const { userId, artists, song, timeSpent } = req.body;
-            console.log(userId,artists,song,timeSpent);
             
             if (!userId || !artists || !song || !timeSpent) {
                 return res.status(400).send({ message: "Missing required fields" });
@@ -472,16 +449,15 @@ import conn from "../../../index.js";
       try {
             
             const { user_id  } = JSON.parse(req.query.session_details);
-                
+            const {report_id} = req.query;
             if (!user_id) {
                 return res.status(400).send({ message: "User ID is required" });
             }
     
-            // const reportMonth = month_name || new Date().toISOString().slice(0, 7);
     
-            const query = `SELECT * FROM tblreport WHERE user_id = ?`;
+            const query = `SELECT * FROM tblreport WHERE user_id = ? and report_id = ?`;
 
-            conn.query(query, [user_id], (error, results) => {
+            conn.query(query, [user_id,report_id], (error, results) => {
                 if (error) return res.status(500).send({ message: "Database error", error });
         
                 if (results.length === 0) {
@@ -515,3 +491,82 @@ import conn from "../../../index.js";
       }
     };
     
+    export const userReports = async(req,res) => {
+        try {
+
+            const {user_id} = JSON.parse(req.query.session_details);
+
+            const query = `Select * from tblreport where user_id = ?`;
+
+            conn.query(query,[user_id],(err,results) => {
+                if(!err){
+                    return res.status(200).send(results);
+                }
+            });
+
+        } catch (error) {
+            return res.status(500).send({message: error.message});
+        }
+    }
+
+    export const userTopTracks = (req,res) => {
+        try {
+    
+          const {user_id} = JSON.parse(req.query.session_details)
+          const reportMonth = new Date().toISOString().slice(0, 7);
+            
+          const query = `SELECT * FROM TBLREPORT WHERE USER_ID = ? AND report_month = ?`;
+
+          conn.query(query,[user_id,reportMonth],(err,results) => {
+            if(!err){
+
+                const report = results;
+                report.forEach((user) => {
+                    
+                    const topSongs = {...user.listened_songs}
+                    const sortedSongs =  Object.entries(topSongs).sort((a,b) => b[1] - a[1]).splice(0,5);
+            
+                    return res.status(200).send(sortedSongs);
+                });
+            }
+          })
+
+        } catch (error) {
+          return res.status(500).send({message:error.message});
+        }
+    }
+
+    export const verifyOtp = async(req,res) => {
+        try {
+            
+            const {verifiedOtp} = req.body;
+            const {otp} = req.body;
+            
+            if(verifiedOtp == otp){
+                return res.status(200).send({success: true});
+            }
+
+        } catch (error) {
+            return res.status(500).send({message : error.message});
+        }
+    }
+
+    export const updatePassword = async(req,res) => {
+        try {
+            console.log("called REset password...");
+            
+            const {email} = req.body;
+            const {newpassword} = req.body;
+            const query = `update tbluser set password= ? where email = ?`;
+            console.log(email,newpassword,query);
+            
+            conn.query(query,[newpassword,email],(err,results) => {
+                if(!err){
+                    console.log(results);
+                    return res.status(200).send({message:"password Updated Successfully."})
+                }
+            })
+        } catch (error) {
+            return res.status(500).send({message: error.message});       
+        }
+    }

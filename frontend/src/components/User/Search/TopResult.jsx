@@ -34,9 +34,9 @@ export const TopResult = ({topResult}) => {
 
     return (
         <div>
-            <h2 className="text-2xl my-2">TopResult</h2>
+            <h2 className="text-2xl mx-5 my-5">TopResult</h2>
             {
-                <div className="flex flex-col justify-between w-full mx-5 p-5">
+                <div className="flex flex-col rounded px-5 py-5 justify-between w-full mx-5 p-5">
                     <div className="flex ">
                         <img 
                             onClick={() => handleMusic(topResult?.id,"track")}
@@ -49,13 +49,13 @@ export const TopResult = ({topResult}) => {
                             {topResult?.name}
                         </div>
                     </div>
-                    <div>
-                        {topResult?.type}
+                    <div className="my-2">
+                        {topResult?.album?.name}
                     </div>
                     <div>
                     {topResult?.artists?.map((artist, i) => (
                         <React.Fragment key={artist?.id}>
-                            <NavLink to={`http://localhost:5173/artist/${artist?.id}`}>
+                            <NavLink className="text-2xl" to={`http://localhost:5173/artist/${artist?.id}`}>
                                 {artist?.name}
                             </NavLink>
                             {i < topResult.artists.length - 1 && ', '}
@@ -67,6 +67,9 @@ export const TopResult = ({topResult}) => {
         <style jsx>{`
                 .search_image_shadow{
                     box-shadow: 8px 8px 0px #4949bf;
+                }
+                .__top_container__{
+                    box-shadow: 8px 8px 0px #4949bf;    
                 }
             `}
         </style>

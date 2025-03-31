@@ -43,64 +43,47 @@ const ArtistsTable = () => {
     navigate(`/admin/artist/edit/${artist.artist_id}`, { state: artist });
   };
 
+  return (<div className="songs">
+    <h3>Manage Artists</h3>
   
-  const songDuration = (position) => {
-      
-    let minute = Math.floor((position/1000) / 60)
-    let second = Math.floor((position/1000) % 60)
-    
-    return `${minute} : ${second < 10 ? '0'+second : second}`
-    
-  }
-
-  return (
-    <div className="songs">
-      <h3>Manage Artists</h3>
-
-      {error && <div className="error-message">{error}</div>} {/* Show error message if any */}
-
-      <table>
-        <thead>
-          <tr>
-            <th>Profile</th>
-            <th>Artist Name</th>
-            <th>Songs</th>
-            <th>Action</th>
+    {error && <div className="error-message">{error}</div>} {/* Show error message if any */}
+  
+    <table>
+      <thead>
+        <tr>
+          <th>Profile</th>
+          <th>Artist Name</th>
+          <th>Songs</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {artists.map((artist) => (
+          <tr key={artist.artist_id}>
+            <td>
+              <img
+                className="artist-profile"
+                src={artist.image} // Assuming profile is a URL from the database
+                alt="Profile"
+              />
+            </td>
+            <td>{artist.artist_name}</td>          
+            <td>{artist.songs ? artist.songs.join(', ') : "No songs available"}</td>
+  
+            <td className="action-buttons">
+              <button className="edit-btn" onClick={() => handleEdit(artist)}>
+                Edit
+              </button>
+              <button className="delete-btn" onClick={() => handleDelete(artist.artist_id)}>
+                Delete
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {artists.map((artist) => (
-            <tr key={artist.artist_id}>
-              <td>
-                <img
-                  className="artist-profile"
-                  src={artist.image} // Assuming profile is a URL from the database
-                  alt="Profile"
-                  style={{ width: "50px", borderRadius: "5px" }}
-                />
-              </td>
-              <td>{artist.artist_name}</td>
-
-              {/* Here you can dynamically display the list of songs of each artist */}
-              {/* You might want to call another API to get songs of this artist */}
-              <td>
-                {/* Example: List songs by artist (Assume you fetch songs in another useEffect if needed) */}
-                {artist.songs ? artist.songs.join(', ') : "No songs available"}
-              </td>
-
-              <td className="action-buttons">
-                <button className="edit-btn" onClick={() => handleEdit(artist)}>
-                  Edit
-                </button>
-                <button className="delete-btn" onClick={() => handleDelete(artist.artist_id)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  
   );
 };
 

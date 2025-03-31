@@ -2,81 +2,41 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
+  const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
 
-    const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
+  return (
+    <div className="w-60 h-full bg-[#0c0925] shadow-md shadow-[#f2c178] flex flex-col p-5">
+      {/* Logo */}
+      <img src="/Noizee_For_Artists.svg" className="w-20 mx-auto mb-6" alt="Noizee" />
 
-    return(
-        <div>
-            <div className="sidebar">
-                <img src="/Noizee_For_Artists.svg" className="logo" alt="Noizee" />
-                <div className="menu">
-                    <NavLink to={`http://localhost:5173/artist/dashboard`} className="menu-item active">
-                        <i className="ri-user-6-line"></i>
-                        ARTISTS
-                    </NavLink>
-                    <NavLink to={`http://localhost:5173/${artistDetails[0]?.artist_id}/albums`} className="menu-item">
-                        <i className="ri-music-line"></i>
-                        Albums
-                    </NavLink>
-                </div>
-            </div>
+      {/* Navigation Menu */}
+      <nav className="flex flex-col gap-3">
+        <NavLink
+          to="/artist/dashboard"
+          className={({ isActive }) =>
+            `flex items-center px-5 py-2 rounded-md font-semibold text-white text-lg transition ${
+              isActive ? "bg-[#282870] text-[#ffba53] shadow-md shadow-[#935d07]" : "hover:bg-[#333157]"
+            }`
+          }
+        >
+          <i className="ri-user-6-line text-xl mr-3"></i> ARTISTS
+        </NavLink>
 
-            <style>
-                {
-                `.sidebar {
-                    box-shadow: .15px 0px 0px 0px #f2c178;
-                    width: 12em;
-                    background: #0c0925;
-                    padding: 20px;
-                    display: flex;
-                    flex-direction: column;
-                }
+        {artistDetails && artistDetails[0] && (
+          <NavLink
+            to={`/${artistDetails[0]?.artist_id}/albums`}
+            className={({ isActive }) =>
+              `flex items-center px-5 py-2 rounded-md font-semibold text-white text-lg transition ${
+                isActive ? "bg-[#282870] text-[#ffba53] shadow-md shadow-[#935d07]" : "hover:bg-[#333157]"
+              }`
+            }
+          >
+            <i className="ri-music-line text-xl mr-3"></i> Albums
+          </NavLink>
+        )}
+      </nav>
+    </div>
+  );
+};
 
-                .logo {
-                    width: 5em;
-                    align-self: center;
-                    margin-bottom: 20px;
-                }
-
-                .menu {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
-                    margin-top: 20px;
-                }
-
-                .menu-item {
-                    display: flex;
-                    align-items: center;
-                    padding: 5px 25px;
-                    border-radius: 3px;
-                    cursor: pointer;
-                    font-family: "teko semibold";
-                    font-size: 1.1rem;
-                    color: #fff;
-                    text-shadow: 1.5px 1px 0px #4949bf;
-                }
-
-                .menu-item i {
-                    font-size: 18px;
-                    margin-right: 10px;
-                    position: relative;
-                    bottom: 1.9px;
-                }
-
-                .menu-item:hover {
-                    background: #333157;
-                }
-
-                .menu-item.active {
-                    background: #282870;
-                    color: #ffba53;
-                    text-shadow: .9px 1px 0px #935d07;
-                }`
-                }
-            </style>
-        </div>
-    )
-
-}
 export default Sidebar;

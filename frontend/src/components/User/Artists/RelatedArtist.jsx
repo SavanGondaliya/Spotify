@@ -2,6 +2,7 @@ import React,{useEffect,useState} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
+import { div } from "framer-motion/client";
 
 export const RelatedArtist = () => {
 
@@ -60,22 +61,46 @@ export const RelatedArtist = () => {
         getRelatedArtist();
     },[relatedArtistId]);
     
-    return(
+    return (
         <div className="w-full">
             {relatedArtists?.artists?.length > 0 ? (
-                <div className="grid grid-cols-4 gap-4">
-                    {relatedArtists.artists.map((artist) => (
+                <div>
+                    <div className="text-2xl mx-5 mb-2">
+                        <h1>Related Artists</h1>
+                    </div>
+                    <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-8 px-4">
+                    {relatedArtists.artists.filter((artist) => artist?.id != id ).map((artist) => (
                         <div key={artist.id} className="flex flex-col items-center">
-                            <NavLink to={`http://localhost:5173/artist/${artist.id}`}>
-                                <img src={artist.images[0]?.url} className="w-20 h-20 rounded-full" alt={artist.name} />
-                                <p className="text-white text-center mt-2">{artist.name}</p>
-                            </NavLink>
+                        <NavLink to={`/artist/${artist.id}`}>
+                            <img
+                            src={artist.images[0]?.url}
+                            className="__related_artist__ w-24 h-24 rounded-full shadow-lg  border-indigo-500 transition-transform transform hover:scale-105"
+                            alt={artist.name}
+                            />
+                            <p className="text-white text-center mt-2 font-semibold">{artist.name}</p>
+                        </NavLink>
                         </div>
                     ))}
+                    </div>
                 </div>
             ) : (
-                <div className="text-white">Loading...</div>
+                <div className="text-white text-center p-4"></div>
             )}
+            <style>
+                {
+                    `
+                    .__related_artist__{
+                        box-shadow : 5px 5px 0px #4949bf;
+                    }
+                    `
+                }
+            </style>
         </div>
-    )
+
+    );
 }
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

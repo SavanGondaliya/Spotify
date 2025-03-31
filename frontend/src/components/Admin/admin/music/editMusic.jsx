@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import '../editForm.css';  // Import the updated CSS file
 
 const EditMusic = () => {
   const { id } = useParams(); // Get song ID from URL params
@@ -10,7 +11,7 @@ const EditMusic = () => {
     duration: "",
     artist_id: "",
   });
-  
+
   const [artists, setArtists] = useState([]);
 
   // Fetch song details
@@ -20,7 +21,7 @@ const EditMusic = () => {
       .then((data) => {
         setSong({
           song_name: data.title,
-          artist_name: data.artist_name, // If you want to store artist_name
+          artist_name: data.artist_name, 
           duration: data.duration,
           artist_id: data.artist_id
         });
@@ -34,7 +35,6 @@ const EditMusic = () => {
       .then((res) => res.json())
       .then((data) => {
         setArtists(data);
-        console.log(data)
       })
       .catch((error) => console.error("Error fetching artists:", error));
   }, []);
@@ -68,46 +68,47 @@ const EditMusic = () => {
   };
 
   return (
-    <form className="form-signup" onSubmit={handleSubmit}>
-      <p className="login-title">Edit Music</p>
+    <div className="center-form">
+      <div className="form-container">
+        <h2 className="form-title">Edit Music</h2>
+        <form className="form-signup" onSubmit={handleSubmit}>
+          <label className="login-detail">Song Name</label>
+          <input
+            name="song_name"
+            type="text"
+            value={song.song_name}
+            onChange={handleChange}
+            required
+          />
 
-      {/* Song Name */}
-      <label className="login-detail">Song Name</label>
-      <input
-        name="song_name"
-        type="text"
-        value={song.song_name}
-        onChange={handleChange}
-        required
-      />
+          <label className="login-detail">Artist</label>
+          <select name="artist_id" value={song.artist_id} onChange={handleChange} required>
+            <option value="">Select Artist</option>
+            {artists.map((artist) => (
+              <option key={artist.artist_id} value={artist.artist_id}>
+                {artist.artist_name}
+              </option>
+            ))}
+          </select>
 
-      {/* Artist Selection */}
-      <label className="login-detail">Artist</label>
-      <select name="artist_id" value={song.artist_id} onChange={handleChange} required>
-        <option value="">Select Artist</option>
-        {artists.map((artist) => (
-          <option key={artist.artist_id} value={artist.artist_id}>
-            {artist.artist_name}
-          </option>
-        ))}
-      </select>
+          <label className="login-detail">Duration (in minutes)</label>
+          <input
+            name="duration"
+            type="text"
+            value={song.duration}
+            onChange={handleChange}
+            required
+          />
 
-      {/* Duration */}
-      <label className="login-detail">Duration (in minutes)</label>
-      <input
-        name="duration"
-        type="text"
-        value={song.duration}
-        onChange={handleChange}
-        required
-      />
-
-      {/* Form Buttons */}
-      <div className="form-actions">
-        <button type="submit" className="save-btn">Save</button>
-        <button type="button" className="cancel-btn" onClick={() => navigate("/admin/music")}>Cancel</button>
+          <div className="form-actions">
+            <button type="submit" className="save-btn">Save</button>
+            <button type="button" className="cancel-btn" onClick={() => navigate("/admin/music")}>
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 

@@ -20,12 +20,7 @@ html,body{
     color: #666666;
     font-size: .8rem;
 } 
-input {
-    font-family: "teko";
-    font-weight: 500;
-    height: 40%;
-    border: none;
-}
+
 body {
     margin: 0;
     font-family: teko;
@@ -181,14 +176,7 @@ body {
 
 }
 
-.search-bar input {
-    padding: 8px 20px;
-    font-size: 14px;
-    color: white;
-    background-color: transparent;
-    border: none;
-    outline: none;
-}
+
 
 .search-bar .search-btn {
     background-color: #33333300;

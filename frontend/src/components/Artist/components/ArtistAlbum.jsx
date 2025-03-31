@@ -2,14 +2,18 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import MusicLoader from "../../User/utility/Loader";
 
 export const ArtistAlbumPage = () => {
+
   const [albums, setAlbums] = useState([]);
 
   const getArtistAlbums = () => {
+
     const artistDetails = JSON.parse(
       sessionStorage.getItem("artistDetails")
     )[0];
+
     axios
       .get(`http://localhost:5000/local/${artistDetails?.artist_id}/albums`, {
         headers: {
@@ -25,12 +29,11 @@ export const ArtistAlbumPage = () => {
         console.log(error);
       });
   };
-
-  useEffect(() => {
+  console.log(albums);
+  
+  useEffect(() => { 
     getArtistAlbums();
   }, []);
-  console.log(albums);
-
   return (
     <div>
       <div className="mt-6">
@@ -39,14 +42,19 @@ export const ArtistAlbumPage = () => {
           <div class="top-albums">
             <div class="albums-container">
               <div class="albums">
-                {albums.map((album) => (
+                {albums ? (albums.length > 0 ? albums.map((album) => (
                   <NavLink to={`http://localhost:5173/albums/${album.album_id}`} class="album">
-                    <div class="album-box">
-                      <img src={album.image} alt="Image not Found" srcset="" />
+                    <div class="album-box w-full">
+                      <img className="w-full h-full rounded" src={album?.albumImage} alt="Image not Found" srcset="" />
                     </div>
-                    <span>{album.album_name}</span>
+                    <div className="text-center my-2">{album.album_name}</div>
                   </NavLink>
-                ))}
+                )):(
+                    <div>Artist Has No Album Yet</div>
+                ))
+                :(
+                    <MusicLoader/>    
+                )}
               </div>
             </div>
           </div>
@@ -63,12 +71,6 @@ export const ArtistAlbumPage = () => {
                     font-size: .8rem;
                 }
 
-                input {
-                    font-family: "teko";
-                    font-weight: 500;
-                    height: .8em;
-                    border: none;
-                }
 
                 a {
                     color: inherit;
@@ -369,16 +371,6 @@ export const ArtistAlbumPage = () => {
 
                 .show-all:hover {
                     color: #6b46c1;
-                }
-
-
-
-
-                input {
-                    font-family: "teko";
-                    font-weight: 500;
-                    height: .8em;
-                    border: none;
                 }
 
                 .form-container {

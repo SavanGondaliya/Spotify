@@ -39,35 +39,41 @@ export const TopTracks = () => {
     return(
        
         <div className="px-10">
-            <h1 className="text-2xl">Top Tracks</h1>
-            {tracks && tracks.length > 0 ? (
+            <h1 className="text-2xl font-bold mb-4">Top Tracks</h1>
+            {tracks ? (
+                tracks.length > 0 ? (
                 tracks.map((track, index) => (
-                <div key={track.id || index} className="flex items-center w-full py-2 border-b">
-                    <div className="w-1/6 flex justify-center">
-                    <img className="w-10 h-10 rounded-md" src={track?.image} alt={track?.title} />
+                    <div key={track.id || index} className="flex items-center w-full py-3 border-b border-gray-300 gap-4">
+
+                    <div className="w-16 flex justify-center">
+                        <img className="w-12 h-12 rounded-md object-cover" src={track?.image} alt={track?.title} />
                     </div>
 
-                    <div className="w-2/6">
-                    <p className="font-semibold">{track?.title}</p>
-                    <p className="text-gray-500 text-sm">{track?.artist_name}</p>
+                    <div className="flex-1 min-w-0">
+                        <p className="font-semibold truncate">{track?.title}</p>
+                        <p className="text-gray-500 text-sm truncate">{track?.artist_name}</p>
                     </div>
 
-                    <div className="w-2/6">
-                    <p className="text-gray-500 text-sm">{track?.album_name}</p>
+                    <div className="w-1/4 hidden sm:block">
+                        <p className="text-gray-500 text-sm truncate">{track?.album_name}</p>
                     </div>
 
-                    <div className="w-1/6 text-right">
-                    <p>
+                    <div className="w-16 text-right text-gray-700 font-medium">
+                        <p>
                         {Math.floor(track.duration / 60)}:
                         {String(Math.floor(track.duration % 60)).padStart(2, "0")}
-                    </p>
+                        </p>
                     </div>
-                </div>
+                    </div>
                 ))
+                ) : (
+                    <div className="text-gray-500 text-center py-4">Artist has no tracks yet.</div>
+                )
             ) : (
                 <MusicLoader />
             )}
-        </div>
+            </div>
+
 
     )
 }

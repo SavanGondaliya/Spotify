@@ -24,9 +24,11 @@ const loggedUserDetails = async(columns,userDetails) => {
 
 export const getAccessToken = async (userDetails) => {
   try {
+    console.log('just got the access token');
     
     const {session_details} = await loggedUserDetails("session_details", userDetails);
     const accessToken = session_details.access_token;
+    console.log(accessToken);
     
     return accessToken;
     
@@ -77,6 +79,7 @@ const updateSessionDetails = (tokenDetails,userDetails) => {
 
 export const refreshToken  = async(userDetails) => {
   try {
+    console.log('come for refresh token');
     
     const {session_details} = await loggedUserDetails("session_details",userDetails);
     const tokenData = querystring.stringify({
@@ -113,10 +116,13 @@ export const userToken = async(userDetails) => {
   
   try{
     const isTokenValid = await isTokenExpired(userDetails);
+    console.log(isTokenValid);
     
-    if(isTokenValid){
+    if(isTokenValid == true){
       accessToken = await refreshToken(userDetails);
     }else{
+      console.log("has come here");
+      
       accessToken = await getAccessToken(userDetails); 
     }
     return accessToken;

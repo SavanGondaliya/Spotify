@@ -6,6 +6,7 @@ import { Play, Pause } from "../utility/SongManipulation";
 import MusicLoader from "../utility/Loader";
 import Wave from "../../Animations/Wave";
 import { NavLink } from "react-router-dom";
+import LayerWave from "../../Animations/LayerWave";
 
 export const TrendingSong = () => {
   const secret_details = sessionStorage.getItem("secret_key");
@@ -95,48 +96,6 @@ export const TrendingSong = () => {
   console.log(trendingSong);
 
   return (
-    // <div className="w-full flex justify-center items-center py-8">
-    //   {trendingSong ? (
-    //       <div className="relative  text-white w-[80%] h-80 flex shadow-lg p-6 trending_container overflow-hidden">
-    //       <div className="rotate-330 absolute top-25 left-30">
-    //             <Wave />
-    //       </div>
-    //       <div className="flex z-50 flex-col justify-center w-2/3 pl-6">
-    //         <h1 className="text-lg font-semibold">Trending Now Hits</h1>
-    //         <h1 className="text-2xl font-bold">{trendingSong.name}</h1>
-    //         <span className="font-semibold">{trendingId[1]} Plays</span>
-    //         <button
-    //           onClick={() => handleMusic(trendingSong.id, "track")}
-    //           className="mt-4 px-4 py-2 text-black font-semibold cursor-pointer"
-    //         >
-    //           Play Now
-    //         </button>
-    //       </div>
-    //       <div className="absolute right-[-30px] bottom-[-20px] ">
-    //         <img
-    //           className="w-48 h-48 shadow-lg"
-    //           src={trendingSong?.album?.images[0]?.url}
-    //           alt="Trending Song"
-    //         />
-    //       </div>
-    //     </div>
-    //   ) : (
-    //     <MusicLoader />
-    //   )}
-    //   <style>
-    //     {`
-    //         .trending_container {
-    //             border-radius:5px;
-    //             background-color: #282870;
-    //             box-shadow: 10px 10px 0px #4949bf;
-    //         }
-    //         .__wave_position__ {
-    //             transform: rotate(90deg);
-    //         }
-    //     `}
-    //
-    //   </style>
-    // </div>
     <div className="w-full flex justify-center items-center py-8 relative">
       {trendingSong ? (
         <div className="relative text-white w-[80%] h-80 flex shadow-lg p-6 trending_container overflow-hidden">
@@ -183,7 +142,6 @@ export const TrendingSong = () => {
         <MusicLoader />
       )}
 
-      {/* Move the image OUTSIDE of .trending_container */}
       <div className="__trending_image_container__ absolute right-[5%] top-[5%] z-50">
         <img
           className="w-48 h-48 shadow-lg"
@@ -192,7 +150,6 @@ export const TrendingSong = () => {
         />
       </div>
 
-      {/* Styles */}
       <style>
         {`
         .trending_container {

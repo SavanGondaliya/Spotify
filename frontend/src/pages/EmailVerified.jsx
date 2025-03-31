@@ -24,8 +24,7 @@ const VerifyEmail = () => {
       console.log(err);
     });
   }
-  console.log(verifyStatus);
-  
+
   useEffect(() => {
     if(verifyStatus == true){
       navigate("/")
@@ -55,16 +54,13 @@ const VerifyEmail = () => {
   }, [searchParams]); 
 
     const closeAndRedirect = () => {
-    // Notify other tabs to close themselves
-    
-    // Redirect this tab to home
     window.location.href = "/";
   };
   
   useEffect(() => {
     const handleStorageEvent = (event) => {
       if (event.key === "closeVerificationTab") {
-        window.close(); // First tab closes itself
+        window.close(); 
       }
     };
   

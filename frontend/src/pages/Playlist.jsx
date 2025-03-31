@@ -5,6 +5,7 @@ import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 
 
+
 export const PlaylistPage = () => {
 
     
@@ -21,7 +22,7 @@ export const PlaylistPage = () => {
                         <div className="w-[100%]">
                             <HorizontalNavbar/>
                         </div>
-                        <div className="container flex flex-col w-325 h-[88%] overflow-y-scroll">
+                        <div className="flex flex-col w-325 h-[88%] overflow-y-scroll">
                             <Playlist/>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
+
 const secret_key = sessionStorage.getItem("secret_key");
 const session_details = sessionStorage.getItem("session_details");
-
 
 export const Play = async(contextUri,device_id,type,position_ms) =>  {
     try {
@@ -15,6 +15,7 @@ export const Play = async(contextUri,device_id,type,position_ms) =>  {
                 }
             });
             if(response.status == 200){
+                console.log(response.data);
                 return true;
             }
         }else{
@@ -112,7 +113,7 @@ export const songDuration = (position) => {
     let minute = Math.floor((position/1000) / 60)
     let second = Math.floor((position/1000) % 60)
     
-    return `${minute} : ${second < 10 ? '0'+second : second}`
+    return `${minute} : ${second < 10 ? '0'+second:second}`
     
 }
 
@@ -318,9 +319,8 @@ export const removeFromLibrary = (ids) => {
 
 const updateReport = async(device_id) => {
     
-        console.log("called....");
         const response = await getCurrentState(device_id);
-        console.log(response);
+        
         let artists = response?.item?.artists.map((element) => element.id)
                                     
         updateMonthlyReport(
@@ -348,3 +348,24 @@ export const PlayRandom = async (device_id) => {
         console.error("Error fetching random track:", error);
     }
 };
+
+
+export const playbackShuffle = (device_id,state) => {
+    try {
+        
+        axios.get(`http://localhost:5000/shuffle?session_details=${session_details}&deviceId=${device_id}&state=${state}`,{
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }).then((res) => {
+            if(res.status === 200){
+                console.log('shuffle loaded')
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+        
+    } catch (error) {
+        return error
+    }
+}

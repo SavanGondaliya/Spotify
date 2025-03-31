@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import '../editForm.css';  // Import the updated CSS file
 
 const EditArtist = () => {
   const { id } = useParams(); // Get artist ID from URL params
@@ -15,7 +16,6 @@ const EditArtist = () => {
       fetch(`http://localhost:5000/api/artists/${id}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data)
           setEditedArtist({
             artist_name: data.artist_name || "",
             image: data.image || "",
@@ -47,7 +47,6 @@ const EditArtist = () => {
       });
 
       if (response.ok) {
-        // If update is successful, navigate back to the artist list or any other desired route
         navigate("/admin/artist");
       } else {
         console.error("Failed to update artist");
@@ -58,40 +57,41 @@ const EditArtist = () => {
   };
 
   return (
-    <form className="form-signup" onSubmit={handleSubmit}>
-      <p className="login-title">Edit Artist</p>
+    <div className="center-form">
+      <div className="form-container">
+        <h2 className="form-title">Edit Artist</h2>
+        <form className="form-signup" onSubmit={handleSubmit}>
+          <label className="login-detail">Artist Name</label>
+          <input
+            name="artist_name"
+            type="text"
+            value={editedArtist.artist_name || ""}
+            onChange={handleChange}
+            required
+          />
 
-      {/* Artist Name */}
-      <label className="login-detail">Artist Name</label>
-      <input
-        name="artist_name"
-        type="text"
-        value={editedArtist.artist_name || ""}
-        onChange={handleChange}
-        required
-      />
+          <label className="login-detail">Profile Image URL</label>
+          <input
+            name="image"
+            type="url"
+            value={editedArtist.image || ""}
+            onChange={handleChange}
+            required
+          />
 
-      {/* Artist Image URL */}
-      <label className="login-detail">Profile Image URL</label>
-      <input
-        name="image"
-        type="text"
-        value={editedArtist.image || ""}
-        onChange={handleChange}
-        required
-      />
-
-      <div className="form-actions">
-        <button type="submit" className="save-btn">Save</button>
-        <button
-          type="button"
-          className="cancel-btn"
-          onClick={() => navigate("/admin/artist")}
-        >
-          Cancel
-        </button>
+          <div className="form-actions">
+            <button type="submit" className="save-btn">Save</button>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => navigate("/admin/artist")}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 

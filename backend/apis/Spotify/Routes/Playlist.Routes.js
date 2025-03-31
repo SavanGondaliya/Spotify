@@ -11,6 +11,6 @@ playListRoute.post("/playlist/:playlist_id/add/:id",addTrackToPlaylist);
 playListRoute.delete("/playlist/:playlist_id/delete/:id",deleteTrackFromPlaylist);
 playListRoute.post("/playlist/create/",createPlaylist);
 playListRoute.delete("/playlist/:playlist_id/delete",deleteUserPlaylist);
-playListRoute.delete("/playlist/:id/details",playlistDetails);
+playListRoute.get("/playlist/:id/details",playlistDetails);
 
 export default playListRoute;

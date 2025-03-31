@@ -116,180 +116,111 @@ export const PopulerTracks = () => {
     }
   };
   
-  return populerTracks && populerTracks?.tracks.length > 0 ? (
-    
-    <div className="w-full h-100 overflow-y-scroll m-5">
-      <h1 className="text-white text-2xl mb-4">Populer Tracks</h1>
-      <div>
-        {populerTracks?.tracks?.map((track, index) => (
-          <div
-            key={index}
-            className="flex items-center px-4 py-3 hover:bg-indigo-600 rounded-md"
-          >
-            {/* Track Number */}
-            <div className="w-1/12 text-center">
-              <h3>{index + 1}</h3>
-            </div>
-
-            {/* Album Image & Play Button */}
-            <div
-              className="w-2/12 flex justify-center items-center cursor-pointer"
-              onClick={() => handleMusic(track.id, "track")}
-            >
-              <img
-                className="w-12 h-12 rounded populer_image"
-                src={track?.album?.images[0]?.url}
-                alt=""
-              />
-            </div>
-
-            {/* Track Name */}
-            <div className="w-4/12">
-              <p className="highlight__text text-white">{track?.name}</p>
-            </div>
-
-            {/* Duration */}
-            <div className="w-2/12">
-              <p className="text-white">{songDuration(track?.duration_ms)}</p>
-            </div>
-
-            {/* Save/Remove from Library */}
-            <div className="w-1/12 flex justify-center">
-              {savedTracks && savedTracks.includes(track?.id) ? (
-                <div
-                className="cursor-pointer"
-                  onClick={() => {
-                    removeFromLibrary(track?.id);
-                    setReRender((prev) =>
-                      prev === track?.id ? null : track?.id
-                    );
-                  }}
-                >
-                  <i className="ri-checkbox-circle-fill"></i>
-                </div>
-              ) : (
-                <div
-                className="cursor-pointer"
-                  onClick={() => {
-                    addToLibrary(track?.id);
-                    setReRender((prev) =>
-                      prev === track?.id ? null : track?.id
-                    );
-                  }}
-                >
-                  <i className="playlist_status ri-add-line text-white"></i>
-                </div>
-              )}
-            </div>
-
-            <div className="w-1/12 relative flex justify-center">
-              <div
-                ref={addref}
-                onClick={() => handleDropDown(index)}
-                className="cursor-pointer"
-              >
-                <i className="ri-more-2-fill text-white"></i>
-                {activeIndex === index && (
-                  <div className="absolute text-white right-10 bottom-0">
-                    <KebabDropDown
-                      playlists={userPlaylists}
-                      artists={track?.artists}
-                      track_id={track?.id}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-//     <div className="w-full h-[500px] overflow-y-auto mx-5 p-4 bg-gray-900 rounded-lg">
-//   <h1 className="text-white text-2xl mb-4">Populer Tracks</h1>
-
-//   <div className="space-y-2">
-//     {populerTracks?.tracks?.map((track, index) => (
-//       <div
-//         key={index}
-//         className="flex items-center px-4 py-3 hover:bg-indigo-600 rounded-md"
-//       >
-//         {/* Track Number */}
-//         <div className="w-1/12 text-center text-white">{index + 1}</div>
-
-//         {/* Album Image & Play Button */}
-//         <div
-//           className="w-2/12 flex justify-center items-center cursor-pointer"
-//           onClick={() => handleMusic(track.id, "track")}
-//         >
-//           <img
-//             className="w-14 h-14 rounded-md shadow-md"
-//             src={track?.album?.images[0]?.url}
-//             alt={track?.name}
-//           />
-//         </div>
-
-//         {/* Track Name */}
-//         <div className="w-4/12">
-//           <p className="text-white truncate">{track?.name}</p>
-//         </div>
-
-//         {/* Duration */}
-//         <div className="w-2/12 text-center text-white">
-//           {songDuration(track?.duration_ms)}
-//         </div>
-
-//         {/* Save/Remove from Library */}
-//         <div className="w-1/12 flex justify-center">
-//           {savedTracks && savedTracks.includes(track?.id) ? (
-//             <div
-//               className="cursor-pointer text-green-400"
-//               onClick={() => {
-//                 removeFromLibrary(track?.id);
-//                 setReRender((prev) =>
-//                   prev === track?.id ? null : track?.id
-//                 );
-//               }}
-//             >
-//               <i className="ri-checkbox-circle-fill"></i>
-//             </div>
-//           ) : (
-//             <div
-//               className="cursor-pointer text-white"
-//               onClick={() => {
-//                 addToLibrary(track?.id);
-//                 setReRender((prev) =>
-//                   prev === track?.id ? null : track?.id
-//                 );
-//               }}
-//             >
-//               <i className="ri-add-line"></i>
-//             </div>
-//           )}
-//         </div>
-
-//         {/* More Options */}
-//         <div className="w-1/12 relative flex justify-center">
-//           <div ref={addref} onClick={() => handleDropDown(index)} className="cursor-pointer">
-//             <i className="ri-more-2-fill text-white"></i>
-//             {activeIndex === index && (
-//               <div className="absolute text-white right-10 bottom-0 bg-gray-800 rounded shadow-lg">
-//                 <KebabDropDown
-//                   playlists={userPlaylists}
-//                   artists={track?.artists}
-//                   track_id={track?.id}
-//                 />
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     ))}
-//   </div>
-// </div>
-
-  ) : (
+  return (
     <div>
-      <MusicLoader />
+      {populerTracks && populerTracks?.tracks.length > 0 ? (
+        <div className="w-full h-full p-5">
+          <h1 className="text-white text-2xl mb-4">Popular Tracks</h1>
+          <div className="h-100 space-y-3 overflow-scroll">
+            {populerTracks?.tracks?.map((track, index) => (
+              <div
+              key={index}
+              className="flex items-center gap-4 px-5 py-3 hover:bg-indigo-600 rounded-lg"
+              >
+                {/* Track Index */}
+                
+                <div className="w-1/12 text-center">
+                  <h3>{index + 1}</h3>
+                </div>
+  
+                {/* Track Image */}
+                <div
+                  className="w-2/12 flex justify-center items-center cursor-pointer"
+                  onClick={() => handleMusic(track.id, "track")}
+                >
+                  <img
+                    className="w-16 h-16 rounded-md __populer_image__"
+                    src={track?.album?.images[0]?.url}
+                    alt=""
+                  />
+                </div>
+  
+                {/* Track Name */}
+                <div className="w-4/12">
+                  <p className="highlight__text text-white">{track?.name}</p>
+                </div>
+  
+                {/* Track Duration */}
+                <div className="w-2/12 text-center">
+                  <p className="text-white">{songDuration(track?.duration_ms)}</p>
+                </div>
+  
+                {/* Save to Library */}
+                
+                <div className="w-1/12 text-center">
+                  {savedTracks?.includes(track.id) ? (
+                    <i
+                    className="ri-checkbox-circle-fill text-xl cursor-pointer"
+                      onClick={async () => {
+                        await removeFromLibrary(track.id);
+                        setSavedTracks((prev) =>
+                          prev.filter((id) => id !== track.id)
+                        );
+                      }}
+                    ></i>
+                  ) : (
+                    <i
+                      className="ri-add-line text-white text-xl cursor-pointer"
+                      onClick={async () => {
+                        await addToLibrary(track.id);
+                        setSavedTracks((prev) => [...prev, track.id]);
+                      }}
+                    ></i>
+                  )}
+                </div>
+                
+  
+                {/* More Options */}
+                <div className="w-1/12 flex justify-center relative">
+                  <div
+                    ref={addref}
+                    onClick={() => handleDropDown(index)}
+                    className="cursor-pointer"
+                  >
+                    <i className="ri-more-2-fill text-white"></i>
+                    {activeIndex === index && (
+                      <div className="absolute text-white right-0 bottom-0 bg-gray-800 p-2 rounded-md">
+                        <KebabDropDown
+                          playlists={userPlaylists}
+                          artists={track?.artists}
+                          track_id={track?.id}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <MusicLoader />
+      )}
+      <style>
+        {
+          `
+            .__populer_image__{
+              box-shadow: 5px 5px 0px #4949bf;
+            }
+          `
+        }
+      </style>
     </div>
   );
-};
+} 
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */ 

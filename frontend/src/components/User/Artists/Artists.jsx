@@ -8,11 +8,11 @@ import { NewArtist } from "./NewArtist";
 export const ArtistCategory = () => {
 
     return(
-        <div className="flex flex-col gap-y-6 p-4">
-            <KPOP />
+        <div className="flex flex-col gap-y-6">
             <NewArtist />
             <TopBollywood />
             <TopHollywood />
+            <KPOP />
         </div>
     )
 }

@@ -1,12 +1,33 @@
 import React from "react";
 
-
-export const AboutSection = () => {
+export const AboutSection = ({aboutArtist}) => {
+  console.log(aboutArtist);
+  
     return (
-      <div className="bg-indigo-800 text-white p-6 mt-6 rounded">
-        <h2 className="text-yellow-400 text-xl font-bold">About</h2>
-        <p>Artist bio goes here...</p>
+      <div className="__about_container__ text-white p-6 mt-6 rounded">
+        <h2 className="__about_text__ text-xl font-bold">About</h2>
+        <p>{aboutArtist}</p>
+
+        <style>
+          {
+            `
+            .__about_container__{
+              background-color: #282870;
+              box-shadow: #4949bf;
+            }
+            .__about_text__{
+              color: #f2c178
+            }
+            `
+          }
+        </style>
       </div>
     );
   };
   
+  /* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

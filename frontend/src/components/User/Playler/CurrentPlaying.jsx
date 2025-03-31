@@ -14,9 +14,7 @@ import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { getUserPlaylist } from "../utility/SongManipulation";
 import MusicLoader from "../utility/Loader";
 
-
 export const Currently = () => {
-
   const session_details = sessionStorage.getItem("session_details");
   const { player, deviceId } = useWebPlayback();
   const [currentState, setCurrentState] = useState();
@@ -93,8 +91,7 @@ export const Currently = () => {
 
   const handleMusic = (id, type) => {
     if (isPlay == id) {
-      PlayRandom();
-      // Pause(id, deviceId, type);
+      Pause(id, deviceId, type);
       setIsPlay(null);
     } else {
       Play(id, deviceId, type, positionMs);
@@ -154,7 +151,7 @@ export const Currently = () => {
                 srcset=""
               />
             </div>
-            <div className="absolute top-20 left-20">
+            <div className="absolute top-10 left-15">
               <div className="h-full w-full">
                 <img
                   className="w-40 h-40 inner_image_shadow"
@@ -164,34 +161,35 @@ export const Currently = () => {
                   }
                   alt=""
                 />
-                <p className="font-bold ml-5">
+                <p className="font-bold  mt-5 text-2xl text-[#f2c178] __track_name__">
                   {currentState?.track_window?.current_track?.name}
                 </p>
-                {currentState?.track_window?.current_track?.artists.map(
-                  (artist, i) => (
-                    <React.Fragment key={artist?.id}>
-                      {artist.name}
-                      {i <
-                        currentState?.track_window?.current_track?.artists
+                <div className=" text-[#f2c178] __artist_name__">
+                  {currentState?.track_window?.current_track?.artists.map(
+                    (artist, i) => (
+                      <React.Fragment  key={artist?.id}>
+                        {artist.name}
+                        {i < 
+                          currentState?.track_window?.current_track?.artists
                           .length -
                           1 && ", "}
-                    </React.Fragment>
-                  )
-                )}
+                      </React.Fragment>
+                    )
+                  )}
+                </div>
               </div>
             </div>
-            <div className="bg-indigo-800 w-full p-4 absolute bottom-0 rounded-b-lg flex flex-col items-center">
-              {/* Progress Bar */}
-              <div className="w-[90%] flex items-center justify-between">
+            <div className="bg-indigo-800 w-full py-2 px-4 absolute bottom-0 rounded-b-lg flex flex-col items-center">
+              <div className="w-[100%] flex items-center justify-between">
                 <span className="text-white text-sm">{currentTime}</span>
                 <input
                   type="range"
                   ref={trackerRef}
-                  className="w-full mx-4 music-slider"
+                  className="w-full mx-3 music-slider"
                   max={currentState.duration}
                   onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
                 />
-                <span className="text-white text-sm">
+                <span className=" text-white text-sm">
                   {songDuration(currentState.duration)}
                 </span>
               </div>
@@ -275,10 +273,16 @@ export const Currently = () => {
         </div>
       ) : (
         <div>
-
+          <MusicLoader />
         </div>
       )}
       <style>
+      /* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */
         {`  
           .music-slider {
               height: 5px;
@@ -317,8 +321,13 @@ export const Currently = () => {
               height: 6px;
               border-radius: 5px;
           }
-        `          
-        }
+          .__artist_name__{
+            text-shadow: 1px 1px 0px  #935d07
+            }
+            .__track_name__{
+              text-shadow: 2px 2px 0px  #935d07
+           }
+        `}
       </style>
     </div>
   );

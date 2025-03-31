@@ -111,19 +111,23 @@ export const login = (req,res) => {
 export const userToken = async(req,res) => {
    
     try{
-    
+        console.log("request come here");
+        
         let accessToken = null;  
     
         const userDetails = JSON.parse(req.query.session_details);  
-        console.log(userDetails);
+        console.log("have user details",userDetails);
         
         const isTokenValid = await isTokenExpired(userDetails);
+        console.log(isTokenValid);
         
         if(isTokenValid){
-        accessToken = await refreshToken(userDetails);
+            accessToken = await refreshToken(userDetails);  
         }else{
-        accessToken = await getAccessToken(userDetails); 
+            accessToken = await getAccessToken(userDetails); 
         }
+        console.log("access token sent : ",accessToken);
+        
         return res.status(200).send(accessToken);
     }
     catch(error){

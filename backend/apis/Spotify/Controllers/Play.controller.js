@@ -75,14 +75,15 @@ export const getAlbumUri = async(req,authToken) => {
       }
     
       try {
+
         const response = await axios.get(`https://api.spotify.com/v1/tracks/${id}`,
           {
             headers:{
               "Content-Type" : "Application/json",  
-                "Authorization": `Bearer ${authToken}`
-              },
-            }
-          );
+              "Authorization": `Bearer ${authToken}`
+            },
+          }
+        );
           
           if(response.status === 200){  
             const contextUri = response.data.uri;
@@ -132,15 +133,9 @@ export const getAlbumUri = async(req,authToken) => {
 
       if(response.status === 204){
         return res.status(200).send({ message: "Playback started successfully" });
-        
       }
       return res.status(404).send({message: "No Song Found"});
     } catch (error) {
-      if (error.response) {
-        return res
-        .status(error.response.status)
-        .send({ message: error.response.data.error.message });
-      }
       return res.status(500).send({ message: error.message });
     }
   };

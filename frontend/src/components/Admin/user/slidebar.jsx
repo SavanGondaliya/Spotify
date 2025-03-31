@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Playlist from './playlistitems';
 
 const Sidebar = () => {
-    
     const [activeMenu, setActiveMenu] = useState('home');
     const [activePlaylist, setActivePlaylist] = useState(0);
 

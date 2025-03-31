@@ -291,10 +291,9 @@ import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helpe
           }
         }
         const sortedArray =  Object.entries(mergedArray).sort((a,b) => b[1] - a[1]);
-        sortedArray.splice(0,Math.floor(sortedArray/2).length);
+        sortedArray.splice(0,Math.floor(sortedArray.length/2));
 
         const url = `http://localhost:5000/tracks?ids=${sortedArray.map((song_id) => song_id[0]).join(",")}&session_details=${session_details}`;
-        console.log(url);
         
         axios.get(url,{
           headers:{
@@ -314,3 +313,4 @@ import { getLikedSongs,setLikedTracks,removeTrack } from "../Helpers/Track.helpe
       return res.status(500).send({message:error.message});
     }
   }
+

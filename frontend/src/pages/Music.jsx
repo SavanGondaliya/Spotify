@@ -15,6 +15,7 @@ import MusicLoader from "../components/User/utility/Loader";
 import { PlayerController } from "../components/User/Playler/Controller";
 import { KebabDropDown } from "../components/User/utility/KebabDropDown";
 import useWebPlayback from "../components/User/utility/WebPlayBackSDK.jsx";
+import { Queue } from "../components/User/Playler/Queue.jsx";
 
 export const Tracks = () => {
   const [tracks, setTracks] = useState();
@@ -24,14 +25,17 @@ export const Tracks = () => {
   const session_details = sessionStorage.getItem("secret_key");
   const [isPlay, setIsPlay] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
-  const [position, setPosition] = useState({ bottom: 0, right: -20 });
+  const [position, setPosition] = useState({ bottom: 0, right: 20 });
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [savedTracks, setSavedTracks] = useState([]);
   const [activeIndex, setActiveIndex] = useState();
-  
+  const [isQueueVisible,setIsQueueVisible] = useState(false); 
+
   const getTracks = () => {
     const url = `http://localhost:5000/music?session_details=${session_details}`;
+    console.log(url);
+
     try {
       axios
         .get(url, {
@@ -92,43 +96,41 @@ export const Tracks = () => {
     likedSongIds();
     getTracks();
     playlist();
-  },[]);
+  }, []);
 
   useEffect(() => {
-      if (!player) return; 
-      
-      const handlePlayerStateChange = (state) => {
-          if (!state) {
-              return;
-          }
-          setCurrentlyPlaying(state);
-      };
-      
-      player.addListener("player_state_changed", handlePlayerStateChange);
-      
-      player.getCurrentState().then((state) => {
-          if (!state) {
-              return;
-          }
-          setCurrentlyPlaying(state);
-          localStorage.setItem("player_details",JSON.stringify(state));            
-          
-      })
-      return () => player.removeListener("player_state_changed", handlePlayerStateChange);
-  },[player]); 
-  console.log(savedTracks);
-  setTimeout(() => console.log("After Update:", savedTracks), 500);
-  const handleMusic = (id,type) => {
-      if(isPlay == id){
-          Pause(id,deviceId,type)
-          setIsPlay(null);
-      }else{
-          setPositionMs(0)
-          Play(id,deviceId,type,positionMs);
-          setIsPlay(id);
-      }
-  }
+    if (!player) return;
 
+    const handlePlayerStateChange = (state) => {
+      if (!state) {
+        return;
+      }
+      setCurrentlyPlaying(state);
+    };
+
+    player.addListener("player_state_changed", handlePlayerStateChange);
+
+    player.getCurrentState().then((state) => {
+      if (!state) {
+        return;
+      }
+      setCurrentlyPlaying(state);
+      localStorage.setItem("player_details", JSON.stringify(state));
+    });
+    return () =>
+      player.removeListener("player_state_changed", handlePlayerStateChange);
+  }, [player]);
+
+  const handleMusic = (id, type) => {
+    if (isPlay == id) {
+      Pause(id, deviceId, type);
+      setIsPlay(null);
+    } else {
+      setPositionMs(0);
+      Play(id, deviceId, type, positionMs);
+      setIsPlay(id);
+    }
+  };
 
   return (
     <div className="w-screen h-screen">
@@ -145,109 +147,144 @@ export const Tracks = () => {
               <div className="flex flex-col w-325 h-[88%] overflow-y-scroll">
                 <div className="overflow-auto w-full h-screen p-5">
                   {tracks && tracks?.tracks?.length > 0 ? (
-                    tracks?.tracks?.map((track, index) => ( 
+                    tracks?.tracks?.map((track, index) => (
                       <div
-                          key={track.id}
-                          className="w-full flex items-center justify-between p-3 _favourite_row_ cursor-pointer  transition rounded-lg"
-                        >
+                        key={track.id}
+                        className="w-full flex items-center justify-between p-3 _favourite_row_ cursor-pointer  transition rounded-lg"
+                      >
                         <div className="relative w-16 h-16">
                           {/* Track Image */}
                           <img
-                            className="w-full h-full rounded-md object-cover _facourite_image_"
+                            className="w-full h-full rounded-md object-cover __music_image__"
                             src={track?.album?.images[0]?.url}
                             alt={track?.name}
                           />
 
                           <i
-                            onClick={() => handleMusic(track?.id, "track", positionMs)}
+                            onClick={() =>
+                              handleMusic(track?.id, "track", positionMs)
+                            }
                             className={`text-4xl cursor-pointer text-white 
-                              absolute inset-0 flex items-center justify-center rounded-md hover:${currentlyPlaying?.paused ? "ri-play-circle-fill" : "ri-pause-circle-fill"}`}
-                          >
-                          </i>
+                              absolute inset-0 flex items-center justify-center rounded-md hover:${
+                                currentlyPlaying?.paused
+                                  ? "ri-play-circle-fill"
+                                  : "ri-pause-circle-fill"
+                              }`}
+                          ></i>
                         </div>
 
-                          <div className="flex flex-col w-1/3 px-4">
-                            <h1 className="text-white text-lg font-semibold truncate">
-                              {track?.name}
-                            </h1>
-                            <p className="text-gray-400 text-sm truncate">
-                              {track?.artists?.map((artist, i) => (
-                                  <React.Fragment key={artist?.id}>
-                                    <NavLink to={`/artist/${artist?.id}`} className="hover:underline">
-                                      {artist?.name}
-                                    </NavLink>
-                                    {i < track.artists.length - 1 && ", "}
-                                  </React.Fragment>
-                                ))}
-                            </p>
-                          </div>
+                        <div className="flex flex-col w-1/3 px-4">
+                          <h1 className="text-white text-lg font-semibold truncate">
+                            {track?.name}
+                          </h1>
+                          <p className="text-gray-400 text-sm truncate">
+                            {track?.artists?.map((artist, i) => (
+                              <React.Fragment key={artist?.id}>
+                                <NavLink
+                                  to={`/artist/${artist?.id}`}
+                                  className="hover:underline"
+                                >
+                                  {artist?.name}
+                                </NavLink>
+                                {i < track.artists.length - 1 && ", "}
+                              </React.Fragment>
+                            ))}
+                          </p>
+                        </div>
 
-                          {/* Album Name */}
-                          <NavLink to={`http://localhost:5173/album/${track?.album?.id}`}  className="w-1/4 px-4">
-                            <h1 className="text-gray-300 text-sm truncate">
-                              {track?.album?.name}
-                            </h1>
-                          </NavLink >
+                        {/* Album Name */}
+                        <NavLink
+                          to={`http://localhost:5173/album/${track?.album?.id}`}
+                          className="w-1/4 px-4"
+                        >
+                          <h1 className="text-gray-300 text-sm truncate">
+                            {track?.album?.name}
+                          </h1>
+                        </NavLink>
 
-                          {/* Duration */}
-                          <div className="w-1/6 text-center">
-                            <b className="text-white">
-                              {songDuration(track?.duration_ms)}
-                            </b>
-                          </div>
+                        {/* Duration */}
+                        <div className="w-1/6 text-center">
+                          <b className="text-white">
+                            {songDuration(track?.duration_ms)}
+                          </b>
+                        </div>
 
-                          {/* Favourite Icon */}
-                          <div className="w-1/12 text-center">
-                            {savedTracks?.includes(track.id) ? (
-                              <i
-                                className="ri-check-fill text-xl cursor-pointer"
-                                onClick={async () => {
-                                  await removeFromLibrary(track.id);
-                                  setSavedTracks(prev => prev.filter(id => id !== track.id));
-                                }}
-                              ></i>
-                            ) : (
-                              <i
-                                className="ri-add-line text-white text-xl cursor-pointer"
-                                onClick={async () => {
-                                  await addToLibrary(track.id);
-                                  setSavedTracks(prev => [...prev, track.id]);
-                                }}
-                              ></i>
-                            )}
-                          </div>
-
-
-                          {/* More Options Dropdown */}
-                          <div className="relative w-1/12 text-center">
+                        {/* Favourite Icon */}
+                        <div className="w-1/12 text-center">
+                          {savedTracks?.includes(track.id) ? (
                             <i
-                              className="ri-more-2-fill text-white text-xl cursor-pointer"
-                              onClick={() => handleDropDown(index)}
+                              className="ri-check-fill text-xl cursor-pointer"
+                              onClick={async () => {
+                                await removeFromLibrary(track.id);
+                                setSavedTracks((prev) =>
+                                  prev.filter((id) => id !== track.id)
+                                );
+                              }}
                             ></i>
+                          ) : (
+                            <i
+                              className="ri-add-line text-white text-xl cursor-pointer"
+                              onClick={async () => {
+                                await addToLibrary(track.id);
+                                setSavedTracks((prev) => [...prev, track.id]);
+                              }}
+                            ></i>
+                          )}
+                        </div>
+
+                        <div className="w-1/12 relative flex justify-center">
+                          <div
+                            ref={addref}
+                            onClick={() => handleDropDown(index)}
+                            className="cursor-pointer"
+                          >
+                            <i className="ri-more-2-fill text-white"></i>
                             {activeIndex === index && (
-                              <div className="absolute right-0 mt-2 bg-gray-900 shadow-lg rounded-lg z-10">
+                              <div className="absolute right-15 top-0 mt-2 bg-gray-900 shadow-lg rounded-lg z-10">
                                 <KebabDropDown
                                   playlists={userPlaylists}
-                                  artists={track.artists}
-                                  tracks_id={track.id}
+                                  artists={track?.artists}
+                                  track_id={track?.id}
                                 />
                               </div>
                             )}
                           </div>
+                        </div>
                       </div>
-                    ))):(
-                      <MusicLoader/>
-                    )
-                  }
-                  </div>
+                    ))
+                  ) : (
+                    <MusicLoader />
+                  )}
                 </div>
+                {isQueueVisible && (
+                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-white shadow-lg overflow-scroll">
+                    <Queue isQueueVisible={isQueueVisible} />
+                </div>
+                )}
+
               </div>
             </div>
           </div>
-        <div className="w-[100%] h-[12%] bg-indigo-400">
-          <PlayerController />
         </div>
+        <div className="w-full h-[12%] z-100">
+            <PlayerController isQueueVisible={isQueueVisible} setIsQueueVisible={setIsQueueVisible} />
         </div>
-    </div>    
+      </div>
+      <style>
+        {
+          `
+            .__music_image__{
+              box-shadow: 5px 5px 0px #4949bf;
+            }
+          `
+        }
+      </style>
+    </div>
   );
 };
+/* 
+// 282870
+// 4949bf
+// 935d07
+// f2c178
+// 05040c */

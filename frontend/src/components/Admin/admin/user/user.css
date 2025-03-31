@@ -7,12 +7,6 @@
     font-size: .8rem;
 }
 
-input {
-    font-family: "teko";
-    font-weight: 500;
-    height: .8em;
-    border: none;
-}
 
 a {
     color: inherit;
@@ -87,7 +81,6 @@ body {
     display: flex;
     height: 100vh;
     overflow: hidden;
-    /* Prevents overall scrolling */
 }
 
 
@@ -112,36 +105,6 @@ body {
     justify-content: space-between;
 }
 
-.cards {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 70px;
-}
-
-.card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: #282870;
-    padding: 20px 25px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 5px 5px 0px 1px #4949bf;
-    width: 100px;
-    height: 100px;
-}
-
-.card h3 {
-    font-size: 35px;
-    margin-bottom: -20px;
-    font-weight: 700;
-}
-
-.card p {
-    color: #facc15;
-    font-weight: 700;
-    font-size: 20px;
-}
 
 .auth {
     display: flex;
@@ -171,26 +134,24 @@ body {
     cursor: pointer;
 }
 
-.search-bar {
+.__user_search_bar__{
     display: flex;
     align-items: center;
     background-color: #303030;
-    border-radius: 3px;
     overflow: hidden;
-    box-shadow: 3px 3px 0px 1px #4949bf;
-
-}
-
-.search-bar input {
-    padding: 12px 20px;
+    border-radius: 3px;
+    padding: 5px 10px;
     font-size: 14px;
-    color: white;
-    background-color: transparent;
     border: none;
     outline: none;
     width: 92%;
+    box-shadow: 3px 3px 0px 1px #4949bf;
 }
 
+.__search_input__{
+    background-color: #303030;
+    font-size: 20px;
+}
 .search-bar .search-btn {
     background-color: #33333300;
     padding: 8px 12px;
@@ -198,7 +159,7 @@ body {
     cursor: pointer;
 }
 
-.search-bar .ri-search-line {
+.__user_search_bar__ .ri-search-line {
     font-size: 16px;
     color: white;
 }

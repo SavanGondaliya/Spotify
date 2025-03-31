@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { PlaylistBase64 } from "./icon/Playlist";
+import MusicLoader from "../utility/Loader";
+
+
+
 export const UserPlaylist = ({playlists}) => {
 
+    useEffect(() => {
+        console.log("playlists :: ",playlists);
+        
+    },[playlists])
+    console.log("playlists :: ",playlists);
+    
     return(
         <div className="w-full h-full">
             {
@@ -26,7 +36,9 @@ export const UserPlaylist = ({playlists}) => {
                         </div>
                     </div>
                 ):(
-                    <div>Loading....</div>
+                    <div>
+                        <MusicLoader />
+                    </div>
                 )
             }
         </div>

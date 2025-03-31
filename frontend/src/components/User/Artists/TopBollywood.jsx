@@ -7,9 +7,8 @@ import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import MusicLoader from "../utility/Loader";
 
 export const TopBollywood = () => {
-
-  const [topBollywoodArtist,setTopBollywoodArtist] = useState();
-  const {player,deviceId} = useWebPlayback();
+  const [topBollywoodArtist, setTopBollywoodArtist] = useState();
+  const { player, deviceId } = useWebPlayback();
 
   const topBollywoodArtists = async () => {
     const response = await axios.get(`http://localhost:5000/top-bollywood`, {
@@ -17,57 +16,58 @@ export const TopBollywood = () => {
         "Content-Type": "application/json",
       },
     });
-  
+
     if (response.status === 200) {
-        setTopBollywoodArtist(response.data);
+      setTopBollywoodArtist(response.data);
     }
   };
 
   useEffect(() => {
     topBollywoodArtists();
-  }, [player,deviceId]);
+  }, [player, deviceId]);
 
   return (
-    <div>
-      <div className="text-2xl mx-5 ">
-        Classic Bollywood
-      </div>
-      <div className="flex flex-col justify-center items-center px-5 py-5 overflow-scroll">
-        <div className="flex w-fit h-fit py-5">
+    <div className="w-full">
+      <div className="text-2xl mx-5">Classic Bollywood</div>
+
+      <div className="overflow-x-auto py-5">
+        <div className="grid grid-flow-col auto-cols-max gap-1 px-5">
           {topBollywoodArtist && topBollywoodArtist.length > 0 ? (
             topBollywoodArtist.map((artist) => (
-              <NavLink to={`http://localhost:5173/artist/${artist.artist_id}`} key={artist.artist_id} className="w-full h-full flex flex-col justify-center items-center rounded_image hover_card">
-                <div className="mx-5 py-5">
-                  <div className="relative w-30 h-30 ">
+              <NavLink
+                to={`/artist/${artist.artist_id}`}
+                key={artist.artist_id}
+                className="flex flex-col items-center hover_card"
+              >
+                <div className="gap-5 p-5 flex flex-col items-center">
+                  <div className="relative w-[130px] h-[130px]">
                     <img
-                      className="w-full h-full object-cover shadow-lg __artist_image__ rounded_image"
+                      className="w-full h-full object-cover shadow-lg __artist_image__ rounded-full"
                       src={artist.image}
                       alt=""
                     />
                   </div>
-                  <div className="w-full h-full text-amber-100 my-2">
-                    <h1 className="text-center">{artist.artist_name}</h1>
-                    <h1 className="text-center">Artist</h1>
+                  <div className="text-amber-100 text-center">
+                    <h1>{artist.artist_name}</h1>
+                    <h1>Artist</h1>
                   </div>
                 </div>
               </NavLink>
             ))
           ) : (
             <div>
-              <MusicLoader/>
+              <MusicLoader />
             </div>
           )}
         </div>
       </div>
-      
+
       <style>
-        {
-          `
-            .__artist_image__{
-                box-shadow: 5px 5px 0px #4949bf;
-            }
-          `
-        }
+        {`
+      .__artist_image__ {
+        box-shadow: 5px 5px 0px #4949bf;
+      }
+    `}
       </style>
     </div>
   );

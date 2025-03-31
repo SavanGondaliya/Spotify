@@ -29,7 +29,7 @@ const UsersTable = () => {
   };
 
   return (
-    <div>
+    <div className="songs">
       <h3>Manage Users</h3>
       <table>
         <thead>
@@ -45,14 +45,14 @@ const UsersTable = () => {
           {users.map((user) => (
             <tr key={user.user_id}>
               <td>
-                <img src={user.image} alt="user" />
+                <img src={user.image} alt="user" style={{ width: "50px", borderRadius: "5px" }} />
               </td>
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
-              <td>
-                <button onClick={() => handleEdit(user)}>Edit</button>
-                <button onClick={() => handleDelete(user.user_id)}>Delete</button>
+              <td className="action-buttons">
+                <button className="edit-btn" onClick={() => handleEdit(user)}>Edit</button>
+                <button className="delete-btn" onClick={() => handleDelete(user.user_id)}>Delete</button>
               </td>
             </tr>
           ))}

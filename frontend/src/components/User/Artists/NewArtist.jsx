@@ -36,7 +36,7 @@ export const NewArtist = () => {
                   <div className="w-full h-full">
                     <img
                       className="w-20 h-20  object-cover shadow-lg album_shadow rounded_image"
-                      src={`http://localhost:5000${artist?.image}`}
+                      src={`${artist?.image}`}
                       alt=""
                     />
                   </div>

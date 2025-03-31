@@ -1,44 +1,32 @@
-import axios from "axios";
-import React from "react";
-import { useState,useEffect } from "react";
-import MusicLoader from "../utility/Loader";
-
-const TopArtists = ({artists}) => {
-
-    const [topArtists,setTopArtists] = useState();
-    console.log(artists);
-    
-    useEffect(() => {
-        const url = `http://localhost:5000/artists?ids=${artists.map((artist) => artist[0]).join(",")}&session_details=${session_details}`
-        console.log(url);
-        
-        axios.get(url,{
-            headers:{
-                "Content-Type":"application/json"
-            }
-        }).then((res) => {
-            if(res.status === 200   ){
-                setTopArtists(res.data)
-            }
-        }).catch((error) =>{
-            console.log(error);
-        });
-    },[])
-    return(
-        <div>
-            {
-                topArtists && typeof(topArtists) == '' ?(
-                    topArtists.map((artist) => (
-                        <div>
-                            <h1>{artist?.name}</h1>
-                        </div>
-                    ))
-                ):(
-                    <MusicLoader/>
-                )
-            }
+const TopArtists = ({ artists, reportData }) => {
+  console.log(artists,reportData);
+  
+    return (
+      <div className="h-100">
+        <h2 className="text-xl font-bold">Your Top 5 Artists</h2>
+        <div className="grid grid-cols-1 gap-3">
+          {artists.length > 0 ? (
+            artists.map((artist, index) => (
+              <div key={index} className="flex items-center space-x-3 border-b pb-2">
+                {artist?.images?.[0]?.url && (
+                  <img
+                    className="w-12 h-12 rounded"
+                    src={artist?.images[0].url}
+                    alt={artist?.name}
+                  />
+                )}
+                <p className="text-lg">
+                  {index + 1}. {artist?.name} ({reportData[0]?.topArtists?.[index]?.[1] || 0} plays)
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>No artist data available.</p>
+          )}
         </div>
-    )
-}
-
-export default TopArtists;
+      </div>
+    );
+  };
+  
+  export default TopArtists;
+  

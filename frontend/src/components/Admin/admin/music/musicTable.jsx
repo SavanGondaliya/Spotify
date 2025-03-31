@@ -1,39 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const MusicTable = () => {
   const [songs, setSongs] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const PAGE_SIZE = 500; // Number of songs per request
 
-  // Fetch Songs with Artist Image & Name
-  useEffect(() => {
-    fetch("http://localhost:5000/api/songs")
-      .then((response) => response.json())
-      .then((data) => setSongs(data))
-      .catch((error) => console.error("Error fetching songs:", error));
-  }, []);
+  // Fetch songs with pagination
+  const fetchSongs = useCallback(async () => {
+    if (!hasMore) return; // Stop fetching if no more songs
 
-  // Update state if an updated song was passed from EditMusic
-  useEffect(() => {
-    if (location.state?.updatedSong) {
-      setSongs((prevSongs) =>
-        prevSongs.map((song) =>
-          song.song_id === location.state.updatedSong.song_id ? location.state.updatedSong : song
-        )
-      );
+    try {
+      const response = await fetch(`http://localhost:5000/api/songs?page=${page}&limit=${PAGE_SIZE}`);
+      const data = await response.json();
+      
+      if (data.length < PAGE_SIZE) setHasMore(false); // If fetched less than PAGE_SIZE, no more data
+
+      setSongs((prev) => [...prev, ...data]); // Append new songs
+    } catch (error) {
+      console.error("Error fetching songs:", error);
     }
-  }, [location.state]);
+  }, [page, hasMore]);
+
+  useEffect(() => {
+    fetchSongs();
+  }, [fetchSongs]);
+
+  // Detect scrolling to bottom and load more songs
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 50) {
+        setPage((prevPage) => prevPage + 1); // Load next page
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Handle delete song
   const handleDelete = async (song_id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/songs/${song_id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(`http://localhost:5000/api/songs/${song_id}`, { method: "DELETE" });
 
       if (response.ok) {
-        setSongs(songs.filter((song) => song.song_id !== song_id));
+        setSongs((prevSongs) => prevSongs.filter((song) => song.song_id !== song_id));
       } else {
         console.error("Failed to delete song");
       }
@@ -47,16 +61,12 @@ const MusicTable = () => {
     navigate(`/admin/music/edit/${song.song_id}`, { state: song });
   };
 
-  
+  // Format song duration
   const songDuration = (position) => {
-      
-    let minute = Math.floor((position/1000) / 60)
-    let second = Math.floor((position/1000) % 60)
-    
-    return `${minute} : ${second < 10 ? '0'+second : second}`
-    
-  }
-
+    let minute = Math.floor((position / 1000) / 60);
+    let second = Math.floor((position / 1000) % 60);
+    return `${minute}:${second < 10 ? '0' + second : second}`;
+  };
 
   return (
     <div className="songs">
@@ -77,7 +87,7 @@ const MusicTable = () => {
               <td>
                 <img src={song.artist_image} alt="Artist" style={{ width: "50px", borderRadius: "5px" }} />
               </td>
-              <td>{song.title}</td>
+              <td>{song.song_name}</td>
               <td>{song.artist_name}</td>
               <td>{songDuration(song.duration)}</td>
               <td className="action-buttons">
@@ -88,6 +98,7 @@ const MusicTable = () => {
           ))}
         </tbody>
       </table>
+      {!hasMore && <p style={{ textAlign: "center", marginTop: "10px" }}>No more songs to load</p>}
     </div>
   );
 };

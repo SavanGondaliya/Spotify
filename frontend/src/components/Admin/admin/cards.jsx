@@ -25,7 +25,6 @@ const Cards = () => {
         }).then((res) => {
           if(res.status === 200){
             setCardsData(res.data);
-            console.log(res.data);
           }
         }).catch((error) => {
           console.log(error);
@@ -34,13 +33,9 @@ const Cards = () => {
       
       return (
         <div className="cards">
-      
-      {/* {cardsData?.map((card) => {
-        console.log(card);
-      })} */}
-      {cardsData?.map((card, index) => (
-        <Card key={index} count={Object.keys(card)} label={Object.values(card)} />
-      ))}
+        {cardsData?.map((card, index) => (
+          <Card key={index} count={Object.keys(card)} label={Object.values(card)} />
+        ))}
     </div>
   )
 };

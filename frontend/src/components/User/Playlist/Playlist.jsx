@@ -8,6 +8,7 @@ import { getUserPlaylist } from "../utility/SongManipulation";
 import { addToLibrary,removeFromLibrary } from "../utility/SongManipulation";
 import MusicLoader from "../utility/Loader";
 import { NavLink } from "react-router-dom";
+import PlaylistDetails from "./PlaylistDetail";
 
 export const Playlist = () => {
 
@@ -21,27 +22,25 @@ export const Playlist = () => {
     const [playlistTrackIds,setplayListTrackIds] = useState("");
     const addref = useRef();
     const [savedTracks, setSavedTracks] = useState([]);
-    const [tracks, setTracks] = useState([]);
     const [userPlaylists, setUserPlaylists] = useState([]);
     const [position, setPosition] = useState({ bottom: 0, right: 0 });
     const [activeIndex, setActiveIndex] = useState();
     
     const playlist = async () => {
-    let playlist = await getUserPlaylist();
-    setUserPlaylists(playlist);
+      let playlist = await getUserPlaylist();
+      setUserPlaylists(playlist);
     };
 
     const handleDropDown = (track_id) => {
     if (addref.current) {
-        const rect = addref.current.getBoundingClientRect();
-        setPosition({
-        bottom: window.innerHeight - rect.bottom,
-        right: window.innerWidth - rect.right,
+          const rect = addref.current.getBoundingClientRect();
+          setPosition({
+          bottom: window.innerHeight - rect.bottom,
+          right: window.innerWidth - rect.right,
         });
     }
-    setActiveIndex((prev) => (prev === track_id ? null : track_id));
+      setActiveIndex((prev) => (prev === track_id ? null : track_id));
     };
-
 
     const getPlaylistTracks = async() => {
         try {
@@ -87,6 +86,7 @@ export const Playlist = () => {
         }
     };
 
+    
     useEffect(() => {getPlaylistTracks();},[playlist_id])
     useEffect(() => {getTrackdetails();},[playlistTrackIds])
     useEffect(() => {
@@ -101,28 +101,6 @@ export const Playlist = () => {
           });
         });
     }, [player]);
-            
-    const getTracks = () => {
-      const url = `http://localhost:5000/music?session_details=${session_details}`;
-      try {
-        axios
-          .get(url, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              setTracks(res.data);
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } catch (error) {
-        return error;
-      }
-    };
   
     const likedSongIds = () => {
       try {
@@ -149,7 +127,6 @@ export const Playlist = () => {
   
     useEffect(() => {
       likedSongIds();
-      getTracks();
       playlist();
     },[]);
   
@@ -175,18 +152,20 @@ export const Playlist = () => {
         })
         return () => player.removeListener("player_state_changed", handlePlayerStateChange);
     },[player]); 
-  
+    
+    
 
     return (
         <div className="overflow-auto w-full h-screen p-5">
-          {tracks && tracks?.tracks?.length > 0 ? (
-            tracks?.tracks?.map((track, index) => ( 
+          <PlaylistDetails id={playlist_id} />
+          {playlistTracks && playlistTracks?.tracks?.length > 0 ? (
+            playlistTracks?.tracks?.map((track, index) => ( 
               <div
                   key={track.id}
                   className="w-full flex items-center justify-between p-3 _favourite_row_ cursor-pointer  transition rounded-lg"
                 >
                 <div className="relative w-16 h-16">
-                  {/* Track Image */}
+            
                   <img
                     className="w-full h-full rounded-md object-cover _facourite_image_"
                     src={track?.album?.images[0]?.url}
@@ -217,21 +196,18 @@ export const Playlist = () => {
                     </p>
                   </div>
 
-                  {/* Album Name */}
                   <NavLink to={`http://localhost:5173/album/${track?.album?.id}`}  className="w-1/4 px-4">
                     <h1 className="text-gray-300 text-sm truncate">
                       {track?.album?.name}
                     </h1>
                   </NavLink >
 
-                  {/* Duration */}
                   <div className="w-1/6 text-center">
                     <b className="text-white">
                       {songDuration(track?.duration_ms)}
                     </b>
                   </div>
 
-                  {/* Favourite Icon */}
                   <div className="w-1/12 text-center">
                     {savedTracks?.includes(track.id) ? (
                       <i
@@ -252,8 +228,6 @@ export const Playlist = () => {
                     )}
                   </div>
 
-
-                  {/* More Options Dropdown */}
                   <div className="relative w-1/12 text-center">
                     <i
                       className="ri-more-2-fill text-white text-xl cursor-pointer"

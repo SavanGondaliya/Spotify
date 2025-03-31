@@ -7,18 +7,11 @@
     font-size: .8rem;
 }
 
-input {
-    font-family: "teko";
-    font-weight: 500;
-    height: .8em;
-    border: none;
-}
 
 body {
     margin: 0;
     font-family: teko;
     background-color: #05040c;
-    color: white;
     overflow: hidden;
 }
 
@@ -105,37 +98,6 @@ a {
     justify-content: space-between;
 }
 
-.cards {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 70px;
-}
-
-.card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: #282870;
-    padding: 20px 25px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 5px 5px 0px 1px #4949bf;
-    width: 100px;
-    height: 100px;
-}
-
-.card h3 {
-    font-size: 35px;
-    margin-bottom: -20px;
-    font-weight: 700;
-}
-
-.card p {
-    color: #facc15;
-    font-weight: 700;
-    font-size: 20px;
-}
-
 .auth {
     display: flex;
     align-items: center;
@@ -164,101 +126,98 @@ a {
     cursor: pointer;
 }
 
-.search-bar {
+
+.__artist_search_bar__{
     display: flex;
     align-items: center;
     background-color: #303030;
-    border-radius: 3px;
     overflow: hidden;
-    box-shadow: 3px 3px 0px 1px #4949bf;
-
-}
-
-.search-bar input {
-    padding: 12px 20px;
+    border-radius: 3px;
+    padding: 5px 10px;
     font-size: 14px;
-    color: white;
-    background-color: transparent;
     border: none;
     outline: none;
     width: 92%;
+    box-shadow: 3px 3px 0px 1px #4949bf;
 }
 
-.search-bar .search-btn {
-    background-color: #33333300;
-    padding: 8px 12px;
+.__search_input__ , .__search_input__:focus{
+    background-color: #303030;
+    font-size: 20px;
+    width: 95%;
     border: none;
-    cursor: pointer;
+    outline: none;
 }
 
-.search-bar .ri-search-line {
+.__artist_search_bar__ .ri-search-line {
     font-size: 16px;
     color: white;
 }
-
 .songs {
-    width: 97%;
-    height: 100%;
-    margin-top: 25px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.songs h3 {
+    margin-bottom: 15px;
 }
 
 .songs table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .songs table th,
 .songs table td {
+    padding: 12px 20px;
+    text-align: left;
+    width: auto;
+    transition: all 0.5s ease-in-out;
+}
 
-    padding: 5px 15px;
-    text-align: center;
+.songs table td:last-child {
+    padding: 10px;
+}
+
+.songs table tr {
+    border-bottom: 1px solid #ddd;
 }
 
 .songs table th {
-
-    border-bottom: 1px solid #333;
+    color: #555;
+    font-weight: 600;
 }
 
-
-.songs table th {
-    color: #acacac;
-    font-weight: 400;
+.artist-profile {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    object-fit: cover;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .action-buttons {
     display: flex;
-    flex-direction: row;
-    width: 40px;
-    position: relative;
-    top: 10px;
-    right: 10px;
-    gap: 20px;
+    gap: 10px;
+    justify-content: center;
 }
 
 .action-buttons button {
-    font-family: teko;
+    font-family: "Teko", sans-serif;
     font-size: 1rem;
     font-weight: 500;
-    padding: 5px 15px;
+    padding: 8px 15px;
     background-color: #282870;
     color: white;
     border: none;
-    box-shadow: 2px 2px 0px 1px #4949bf;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
 .action-buttons button:hover {
     background-color: #f2c178;
-    box-shadow: 2px 2px 0px 1px #935d07;
-    color: #000000;
-
-}
-
-.songs .artist-profile {
-    width: 50px;
-    height: 50px;
-    background-position: center;
-    object-fit: cover;
-    box-shadow: 2px 2px 0px 1px #4949bf;
-    background-color: #282870;
+    color: #000;
+    transform: scale(1.05);
 }

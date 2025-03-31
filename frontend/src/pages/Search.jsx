@@ -41,41 +41,53 @@ export const Search = () => {
 
         
     return(
-            <div className="w-screen h-screen">
-            <div className="flex flex-col flex-wrap w-full h-full">
-                <div className="w-[100%] h-[88%]">
-                    <div className="flex w-full h-full">
-                        <div className="w-[15%] h-full">
-                            <VerticalNavbar/>
-                        </div>
-                        <div className="flex flex-wrap">
-                            <div className="w-[100%] sticky top-0">
-                                <HorizontalNavbar/>
+        <div className="w-screen h-screen flex flex-col">
+    {/* Main Content */}
+    <div className="flex flex-grow overflow-hidden">
+        {/* Sidebar (Fixed) */}
+        <div className="w-[15%] h-full bg-gray-900">
+            <VerticalNavbar />
+        </div>
+
+        {/* Main Section (Right Side) */}
+        <div className="flex flex-col flex-grow">
+            {/* Horizontal Navbar (Fixed) */}
+            <div className="w-full sticky top-0 bg-white shadow-md z-10">
+                <HorizontalNavbar />
+            </div>
+
+            {/* Scrollable Main Content */}
+            <div className="container flex flex-col flex-grow overflow-y-auto p-4">
+                {searchResult ? (
+                    <div className="w-full space-y-6">
+                        {/* Top Result & Tracks (Side by Side) */}
+                        <div className="flex justify-between gap-6">
+                            <div className="w-1/3">
+                                <TopResult topResult={searchResult?.tracks?.items[0]} />
                             </div>
-                            <div className="container flex flex-col w-[100%] h-[88%] overflow-y-scroll">
-                                { searchResult ? (
-                                    <div className="w-full">
-                                        <div className="flex justify-around">
-                                           <TopResult topResult={searchResult?.tracks?.items[0]} />
-                                           <Tracks tracks={searchResult?.tracks?.items}/>
-                                        </div>
-                                        <Artists artists={searchResult?.artists?.items}/>
-                                        <Albums albums={searchResult?.albums?.items}/>
-                                    </div>                                    
-                                ):(
-                                    <div>
-                                        Loading....
-                                    </div>
-                                )
-                                }
+                            <div className="w-2/3">
+                                <Tracks tracks={searchResult?.tracks?.items} />
                             </div>
                         </div>
+
+                        {/* Artists & Albums */}
+                        <Artists artists={searchResult?.artists?.items} />
+                        <Albums albums={searchResult?.albums?.items} />
                     </div>
-                </div>
-                <div className="w-[100%] h-[12%] bg-indigo-400">
-                    <PlayerController/>
-                </div>
+                ) : (
+                    <div className="flex items-center justify-center h-full text-lg font-semibold">
+                        Loading...
+                    </div>
+                )}
             </div>
         </div>
+    </div>
+
+    {/* Player Controller (Fixed at Bottom) */}
+    <div className="w-full h-[12%] bg-indigo-400 flex items-center justify-center">
+        <PlayerController />
+    </div>
+        </div>
+
     )
 }

@@ -1,29 +1,22 @@
 import lottie from "lottie-web";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Wave = () => {
+  const containerRef = useRef(null);
+
   useEffect(() => {
-    fetch("/Animation/wave.json") 
-      .then((response) => response.json())
-      .then((data) => {
-        lottie.loadAnimation({
-          container: document.getElementById("lottie"),
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-          animationData: data, 
-        });
-      }).catch((error) => console.log(error)
-      );
+    if (containerRef.current) {
+      lottie.loadAnimation({
+        container: containerRef.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path: "/Animation/wave.json", // Directly use path
+      });
+    }
   }, []);
 
-  return (
-      <div
-        id="lottie"
-        className="w-full h-full overflow-hidden"
-      ></div>
-  );
-
+  return <div ref={containerRef} className="w-full h-full pointer-events-none"></div>;
 };
 
 export default Wave;

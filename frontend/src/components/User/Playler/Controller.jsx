@@ -1,12 +1,11 @@
 import React,{useState,useEffect,useRef} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
-import { Play,Pause,skipToNext,skipToPrevious,songDuration,RepeatMode,seekSong,setVolume } from "../utility/SongManipulation";
+import { Play,Pause,skipToNext,skipToPrevious,songDuration,RepeatMode,seekSong,setVolume,playbackShuffle } from "../utility/SongManipulation";
 import "./style.css";
 import { NavLink } from "react-router-dom";
-import { Queue } from "./Queue";
 import { PlayRandom } from "../utility/SongManipulation";
 
-export const PlayerController = () => {
+export const PlayerController = ({isQueueVisible,setIsQueueVisible}) => {
     
     const session_details = sessionStorage.getItem("session_details");
     const playerDetails = JSON.parse(localStorage.getItem("player_details"));
@@ -23,6 +22,8 @@ export const PlayerController = () => {
     const [volume,getVolume] = useState(100);
     const [queue,setQueue] = useState(false)
     const [hasPlayedNext, setHasPlayedNext] = useState(false);
+    const [shuffle,setShuffle] = useState(true);
+    const [seekPosition,setSeekPosition] = useState(0);
     
     useEffect(() => {
         if (!player) return; 
@@ -41,12 +42,9 @@ export const PlayerController = () => {
                 return;
             }
             setCurrentlyPlaying(state);
-            localStorage.setItem("player_details",JSON.stringify(state));            
-            
         })
         return () => player.removeListener("player_state_changed", handlePlayerStateChange);
     },[player]); 
-
     useEffect(() => { 
         if (!player) return;
 
@@ -69,9 +67,8 @@ export const PlayerController = () => {
         }, 900);
 
         return () => clearInterval(intervalRef.current);
-}, [player, hasPlayedNext]);
+      }, [player, hasPlayedNext]);
 
-    
     
     const handleMusic = (id,type) => {
         if(isPlay == id){
@@ -84,10 +81,14 @@ export const PlayerController = () => {
         }
     }
 
-    const skipSong = (position,deviceId) => {
-        trackerRef.current.value = position
-        seekSong(position,deviceId)
-    }
+    const skipSong = (position, deviceId) => {
+      setSeekPosition(position);
+      if (trackerRef.current) {
+          trackerRef.current.value = position;  // Ensures UI reflects change
+      }
+      seekSong(position, deviceId);
+  };
+  
 
     const changeVolume = (volume,deviceId) => {
         volumeRef.current.value = volume;
@@ -100,14 +101,14 @@ export const PlayerController = () => {
       <div className="w-screen h-full">
         {currentlyPlaying && Object.keys(currentlyPlaying).length > 0 ? (
           <div
-            key={currentlyPlaying.track_window.current_track.name}
+            key={currentlyPlaying?.track_window?.current_track?.name}
             className="flex justify-between items-center w-full h-full py-5 player_container"
           >
 
             <div className="flex items-center w-[25%] px-5 space-x-3">
               <img
                 className="w-12 h-12 rounded"
-                src={currentlyPlaying.track_window.current_track.album.images[0].url}
+                src={currentlyPlaying?.track_window?.current_track?.album?.images[0]?.url}
                 alt="Album Art"
               />
               <div className="flex flex-col">
@@ -129,7 +130,7 @@ export const PlayerController = () => {
               <i onClick={() => skipToPrevious(deviceId)} className="ri-skip-left-fill text-3xl cursor-pointer"></i>
 
               <i
-                onClick={() => handleMusic(currentlyPlaying.track_window.current_track.id, "track", positionMs)}
+                onClick={() => handleMusic(currentlyPlaying?.track_window?.current_track?.id, "track", positionMs)}
                 className={`text-4xl cursor-pointer ${
                   currentlyPlaying.paused ? "ri-play-circle-fill" : "ri-pause-circle-fill"
                 }`}
@@ -141,12 +142,12 @@ export const PlayerController = () => {
                 type="range"
                 ref={trackerRef}
                 className="w-[50%] music-slider"
-                max={currentlyPlaying.duration}
+                max={currentlyPlaying?.duration}
                 onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
               />
 
               <p className="text-sm">
-                {songDuration(currentTime)} / {songDuration(currentlyPlaying.duration)}
+                {songDuration(currentTime)} / {songDuration(currentlyPlaying?.duration)}
               </p>
             </div>
 
@@ -163,29 +164,32 @@ export const PlayerController = () => {
                 onMouseUp={() => changeVolume(volumeRef.current.value, deviceId)}
               />
 
-              <i className="ri-shuffle-line cursor-pointer"></i>
+              <div onClick={() => {playbackShuffle(deviceId,shuffle);setShuffle((prev) => !prev)}}>
+                <i className="ri-shuffle-line cursor-pointer"></i>
+              </div>
 
               <div className="cursor-pointer" onClick={() => RepeatMode(deviceId, repeatMode === 0 ? "context" : repeatMode === 1 ? "track" : "off")}>
                 <i className={`ri-repeat${repeatMode === 1 ? "-2" : repeatMode === 2 ? "-one" : ""}-fill`}></i>
               </div>
 
-              <i className="ri-order-play-line cursor-pointer"></i>
-              <Queue />
+              <div onClick={() => {setIsQueueVisible((prev) => !prev)}}>
+                <i className="ri-order-play-line cursor-pointer"></i>
+              </div>
 
               <NavLink to="/lyrics">
-                <i className="ri-closed-captioning-line cursor-pointer"></i>
+                <i class="ri-fullscreen-fill"></i>
               </NavLink>
             </div>
           </div>
         ) : (
           <div
-            key={playerDetails.track_window.current_track.name}
+            key={playerDetails?.track_window?.current_track?.name}
             className="flex justify-between items-center w-full h-full py-5 player_container"
           >
             <div className="flex items-center w-[25%] px-5 space-x-3">
               <img
                 className="w-12 h-12 rounded"
-                src={playerDetails.track_window.current_track.album.images[0].url}
+                src={playerDetails?.track_window?.current_track?.album?.images[0]?.url}
                 alt="Album Art"
               />
               <div className="flex flex-col">
@@ -207,10 +211,8 @@ export const PlayerController = () => {
               <i onClick={() => skipToPrevious(deviceId)} className="ri-skip-left-fill text-3xl cursor-pointer"></i>
 
               <i
-                onClick={() => handleMusic(playerDetails.track_window.current_track.id, "track", positionMs)}
-                className={`text-4xl cursor-pointer ${
-                  playerDetails.paused ? "ri-play-circle-fill" : "ri-pause-circle-fill"
-                }`}
+                onClick={() => handleMusic(playerDetails?.track_window?.current_track?.id, "track", positionMs)}
+                className="text-4xl cursor-pointer ri-play-circle-fill"
               ></i>
 
               <i onClick={() => skipToNext(deviceId)} className="ri-skip-right-fill text-3xl cursor-pointer"></i>
@@ -219,12 +221,12 @@ export const PlayerController = () => {
                 type="range"
                 ref={trackerRef}
                 className="w-[50%] music-slider"
-                max={playerDetails.duration}
+                max={playerDetails?.duration}
                 onMouseUp={() => skipSong(trackerRef.current.value, deviceId)}
               />
 
               <p className="text-sm">
-               {songDuration(playerDetails.duration)}
+               {songDuration(playerDetails?.duration)}
               </p>
             </div>
 
@@ -241,17 +243,18 @@ export const PlayerController = () => {
                 onMouseUp={() => changeVolume(volumeRef.current.value, deviceId)}
               />
 
-              <i className="ri-shuffle-line cursor-pointer"></i>
-
+              <div onClick={() => {playbackShuffle(deviceId,shuffle);setShuffle((prev) => !prev)}}>
+                <i className="ri-shuffle-line cursor-pointer"></i>
+              </div>
+              
               <div className="cursor-pointer" onClick={() => RepeatMode(deviceId, repeatMode === 0 ? "context" : repeatMode === 1 ? "track" : "off")}>
                 <i className={`ri-repeat${repeatMode === 1 ? "-2" : repeatMode === 2 ? "-one" : ""}-fill`}></i>
               </div>
 
               <i className="ri-order-play-line cursor-pointer"></i>
-              <Queue />
 
               <NavLink to="/lyrics">
-                <i className="ri-closed-captioning-line cursor-pointer"></i>
+                <i class="ri-fullscreen-fill"></i>
               </NavLink>
             </div>
           </div>

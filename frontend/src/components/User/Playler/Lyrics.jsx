@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 
-
 export const Lyrics = ({song_name,artist_name}) => {
 
     
@@ -52,9 +51,7 @@ export const Lyrics = ({song_name,artist_name}) => {
         }
     }
 
-    useEffect(() => {
-        console.log("ueseffect called off.");
-        
+    useEffect(() => {        
         getLyrics();
     },[currentState]);
 

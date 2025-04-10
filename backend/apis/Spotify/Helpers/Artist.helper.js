@@ -10,9 +10,7 @@ export const getArtistGenre = async(id) =>{
             conn.query(query,(err,results,fields) => {
                 if(err){
                     reject(err)
-                }
-                console.log(results);
-                
+                }                
                 resolve(results[0])
             });
         })

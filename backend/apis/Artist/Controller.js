@@ -76,7 +76,6 @@ export const ArtistLogin = async(req, res) => {
 
 
 export const createAlbum = async(req, res) => {
-    console.log('called...');
     
     if (!fs.existsSync(imageUploadDir)) {
         fs.mkdirSync(imageUploadDir, { recursive: true });
@@ -107,7 +106,6 @@ export const createAlbum = async(req, res) => {
         }
         
         const query = `INSERT INTO tblalbum (album_id,album_name, total_tracks, image,artist_id) VALUES (?, ?, ?, ?, ?)`;
-        console.log(query);
         
         conn.query(query, [album_id,album_name, total_tracks, imagePath,artist_id], (err) => {
             if (err) {
@@ -140,13 +138,10 @@ export const deleteAlbum = async(req,res) => {
 
 export const getAlbumById = async(req, res) => {
     try {
-        console.log("called..");
         
         const {id} = req.params;
-        console.log(id);
         
         const query = `SELECT tblalbum.image as albumImage,tblartist.image as artistImage,tblalbum.*,tblartist.* from tblalbum inner join tblartist on tblartist.artist_id = tblalbum.artist_id where tblalbum.album_id = ?`;
-        console.log(query);
         
         conn.query(query,[id],(err,results,fields) => {
             if(!err){
@@ -216,18 +211,14 @@ export const getArtistAlbums = async(req, res) => {
     try {
 
     const {id} = req.params;
-    console.log(id,"request has come");
     
     const query = `SELECT tblalbum.image AS albumImage,tblartist.image AS artistImage,tblalbum.*,tblartist.* from tblalbum inner join tblartist on tblalbum.artist_id = tblartist.artist_id where tblartist.artist_id = '${id}';`
-    console.log(query);
     
     conn.query(query,(err,results,fields) => {
         if(err){
-            console.log(err);
             
             return res.status(400).send({message:"Not Found"})
         }
-        console.log(results);
         
         return res.status(200).send(results)
     });
@@ -240,11 +231,11 @@ export const getArtistAlbums = async(req, res) => {
 export const addTrack = async(req, res) => {
     try {
 
-        console.log("called... Addtrack");
         const form = new IncomingForm({ 
             trackUploadDir,
             keepExtensions: true,
         });
+
         form.parse(req, async (err, fields, files) => {
             if (err) {
                 console.error("Error parsing form:", err);
@@ -257,26 +248,20 @@ export const addTrack = async(req, res) => {
             const track_name = fields.track_name[0];
             const track_number = fields.track_number[0];
             const file = files.track_url[0];
-            console.log("artist_id :: ",artist_id,"track_id::",track_id,"album_id :: ",album_id,"track_name :: ","track_name :: ",track_name,"track_number :: ",track_number,"Audio file :: ",file);
             
             if (!album_id || !track_name || !file) {
                 return res.status(400).json({ message: "Missing required fields" });            }
             
             const metadata = await parseFile(file.filepath);
-            console.log(metadata);
             
             const duration = metadata.format.duration;           
-            console.log(duration);
             
             const trackPath = await setAudioFile(file,trackUploadDir);
-            console.log(trackPath);
             
             const query = `INSERT INTO tblsongs (song_id,title,duration,song_url,artist_id,album_id,track_number) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            console.log(query);
             
             conn.query(query, [track_id,track_name,duration,trackPath,artist_id,album_id,track_number], (err) => {
                 if (err) {
-                    console.error("Database error:", err);
                     return res.status(500).json({ message: "Database error" });
                 }
                 res.status(200).json({ success: "true"});
@@ -347,7 +332,6 @@ export const  getTrackById = async(req,res) => {
 
 export const updateTrack = async(req,res) => {
     try {
-        console.log("called update");
         
         const form = new IncomingForm({ 
             trackUploadDir,
@@ -374,7 +358,6 @@ export const updateTrack = async(req,res) => {
                 const metadata = await parseFile(files.track_url[0]?.filepath);
                 duration = metadata.format.duration;
             }
-            console.log(track_name,duration,trackPath,track_number,trackPath);
             
             const query = `UPDATE tblsongs set title=?,duration=?,song_url=?,album_id=?,track_number=? where song_id  = ?`;
             conn.query(query, [track_name,Math.floor(duration),trackPath,album_id,track_number,track_id], (err) => {
@@ -418,10 +401,8 @@ export const topTracks = async(req,res) => {
         
         conn.query(query,[artist_id],(err,results) => {
             if(err){
-                console.log(err);
                 return res.status(404).send({message:err})
             }
-            console.log(err);
             return res.status(200).send(results);
         })
 
@@ -444,5 +425,23 @@ export const getAlbumTracks = async(req, res) => {
         })
     } catch (error) {
         return error;
+    }
+}
+export const getTotalTracks = async(req, res) => {
+    try {
+        
+        const {id} = req.params;
+
+        const query = `SELECT COUNT(*) AS total_tracks FROM tblsongs WHERE artist_id = '${id}';`;
+        
+        conn.query(query,(err,results) => {
+            if(!err){
+                console.log(results);
+                return res.status(200).send(results)
+            }
+            return res.status(400).send(err);
+        })
+    } catch (error) {
+        return res.status(500).send({message: error.message});
     }
 }

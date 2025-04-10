@@ -92,8 +92,6 @@ export const TrendingSong = () => {
     getTrendingSong();
   }, [trendingId]);
 
-  useEffect(() => {}, []);
-  console.log(trendingSong);
 
   return (
     <div className="w-full flex justify-center items-center py-8 relative">

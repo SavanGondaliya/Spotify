@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import noizeeLogo from "../../public/Noizee_For_Artists.svg"
+import { NavLink } from "react-router-dom";
 
 const NoizeeForArtists = () => {
   useEffect(() => {
@@ -21,15 +22,15 @@ const NoizeeForArtists = () => {
   }, []);
 
   return (
-    <div className="container">
+    <div className="w-[100%] h-[100vh]">
       <div className="background"></div>
       <header>
         <div className="logo">
           <img src={noizeeLogo} alt="Noizee Logo" />
         </div>
         <nav>
-          <button className="btn">Login</button>
-          <button className="btn">Register</button>
+          <NavLink to={'http://localhost:5173/artist/register'} className="cursor-pointer btn">Login</NavLink>
+          <NavLink to={'http://localhost:5173/artist/register'} className="cursor-pointer btn">Register</NavLink>
         </nav>
       </header>
       <main>
@@ -60,12 +61,12 @@ const NoizeeForArtists = () => {
           color: white;
           overflow: hidden;
         }
-        .background {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-        }
+        // .background {
+        //   position: absolute;
+        //   width: 100%;
+        //   height: 100%;
+        //   overflow: hidden;
+        // }
         .music-note {
           position: absolute;
           font-size: 12px;

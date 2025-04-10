@@ -22,7 +22,7 @@ export const PopulerTracks = () => {
   const [populerTracks, setPopulerTracks] = useState();
   const [isPlay, setIsPlay] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
-  const [position, setPosition] = useState({ bottom: 0, right: -20 });
+  const [position, setPosition] = useState({ bottom: 10, right: 10 });
   const [currentState, setCurrentState] = useState(null);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [savedTracks, setSavedTracks] = useState([]);
@@ -189,7 +189,7 @@ export const PopulerTracks = () => {
                   >
                     <i className="ri-more-2-fill text-white"></i>
                     {activeIndex === index && (
-                      <div className="absolute text-white right-0 bottom-0 bg-gray-800 p-2 rounded-md">
+                      <div className="absolute text-white right-8 bottom-0 bg-gray-800 p-2 rounded-md">
                         <KebabDropDown
                           playlists={userPlaylists}
                           artists={track?.artists}

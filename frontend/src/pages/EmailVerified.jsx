@@ -54,7 +54,7 @@ const VerifyEmail = () => {
   }, [searchParams]); 
 
     const closeAndRedirect = () => {
-    window.location.href = "/";
+    window.location.href = "/auth/user";
   };
   
   useEffect(() => {
@@ -73,7 +73,7 @@ const VerifyEmail = () => {
       <p className="text-lg">{message}</p>
       {verified && (
         <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={closeAndRedirect}>
-            Click Here To Go To Home
+            Click Here To Go To Login
         </button>
       )}
     </div>

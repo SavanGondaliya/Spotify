@@ -51,7 +51,7 @@ export const Playlist = () => {
                 }
             });
             if(response.status === 200){
-                setplayListTrackIds(response.data[0].song_id)
+                setplayListTrackIds(response?.data[0]?.song_id)
             }
         } catch (error) {
             return error
@@ -211,7 +211,7 @@ export const Playlist = () => {
                   <div className="w-1/12 text-center">
                     {savedTracks?.includes(track.id) ? (
                       <i
-                        className="ri-check-fill text-xl cursor-pointer"
+                        className="ri-check-circle-fill text-xl cursor-pointer"
                         onClick={async () => {
                           await removeFromLibrary(track.id);
                           likedSongIds(); 

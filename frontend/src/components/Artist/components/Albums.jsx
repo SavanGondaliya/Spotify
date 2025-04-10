@@ -17,8 +17,7 @@ export const ArtistAlbums = () => {
   const [showUpdateAlbumForm, setShowUpdateAlbumForm] = useState(false);
   const [showUpdateTrackForm, setShowUpdateTrackForm] = useState(false);
   const [album,setAlbum] = useState([]);
-  console.log(albumTracks);
-    
+      
   useEffect(() => {
     const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"))?.[0];
     if (!artistDetails) return;
@@ -28,7 +27,8 @@ export const ArtistAlbums = () => {
       .then((res) => res.status === 200 && setAlbums(res.data))
       .catch(console.log);
   }, [refresh]);
-
+  console.log("AlbumTracks",albumTracks);
+  
   useEffect(() => {
     
     axios.get(`http://localhost:5000/album/local/${album.album_id}`, { headers: { "Content-Type": "application/json" } })
@@ -74,7 +74,7 @@ export const ArtistAlbums = () => {
               <div className="space-y-4">
                 {albumTracks ? albumTracks.map((track) => (
                   <div key={track?.song_id} className="flex items-center  p-4 rounded-lg shadow-md">
-                    <img className="w-16 h-16 object-cover rounded-md" src={track?.artistImage} alt="Album Cover" />
+                    <img className="w-16 h-16 object-cover rounded-md" src={track?.AlbumImage} alt="Album Cover" />
                     <div className="flex flex-col flex-grow px-4 text-white">
                       <h1 className="text-lg font-bold">{track?.title}</h1>
                       <p className="text-sm text-gray-400">{track?.artist_name}</p>
@@ -122,7 +122,7 @@ export const ArtistAlbums = () => {
                       {albums.map((album) => (
                         <tr key={album.album_id} className="border-b border-indigo-900 ">
                           <td className="p-3">
-                            <img src={album.albumImage} alt="album" className="w-16 h-16 object-cover rounded-md" />
+                            <img src={album?.artistImage} alt="album" className="w-16 h-16 object-cover rounded-md" />
                           </td>
                           <td className="p-3 text-white cursor-pointer" onClick={() => {setRefresh((prev) => !prev),setAlbum(album)}}>
                             {album.album_name}

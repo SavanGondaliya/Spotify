@@ -24,8 +24,6 @@ const ArtistDashboardPage = () => {
         })
         .then((res) => {
           if (res.status === 200) {
-
-            
             setArtist(res.data);
           }
         })
@@ -49,10 +47,9 @@ const ArtistDashboardPage = () => {
       <div className="w-1/5 text-white">
         <Sidebar />
       </div>
-
       
       <div className="flex flex-col w-full p-6 space-y-6 overflow-y-auto min-h-0">
-        <ArtistProfile />
+        <ArtistProfile  />
         <TopTracks />
         <ArtistAlbumPage />
         <AboutSection aboutArtist={artistDetails?.bio} />

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Waves } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const ArtistRegister = () => {
 
@@ -11,6 +13,7 @@ const ArtistRegister = () => {
     const [genre,setGenre] = useState("");
     const [loginName,setLoginName] = useState("");
     const [loginPassword,setLoginPassword] = useState("");
+    const [isLogin, setIsLogin] = useState(true);
 
     const loginDetails = {
         "username": loginName,
@@ -41,8 +44,6 @@ const ArtistRegister = () => {
     }
 
     const handleLogin = () => {
-        console.log('called');
-            console.log(loginName,loginPassword);
             
         axios.post(`http://localhost:5000/artist/login`,{
             "name":loginName,
@@ -70,324 +71,301 @@ const ArtistRegister = () => {
           $(".form-container").toggleClass("active");
           $(currentlyVisible).fadeToggle(150, function () {
             $(currentlyHidden).fadeToggle();
-            [currentlyVisible, currentlyHidden] = [currentlyHidden, currentlyVisible]; // Swap variables
+            [currentlyVisible, currentlyHidden] = [currentlyHidden, currentlyVisible]; 
           });
         });
     
         return () => {
-          $(".info-item .btn").off("click"); // Cleanup event listeners to prevent memory leaks
+          $(".info-item .btn").off("click"); 
         };
     }, []);    
 
     return (
-        <div class="outer-container">
-            <div class="container">
-            <div class="left-login-logo">
-                <img src="/Artist_For_Noizee.svg" alt="Logo" class="logo" />
-                <p class="slogan">Where Every Beat Hits Different</p>
+        <div>
+        <div className="outer-container flex items-center justify-center min-h-screen bg-gray-900">
+          <div className="absolute rotate-350 scale-120">
+            <Waves />
+          </div>
+          <div className="container  bg-indigo-800  rounded-lg shadow-lg relative">
+            <div className="flex justify-center items-center flex-col absolute left-28 text-center">
+              <img className="w-30 h-30" src="/Noizee_For_Artists.svg" alt="Logo" />
+              <p className="slogan text-white text-sm">
+                Where Every Beat Hits Different
+              </p>
             </div>
-            <div class="right-login-logo">
-                <img src="/Artist_For_Noizee.svg" alt="Logo" class="logo"/>
-                <p class="slogan">Where Every Beat Hits Different</p>
+            <div className="flex justify-center items-center flex-col mx-25 absolute right-10 text-center">
+              <img src="/Noizee_For_Artists.svg" alt="Logo" className="w-30 h-30" />
+              <p className="slogan text-white text-sm">
+                Where Every Beat Hits Different
+              </p>
             </div>
-            <div class="have-account">
-                <div class="info-container">
-                    <div class="info-item log-in">
-                        <p>Already have an account?</p>
-                        <div class="btn">Login</div>
-                    </div>
-                    <div class="info-item signup">
-                        <p>Don't have an account?</p>
-                        <div class="btn">Sign Up</div>
-                    </div>
+  
+            <div className="have-account flex left-1 justify-center gap-10 my-4 mx-12">
+              <div className="info-item text-center">
+                <p className="text-white mb-2">Already have an account?</p>
+                <div
+                  className="btn __swap_btn__  py-2 rounded font-bold shadow-md transition"
+                  onClick={() => setIsLogin((prev) => !prev)}
+                >
+                  Login
                 </div>
-            </div>
-            <div className="form-container">
-                <div class="form-log-in">
-                    <p class="login-title">Login Account</p>
-                    <p class="login-title-detail">Login to your account</p><br/>
-                    <div>
-                        <input type="text" value={loginName} onChange={(e) => setLoginName(e.target.value)} placeholder="Enter The Username"/>
-                    </div>
-                    <div>
-                        <input type="text" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="Enter The password" />
-                    </div>
-                    <div>
-                        <button onClick={() => handleLogin()}>Login</button>
-                    </div>
+              </div>
+              <div className="info-item text-center">
+                <p className="text-white mb-2">Don't have an account?</p>
+                <div
+                  className="btn __swap_btn__  py-2 rounded font-bold shadow-md transition"
+                  onClick={() => setIsLogin((prev) => !prev)}
+                >
+                  Sign Up
                 </div>
-                <div className="form-signup" style={{"display": "none"}}>
-                    <div>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter The Artist Name" />
-                    </div>
-                    <div>
-                        <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter the email" />
-                    </div>
-                    <div>
-                        <input type="text" value={genre} onChange={(e) => setGenre(e.target.value)} placeholder="Enter the Genre" />
-                    </div>
-                    <div>
-                        <input
+              </div>
+            </div>
+  
+            <div className="form-container  p-6 rounded-lg shadow-lg transition-all duration-500">
+              {isLogin && isLogin == true ? (
+                <div className="form-log-in text-black space-y-4">
+                  <div className="text-center">
+                    <p className="text-lg font-bold">Login Account</p>
+                    <p className="text-sm text-gray-700">Login to your account</p>
+                  </div>
+  
+                  <div className="space-y-2">
+                    <label className="block font-semibold">Email</label>
+                    <input
+                      className="w-full p-3 __input_shadows__  rounded outline-0 bg-white"
+                      name="Email"
+                      placeholder="Enter your email"
+                      type="email"
+                      onChange={(e) => setLoginName(e.target.value)}
+                    />
+                  </div>
+  
+                  <div className="space-y-2">
+                    <label className="block font-semibold">Password</label>
+                    <input
+                      className="w-full p-3 __input_shadows__ rounded outline-0 bg-white"
+                      name="Password"
+                      placeholder="Enter Your Password"
+                      type="password"
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <NavLink to={`/forgotpassword`} className="text-sm">
+                      Forgot Password?
+                    </NavLink>
+                  </div>
+  
+                  <div
+                    className="w-full py-3 __register_btn__ text-white text-center rounded font-bold shadow-md transition"
+                    onClick={() => {
+                      handleLogin();
+                    }}
+                  >
+                    Login
+                  </div>
+                </div>
+              ) : (
+                <div className="form-signup text-black flex justify-center flex-col ">
+                  <p className="text-lg font-bold text-center">Sign Up Account</p>
+                  <p className="text-sm text-gray-700 text-center">
+                    Enter your personal data to create an account
+                  </p>
+  
+                  <div className="space-y-1">
+                    <label className="block font-semibold">Artist Name</label>
+                    <input
+                      className="w-full p-3 __input_shadows__ bg-white outline-0 rounded"
+                      type="text"
+                      placeholder="Enter Your Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+  
+                  <div className="space-y-1">
+                    <label className="block font-semibold">Image</label>
+                    <input
+                            className="w-full bg-white __input_shadows__ rounded"
                             type="file"
                             onChange={(e) => setFileName(e.target.files[0])} 
                         />
-                    </div>
-                    <div>
-                        <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter the Password" />
-                    </div>
-                    <div>
-                        <textarea type="text" value={bio} onChange={(e) => setBio(e.target.value)} />
-                    </div>
-                    <div>
-                        <button onClick={() => handleRegister()}>Register</button>
-                    </div>
-                    
+                  </div>
+  
+                  <div className="space-y-1">
+                    <label className="block font-semibold">Genre</label>
+                    <select
+                      className="w-35 p-3 __input_shadows__ bg-white outline-0 rounded"
+                      value={genre}
+                      onChange={(e) => setGenre(e.target.value)}
+                    >
+                      <option className="text-gray-500" value="#" disabled>
+                        Choose your gender
+                      </option>
+                        <option value="pop">Pop</option>
+                        <option value="rock">Rock</option>
+                        <option value="hiphop">Hip-Hop</option>
+                        <option value="classical">Classical</option>
+                        <option value="country">Country</option>
+                        
+                    </select>
+                  </div>
+  
+                  <div className="space-y-1">
+                    <label className="block font-semibold">Password</label>
+                    <input
+                      className="w-full __input_shadows__ bg-white outline-0 p-3 rounded"
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="password"
+                      value={password}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+  
+                  <div
+                    className="w-full text-center __register_btn__ py-3 my-5 text-white rounded font-bold transition "
+                    onClick={handleRegister}
+                  >
+                    Sign Up
+                  </div>
                 </div>
+              )}
             </div>
+          </div>
         </div>
-        <style jsx>{`
-            
-        ::placeholder {
-            color: #7d7da0;
-            font-size: .75rem;
-        }
-
-        a {
-            text-decoration: none;
-            color: #404040;
-            margin-left: .7em;
-            font-weight: 500;
-            position: relative;
-            top: .1em;
-            font-size: .8rem;
-        }
-
-        input {
-            font-family: "teko";
-            font-weight: 500;
-            height: .8em;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 5px 5px 0px 1px #4949bf;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: teko;
-        }
-
-        .outer-container {
-            background-color: #05040c;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background-color: #282870;
-            width: 39em;
-            height: 15em;
-            display: flex;
-            position: relative;
-            border-radius: 5px;
-            box-shadow: 10px 10px 0px 1px #4949bf;
-        }
-
-        .form-container {
-            margin-left: 25px;
-            background-color: #f2c178;
-            height: 25em;
-            width: 18.4em;
-            align-self: center;
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            position: absolute;
-            transition: margin-left 1.5s;
-            border-radius: 8px;
-            box-shadow: 10px 10px 0px 1px rgba(147, 93, 7, 1);
-        }
-
-        .form-container.active {
-            margin-left: 19.4em;
-        }
-
-        .form-container input {
-            display: block;
-            padding: 10px;
-            /* width: 250px; */
-            margin: 5px;
-        }
-
-        .form-container .btn {
-            cursor: pointer;
-            display: block;
-            padding: 7px;
-            font-weight: 600;
-            width: 13.5em;
-            margin: 5px;
-            font-size: 1em;
-            text-align: center;
-            background-color: #282870;
-            box-shadow: 5px 5px 0px 1px #4949bf;
-            border-radius: 8px;
-            color: white;
-            opacity: 1;
-            position: relative;
-            top: .7em;
-        }
-
-        .form-container .btn:hover {
-            opacity: 0.7;
-        }
-
-        .info-container {
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .form-container input {
-            width: 16em;
-        }
-
-        .info-item {
-            width: 40%;
-            color: white;
-            font-weight: 500;
-            margin-left: 2.4em;
-            margin-top: 1.7em;
-            font-size: 1.2rem;
-            text-align: center;
-        }
-        
-        .info-item p {
-            width: 25em;
-            position: relative;
-            top: 1.6em;
-            right: 5em;
-        }
-        .have-account{
-            top: 3.6em;
-            position: relative;
-            right: 2em;
-            width: 95%;
-        }
-        
-        .info-item .btn {
-            top: 1em;
-            cursor: pointer;
-            background-color: transparent;
-            width: 4em;
-            font-weight: bold;
-            padding: 5px 10px;
-            left: 6.2em;
-            position: relative;
-            color: #282870;
-            background-color: #ffffff;
-            box-shadow: 5px 5px 0px 1px #4949bf;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .info-item .btn:hover {
-            scale: 1.1;
-            background-color: #f2c178;
-            box-shadow: 5px 5px 0px 1px #935d07;
-        }
-
-        .login-detail {
-            font-weight: 600;
-            font-size: .8rem;
-            position: relative;
-            left: .7em;
-            top: .4em;
-        }
-
-        .login-title {
-            position: relative;
-            font-size: 1.7rem;
-            font-weight: 600;
-            margin-top: -1.2em;
-            text-align: center;
-            
-        }
-        
-        .login-title-detail {
-            top: 8px;
-            position: relative;
-            font-size: .75rem;
-            margin-top: -4em;
-            text-align: center;
-
-        }
-
-        .signup-row {
-            display: flex;
-            position: relative;
-        }
-
-        .name-group {
-            display: flex;
-            justify-content: space-between;
-            width: 97%;
-            margin-bottom: 1px;
-        }
-
-        .name-field {
-            width: 48%;
-            /* Adjust width as needed */
-        }
-
-        .name-field label {
-            display: block;
-            font-size: .8rem;
-            font-weight: 600;
-            position: relative;
-            top: 5px;
-            left: 10px;
-        }
-
-        .name-field input {
-            width: 6.75em;
-        }
-
-        .left-login-logo {
-            width: 11em;
-            left: 4.7em;
-            top: 2.4em;
-            position: absolute;
-            text-align: center;
-        }
-        .left-login-logo .slogan{
-            position: relative;
-            bottom: 1em;
-            font-size: 13px;
-            color: white;
-        }
-        .right-login-logo {
-            width: 11em;
-            right: 4.5em;
-            top: 2.4em;
-            position: absolute;
-            text-align: center;
-        }
-        .right-login-logo .slogan{
-            position: relative;
-            bottom: 1em;
-            font-size: 13px;
-            color: white;
-        }
-        `}
+        <style>
+  
+          {`
+                ::placeholder {
+                    color: #7d7da0;
+                    font-size: .75rem;
+                }
+  
+                a {
+                    text-decoration: none;
+                    color: #404040;
+                    margin-left: .7em;
+                    font-weight: 500;
+                    position: relative;
+                    top: .1em;
+                    font-size: .8rem;
+                }
+  
+                .__input_shadows__{
+                  box-shadow: 5px 5px 0px #4949bf; 
+                }
+  
+                .__register_btn__{
+                  background-color: #282870;
+                  box-shadow : 5px 5px 0px #4949bf
+                }
+  
+                .outer-container {
+                    background-color: #05040c;
+                    width: 100vw;
+                    height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+  
+                .container {
+                    background-color: #282870;
+                    width: 50em;
+                    height: 20em;
+                    display: flex;
+                    position: relative;
+                    border-radius: 5px;
+                    box-shadow: 10px 10px 0px 1px #4949bf;
+                }
+  
+                .form-container {
+                    margin-left: 70px;
+                    background-color: #f2c178;
+                    height: 30em;
+                    width: 20em;
+                    align-self: center;
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                    position: absolute;
+                    transition: margin-left 1.5s;
+                    border-radius: 8px;
+                }
+  
+                .form-container.active {
+                    margin-left: 25em;
+                }
+  
+                .form-container input {
+                    display: block;
+                    padding: 5px;
+                }
+  
+                .info-container {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                }
+  
+                .form-container input {
+                    width: 16em;
+                }
+  
+                .info-item {
+                    width: 50%;
+                    color: white;
+                    font-weight: 500;
+                    margin-top: 1.7em;
+                    font-size: 1.2rem;
+                    text-align: center;
+                }
+                
+                .info-item p {
+                    width: 25em;
+                    position: relative;
+                    top: 1.6em;
+                    right: 5em;
+                }
+  
+                .have-account{
+                    top: 3.6em;
+                    position: relative;
+                    right: 2em;
+                    width: 100%;
+                }
+                
+                .info-item .btn {
+                    top: 2em;
+                    cursor: pointer;
+                    background-color: transparent;
+                    width: 5em;
+                    font-weight: bold;
+                    padding: 5px 10px;
+                    left: 6.2em;
+                    position: relative;
+                    color: #282870;
+                    background-color: #ffffff;
+                    box-shadow: 5px 5px 0px 1px #4949bf;
+                    font-size: 1rem;
+                }
+  
+                // .info-item .btn:hover {
+                //     scale: 1.1;
+                //     background-color: #f2c178;
+                //     box-shadow: 5px 5px 0px 1px #935d07;
+                // }
+  
+                .__swap_btn__{
+                  background-color: white
+                }
+                `}
         </style>
-    </div>  
+      </div>  
     )
 };
 

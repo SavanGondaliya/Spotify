@@ -6,10 +6,9 @@ const Sidebar = () => {
 
   return (
     <div className="w-60 h-full bg-[#0c0925] shadow-md shadow-[#f2c178] flex flex-col p-5">
-      {/* Logo */}
+      
       <img src="/Noizee_For_Artists.svg" className="w-20 mx-auto mb-6" alt="Noizee" />
 
-      {/* Navigation Menu */}
       <nav className="flex flex-col gap-3">
         <NavLink
           to="/artist/dashboard"

@@ -1,7 +1,7 @@
 import express from "express";
     
 import { addTrack, createAlbum,getArtistAlbums,deleteTrack, getArtistTracks, getTrackById, updateTrack, deleteAlbum,RegisterArtist, getAlbumById, updateAlbum, ArtistLogin, getArtistById } from "./Controller.js";
-import { topTracks,getAlbumTracks } from "./Controller.js";
+import { topTracks,getAlbumTracks,getTotalTracks } from "./Controller.js";
 export const ArtistsRoutes = express.Router();
 
 ArtistsRoutes.post(`/album/create`,createAlbum);
@@ -19,3 +19,4 @@ ArtistsRoutes.get('/track/:id',getTrackById);
 ArtistsRoutes.put('/track/update/:id',updateTrack);
 ArtistsRoutes.get('/toptracks',topTracks)
 ArtistsRoutes.get('/album/local/:id',getAlbumTracks);
+ArtistsRoutes.get('/:id/totalTracks',getTotalTracks);

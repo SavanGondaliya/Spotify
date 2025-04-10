@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
-  { name: "DASHBOARD", icon: "ri-dashboard-line", link: "/admin" },
+  { name: "DASHBOARD", icon: "ri-dashboard-line", link: "/admin/dashboard" },
   { name: "ARTISTS", icon: "ri-user-6-line", link: "/admin/artist" },
   { name: "MUSIC", icon: "ri-music-line", link: "/admin/music" },
   { name: "USERS", icon: "ri-user-line", link: "/admin/user" },

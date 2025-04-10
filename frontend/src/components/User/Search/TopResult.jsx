@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { Play,Pause } from "../utility/SongManipulation";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { useState,useEffect } from "react";
+import MusicLoader from "../utility/Loader";
 
 export const TopResult = ({topResult}) => {
     
@@ -18,6 +19,7 @@ export const TopResult = ({topResult}) => {
                     return;
                 }                
                 setPositionMs(state.position);
+                localStorage.setItem("player_details", JSON.stringify(state));
             });
     },[isPlay]); 
     

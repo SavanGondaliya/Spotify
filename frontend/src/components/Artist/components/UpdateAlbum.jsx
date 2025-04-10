@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 export const UpdateAlbum = ({ setVisible, refresh }) => {
+
     const { id } = useParams();
     const [albumName, setAlbumName] = useState("");
     const [fileName, setFileName] = useState(null);
@@ -18,9 +19,7 @@ export const UpdateAlbum = ({ setVisible, refresh }) => {
             formData.append("total_tracks", totalTracks);
             formData.append("artist_id", artistId);
             formData.append("album_id", albumId);
-            
-            console.log([...formData]);
-            
+                    
             axios.post(`http://localhost:5000/local/album/update/${id}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",

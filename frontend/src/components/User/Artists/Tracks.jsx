@@ -1,13 +1,56 @@
 import axios from "axios";
 import React  from "react";
-import { useState,useEffect } from "react";
+import { useState,useEffect,useCallback,useRef } from "react";
 import MusicLoader from "../utility/Loader";
+import { Play,Pause } from "../utility/SongManipulation";
+import useWebPlayback from "../utility/WebPlayBackSDK";
 
 export const TopHits = () => {
 
     const session_details = sessionStorage.getItem("secret_key");
     const [ids,setIds] = useState();
     const [topHits,setTopHits] = useState();
+    const [isPlay, setIsPlay] = useState(null);
+    const { player, deviceId } = useWebPlayback();
+    const [positionMs, setPositionMs] = useState(0);
+
+
+      useEffect(() => {
+        if (!player) return;
+    
+        const handlePlayerStateChange = (state) => {
+          if (!state) {
+            return;
+          }
+        };
+    
+        player.addListener("player_state_changed", handlePlayerStateChange);
+    
+        player.getCurrentState().then((state) => {
+          if (!state) {
+            return;
+          }
+          console.log(state);
+          setPositionMs(state?.position);
+        });
+        return () =>
+          player.removeListener("player_state_changed", handlePlayerStateChange);
+      }, [player]);
+    
+      
+    const handleMusic = useCallback((id, type) => {
+        if (isPlay === id) {
+            Pause(id, deviceId);
+            setIsPlay(null);
+        } else {
+            if(id != isPlay){
+                setPositionMs(0)
+            }
+            Play(id, deviceId, type, positionMs);
+            setIsPlay(id);
+        }
+    }, [isPlay, deviceId, positionMs]);
+    
 
     const topHitsIds = () => {
         try {
@@ -69,7 +112,7 @@ export const TopHits = () => {
                         topHits && typeof(topHits) == "object" ? (
                             topHits.tracks.map((track) => (
                                 <div className="w-full h-full">
-                                    <div className="w-30 h-50 mx-5 py-5">
+                                    <div className="w-30 h-50 mx-5 py-5" onClick={() => handleMusic(track?.id,"track")}>
                                         <img
                                             className="w-full h-full object-cover rounded shadow-lg __top_hits__"
                                             src={track?.album?.images[0]?.url} 

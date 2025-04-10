@@ -29,8 +29,8 @@ export const createUniqueId = () => {
 export const callback = async (req, res) => {
     
     try {
-        console.log("called");
-        
+        console.log('has come here!!! for call back');
+            
         let code = req.query.code || null;
         let state = req.query.state || null;
         
@@ -66,14 +66,16 @@ export const callback = async (req, res) => {
                         const decrypted = CryptoJS.AES.decrypt(state,"secret_keys");
                         const plaintText = decrypted.toString(CryptoJS.enc.Utf8);    
                         const userId =  createUniqueId();
-                        const {name, email, password, dob, gender} = JSON.parse(plaintText);
-                        
-                        const query = `INSERT INTO tbluser(user_id, name, email, password, dob, gender, session_details) VALUES('${userId}','${name}','${email}','${password}','${dob}','${gender}','${session_details}');`;
+                        const {name, email, password, gender} = JSON.parse(plaintText);
+                        console.log(name,email,password,gender);
+                                   
+                        const query = `INSERT INTO tbluser(user_id, name, email, password,  gender, session_details) VALUES('${userId}','${name}','${email}','${password}','${gender}','${session_details}');`;
                         console.log(query);
                         
                         if (session_details) {
                             conn.query(query, (err) => {
                                 if (err) {
+                                    console.log(err);
                                     return res.status(401).json({ message: "Database error" });
                                 }
                             });
@@ -99,6 +101,7 @@ export const login = (req,res) => {
             if(err){
                 return res.status(404).send({message:"Wrong Credentials"});
             }
+
             if(results != null){
                 return res.status(200).send(results[0]);
             }
@@ -111,15 +114,13 @@ export const login = (req,res) => {
 export const userToken = async(req,res) => {
    
     try{
-        console.log("request come here");
+
         
         let accessToken = null;  
     
         const userDetails = JSON.parse(req.query.session_details);  
-        console.log("have user details",userDetails);
         
         const isTokenValid = await isTokenExpired(userDetails);
-        console.log(isTokenValid);
         
         if(isTokenValid){
             accessToken = await refreshToken(userDetails);  

@@ -32,11 +32,11 @@ export const KebabDropDown = ({ playlists, artists, track_id }) => {
     }, []);
 
     return (
-        <div className="relative w-30 text-center bg-gray-800 text-white p-2 rounded-md" ref={dropdownRef}>
+        <div className="relative w-30 text-center bg-indigo-800 text-white p-2 rounded-md" ref={dropdownRef}>
             
             <div 
                 onClick={() => addToQueue(deviceId, track_id)}
-                className="hover:cursor-pointer p-2 hover:bg-gray-700"
+                className="hover:cursor-pointer p-2 hover:bg-indigo-700"
             >
                 Add To Queue
             </div>
@@ -46,11 +46,11 @@ export const KebabDropDown = ({ playlists, artists, track_id }) => {
                 onMouseEnter={() => setArtistIndex(track_id)} 
                 onMouseLeave={() => setArtistIndex(null)}
             >
-                <div className="hover:cursor-pointer p-2 hover:bg-gray-700">
+                <div className="hover:cursor-pointer p-2 hover:bg-indigo-700">
                     Go To Artists
                 </div>
                 {artistIndex === track_id && (
-                    <div className={`absolute top-0 ${dropdownPosition} bg-gray-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
+                    <div className={`absolute top-0 ${dropdownPosition} bg-indigo-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
                         <ArtistDropDown artists={artists} />
                     </div>
                 )}
@@ -61,11 +61,11 @@ export const KebabDropDown = ({ playlists, artists, track_id }) => {
                 onMouseEnter={() => setPlaylistIndex(track_id)}
                 onMouseLeave={() => setPlaylistIndex(null)}
             >
-                <div className="hover:cursor-pointer p-2 hover:bg-gray-700">
+                <div className="hover:cursor-pointer p-2 hover:bg-indigo-700">
                     Add To Playlist
                 </div>
                 {playlistIndex === track_id && (
-                    <div className={`absolute top-0 ${dropdownPosition} bg-gray-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
+                    <div className={`absolute top-0 ${dropdownPosition} bg-indigo-900 text-white p-2 rounded-md shadow-md min-w-[150px]`}>
                         <PlaylistDropDown playlists={playlists} track_id={track_id} />
                     </div>
                 )}

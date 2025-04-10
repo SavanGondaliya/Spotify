@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import conn from "../../../index.js";
+import { generateRandomId } from "../../Artist/helper.js";
 
     export const userProfile = async(req,res) => {
 
@@ -366,7 +367,7 @@ import conn from "../../../index.js";
     
             const reportMonth = new Date().toISOString().slice(0, 7);
             const selectQuery = `SELECT * FROM tblreport WHERE user_id = ? AND report_month = ?`;
-
+            
             conn.query(selectQuery, [userId, reportMonth], (err, results) => {
                 if (err) return res.status(500).send({ message: "Database error", error: err });
                 
@@ -392,40 +393,42 @@ import conn from "../../../index.js";
                     updatedListenedSongs = { ...existingSongs, [song]: (existingSongs[song] || 0) + 1 };
                     
                     const updateQuery = `
-                        UPDATE tblreport 
-                        SET streaming_time = ?, listened_artist = ?, listened_songs = ?
-                        WHERE user_id = ? AND report_month = ?
+                    UPDATE tblreport 
+                    SET streaming_time = ?, listened_artist = ?, listened_songs = ?
+                    WHERE user_id = ? AND report_month = ?
                     `;
-
+                    
                     const updateValues = [
-                        newStreamingTime,
-                        JSON.stringify(updatedListenedArtists),
-                        JSON.stringify(updatedListenedSongs),
-                        userId,
-                        reportMonth
-                    ];
-                    
-                    conn.query(updateQuery, updateValues, (updateErr) => {
-                        if (updateErr) return res.status(500).send({ message: "Update error", error: updateErr });
-    
-                        return res.status(200).send({ message: "Report updated successfully" });
-                    });
-    
-                } else {
-                    
-                    artists.forEach((artist) => {
-                        console.log(artist);
+                            newStreamingTime,
+                            JSON.stringify(updatedListenedArtists),
+                            JSON.stringify(updatedListenedSongs),
+                            userId,
+                            reportMonth
+                        ];
                         
-                        updatedListenedArtists[artist] = 1;
-                    })
-                    updatedListenedSongs[song] = 1;
-    
-                    const insertQuery = `
-                        INSERT INTO tblreport (report_month, user_id, streaming_time, listened_artist, listened_songs)
+                        conn.query(updateQuery, updateValues, (updateErr) => {
+                            if (updateErr) return res.status(500).send({ message: "Update error", error: updateErr });
+                            
+                            return res.status(200).send({ message: "Report updated successfully" });
+                        });
+                        
+                    } else {
+                        
+                        const report_id =  generateRandomId()
+                        artists.forEach((artist) => {
+                            console.log(artist);
+                            
+                            updatedListenedArtists[artist] = 1;
+                        })
+                        updatedListenedSongs[song] = 1;
+                        
+                        const insertQuery = `
+                        INSERT INTO tblreport (report_id,report_month, user_id, streaming_time, listened_artist, listened_songs)
                         VALUES (?, ?, ?, ?, ?)
-                    `;
-
+                        `;
+                        
                     const insertValues = [
+                        report_id,
                         reportMonth,
                         userId,
                         newStreamingTime,
@@ -439,14 +442,14 @@ import conn from "../../../index.js";
                     });
                 }
             });
-    
+            
         } catch (error) {
             res.status(500).send({ message: error.message });
         }
     };
     
     export const getMonthlyReport = async (req, res) => {
-      try {
+        try {
             
             const { user_id  } = JSON.parse(req.query.session_details);
             const {report_id} = req.query;
@@ -558,11 +561,9 @@ import conn from "../../../index.js";
             const {email} = req.body;
             const {newpassword} = req.body;
             const query = `update tbluser set password= ? where email = ?`;
-            console.log(email,newpassword,query);
             
             conn.query(query,[newpassword,email],(err,results) => {
                 if(!err){
-                    console.log(results);
                     return res.status(200).send({message:"password Updated Successfully."})
                 }
             })

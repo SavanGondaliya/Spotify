@@ -31,6 +31,7 @@ export const AlbumDetails = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [savedTracks, setSavedTracks] = useState([]);
   const addRef = useRef(null);
+  const decorateRef = useRef({});
   
   const handleDropDown = (track_id) => {
     setActiveIndex((prev) => (prev === track_id ? null : track_id));
@@ -91,7 +92,6 @@ export const AlbumDetails = () => {
 
   const likedSongIds = () => {
     try {
-      console.log("liked Ids Called...");
       
       const url = `http://localhost:5000/track/saved_tracks?session_details=${session_details}`;
 
@@ -113,45 +113,59 @@ export const AlbumDetails = () => {
       return error;
     }
   };
-  console.log(savedTracks);
   
   useEffect(() => {
     if (!player) return;
-    player.addListener("ready", () => {
-      player.getCurrentState().then((state) => {
-        if (!state) {
-          return;
-        }
-        setPositionMs(state.position);
-        setCurrentState(state);
-      });
-    });
-  }, [player]);
+  
+    const handleStateChange = (state) => {
+      if (!state) return;
+      setPositionMs(state.position);
+      setCurrentState(state);
+    };
+  
+    player.addListener("player_state_changed", handleStateChange);
+  
+    return () => {
+      player.removeListener("player_state_changed", handleStateChange);
+    };
+  }, [player]);    
 
   const handleMusic = (id, type) => {
     if (isPlay == id) {
       Pause(id, deviceId);
       setIsPlay(null);
     } else {
-      setPositionMs(0);
       Play(id, deviceId, type, positionMs);
       setIsPlay(id);
     }
   };
-  
-  
-  const funcAlbumDuration = (position) => {
-    
-  let hour = Math.floor((position/1000) / 3600)
-  let minute = Math.floor((position/1000) % 3600/60)
-  
-  return `${hour} hour : ${minute < 10 ? '0'+minute:minute} minutes`  
-  }
-
 
   useEffect(() => {
-    if (albumTracks) {
+    if (isPlay && currentState && isPlay === currentState.track_window?.current_track?.album?.id) {
+      playingDecorate(isPlay);
+    }
+  }, [currentState]);
 
+  const funcAlbumDuration = (position) => {
+    
+    let hour = Math.floor((position/1000) / 3600)
+    let minute = Math.floor((position/1000) % 3600/60)
+    
+    return `${hour < 10 ? '0'+hour:hour} hour : ${minute < 10 ? '0' + minute:minute} minutes`  
+  }
+  
+  const playingDecorate = (id) => {
+    Object.values(decorateRef.current).forEach((el) => {
+      if (el) el.style.background = "";
+    });
+    if(decorateRef.current[id]){
+      decorateRef.current[id].style.background = "rgba(242, 193, 120, 0.2)";
+    } 
+  }
+  
+  useEffect(() => {
+    if (albumTracks) {
+      
       let totalDuration = 0;
       albumTracks?.items?.forEach((album) => {
         totalDuration += album?.duration_ms || 0;
@@ -159,10 +173,11 @@ export const AlbumDetails = () => {
       setAlbumDuration(totalDuration);
     }
   }, [albumTracks]);
+  
   useEffect(() => {
     likedSongIds();
   },[]);
-
+  
   useEffect(() => {
     getAlbumTracks();
     getAlbumDetails();
@@ -176,12 +191,12 @@ export const AlbumDetails = () => {
             <div className="relative flex justify-center items-center __album_shadow__">
               <img
                 className="h-full w-full rounded shadow-md opacity-20"
-                src={albumDetails.images[0].url}
+                src={albumDetails?.images[0]?.url}
                 alt="Album Cover"
               />
               <img
                 className="absolute h-30 w-30 shadow-lg __inner_album_shadow__"
-                src={albumDetails.images[0].url}
+                src={albumDetails?.images[0]?.url}
                 alt="Inner Cover"
               />
             </div>
@@ -190,10 +205,14 @@ export const AlbumDetails = () => {
                 className="flex justify-center mt-4 cursor-pointer"
                 onClick={() => handleMusic(albumDetails.id, "album")}
               >
-                {currentState && currentState.paused ? (
-                  <i className="ri-pause-circle-fill text-4xl text-[#f2c178]"></i>
+                {isPlay === albumDetails?.id ? (
+                  currentState?.paused ? (
+                    <i className="ri-play-circle-fill text-4xl text-[#f2c178]"></i>
+                  ) : (
+                    <i className="ri-pause-circle-fill text-4xl text-[#f2c178]"></i>
+                  )
                 ) : (
-                  <i className="ri-play-circle-fill text-4xl text-[#f2c178]"></i>
+                  <i className="ri-play-circle-fill text-4xl text-[#f2c178]"></i> // default state
                 )}
               </div>
 
@@ -216,6 +235,7 @@ export const AlbumDetails = () => {
                 albumTracks.items.map((track, index) => (
                   <div
                     key={track.id}
+                    ref={(el) => (decorateRef.current[track.id] = el)}
                     className="w-full flex items-center justify-between p-3 _favourite_row_ cursor-pointer transition rounded-lg"
                   >
                     <div className="relative w-16 h-16">
@@ -285,7 +305,7 @@ export const AlbumDetails = () => {
                       >
                         <i className="ri-more-2-fill text-white"></i>
                         {activeIndex === index && (
-                          <div className="absolute right-15 top-0 mt-2 bg-indigo-900 shadow-lg rounded-lg z-10">
+                          <div className="absolute right-5 bottom-0 mt-2 bg-indigo-900 shadow-lg rounded-lg z-10">
                             <KebabDropDown
                               playlists={userPlaylists}
                               artists={track?.artists}

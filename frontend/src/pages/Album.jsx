@@ -15,21 +15,20 @@ export const Album = () => {
         
         <div className="flex flex-grow overflow-hidden">
         
-            <div className="w-[15%] h-full bg-gray-900 flex-shrink-0">
+            <div className="w-[14%] h-full bg-gray-900 flex-shrink-0">
                 <VerticalNavbar />
             </div>
     
         
             <div className="flex flex-col w-[85%] h-full">        
-                <div className="w-full sticky top-0 bg-white shadow-md z-10">
+                <div className="w-full sticky top-0 bg-white  z-0">
                     <HorizontalNavbar />
                 </div>
         
                 <div className="w-full flex-grow overflow-y-auto p-4">
                     <AlbumDetails />
-                    
                     {isQueueVisible && (
-                    <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-white shadow-lg overflow-scroll">
+                    <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
                         <Queue isQueueVisible={isQueueVisible} />
                     </div>
                     )}

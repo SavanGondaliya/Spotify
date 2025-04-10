@@ -8,12 +8,16 @@ import { Tracks } from "../components/User/Search/Tracks";
 import { Albums } from "../components/User/Search/Album";
 import { Artists } from "../components/User/Search/Artist";
 import { TopResult } from "../components/User/Search/TopResult";
+import MusicLoader from "../components/User/utility/Loader";
+import { Queue } from "../components/User/Playler/Queue";
+
 
 export const Search = () => {
 
     const {q} = useParams();
     const session_details = sessionStorage.getItem("secret_key");
     const [searchResult,setSearchResult] = useState();
+    const [isQueueVisible,setIsQueueVisible] = useState();
 
     const search = async() => {
         try {
@@ -42,25 +46,23 @@ export const Search = () => {
         
     return(
         <div className="w-screen h-screen flex flex-col">
-    {/* Main Content */}
+    
     <div className="flex flex-grow overflow-hidden">
-        {/* Sidebar (Fixed) */}
+    
         <div className="w-[15%] h-full bg-gray-900">
             <VerticalNavbar />
         </div>
 
-        {/* Main Section (Right Side) */}
         <div className="flex flex-col flex-grow">
-            {/* Horizontal Navbar (Fixed) */}
+
             <div className="w-full sticky top-0 bg-white shadow-md z-10">
                 <HorizontalNavbar />
             </div>
 
-            {/* Scrollable Main Content */}
             <div className="container flex flex-col flex-grow overflow-y-auto p-4">
                 {searchResult ? (
                     <div className="w-full space-y-6">
-                        {/* Top Result & Tracks (Side by Side) */}
+
                         <div className="flex justify-between gap-6">
                             <div className="w-1/3">
                                 <TopResult topResult={searchResult?.tracks?.items[0]} />
@@ -70,22 +72,25 @@ export const Search = () => {
                             </div>
                         </div>
 
-                        {/* Artists & Albums */}
                         <Artists artists={searchResult?.artists?.items} />
                         <Albums albums={searchResult?.albums?.items} />
+                        {isQueueVisible && (
+                            <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
+                                <Queue isQueueVisible={isQueueVisible} />
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-full text-lg font-semibold">
-                        Loading...
+                        <MusicLoader />
                     </div>
                 )}
             </div>
         </div>
     </div>
 
-    {/* Player Controller (Fixed at Bottom) */}
-    <div className="w-full h-[12%] bg-indigo-400 flex items-center justify-center">
-        <PlayerController />
+    <div className="w-full h-[12%] z-100">
+        <PlayerController isQueueVisible={isQueueVisible} setIsQueueVisible={setIsQueueVisible} />
     </div>
         </div>
 

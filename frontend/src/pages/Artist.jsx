@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { ArtistDetails } from "../components/User/Artists/Artist";
 import { PopulerTracks } from "../components/User/Artists/PopulerTracks";
 import { PlayerController } from "../components/User/Playler/Controller";
@@ -7,8 +8,11 @@ import { FeaturedAlbum } from "../components/User/Artists/Featured";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import { RelatedArtist } from "../components/User/Artists/RelatedArtist";
+import { Queue } from "../components/User/Playler/Queue";
 
 export const Artist = () => {
+
+  const [isQueueVisible,setIsQueueVisible] = useState(false); 
 
   return (
     <div className="w-screen h-screen">
@@ -32,12 +36,17 @@ export const Artist = () => {
                   <RelatedArtist className="w-full" />
                   <FeaturedAlbum className="w-full" />
                 </div>
+                {isQueueVisible && (
+                  <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
+                      <Queue isQueueVisible={isQueueVisible} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <div className="w-[100%] h-[12%]">
-          <PlayerController />
+        <div className="w-full h-[12%] z-100">
+            <PlayerController isQueueVisible={isQueueVisible} setIsQueueVisible={setIsQueueVisible} />
         </div>
       </div>
     </div>

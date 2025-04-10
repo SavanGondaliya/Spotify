@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import useWebPlayback from "../utility/WebPlayBackSDK";
 import MusicLoader from "../utility/Loader";
+import { useMemo } from "react";
 
 export const Queue = () => {
   const [currentQueue, setCurrentQueue] = useState([]);
@@ -57,13 +58,21 @@ export const Queue = () => {
   useEffect(() => {
     getQueue();
   }, [currentlyPlaying]);
-  
 
+  const filteredTracks = useMemo(() => {
+    const uniqueTracks = new Map();
+    currentQueue?.queue?.forEach((track) => {
+      uniqueTracks.set(track?.id, track);
+    });
+    return Array.from(uniqueTracks.values());
+  }, [currentQueue]); 
+  
+  
   return (
     <div className="w-full bg-[#0c0925] p-4 shadow-lg">
-    {currentQueue && currentQueue?.queue?.length > 0 ? (       
+    {filteredTracks && filteredTracks?.length > 0 ? (       
       <div className="space-y-4">
-        {currentQueue?.queue.map((track, i) => (
+        {filteredTracks?.map((track, i) => (
           <div key={track?.id || i} className="flex items-center gap-3 p-2 bg-indigo-800 rounded">
             
             {/* Album Cover */}
@@ -74,8 +83,7 @@ export const Queue = () => {
                 className="w-full h-full object-cover rounded-md"
               />
             </div>
-  
-            {/* Song & Artist Info */}
+
             <div className="flex-1">
               <p className="text-white font-semibold truncate">{track?.name}</p>
               <div className="text-[#f2c178] text-sm truncate">
@@ -90,7 +98,7 @@ export const Queue = () => {
           </div>
         ))}
       </div>
-    ) : currentQueue ? (
+    ) : filteredTracks ? (
       <MusicLoader />
     ) : (
       <div className="text-white text-center text-sm italic">Queue is Empty</div>

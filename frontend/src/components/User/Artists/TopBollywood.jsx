@@ -40,7 +40,7 @@ export const TopBollywood = () => {
                 className="flex flex-col items-center hover_card"
               >
                 <div className="gap-5 p-5 flex flex-col items-center">
-                  <div className="relative w-[130px] h-[130px]">
+                  <div className="relative w-[120px] h-[120px]">
                     <img
                       className="w-full h-full object-cover shadow-lg __artist_image__ rounded-full"
                       src={artist.image}

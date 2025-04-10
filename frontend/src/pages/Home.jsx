@@ -11,8 +11,7 @@ import { Queue } from "../components/User/Playler/Queue.jsx";
 
 const Home = () => {
 
-    const [isQueueVisible,setIsQueueVisible] = useState(false); 
-    console.log(isQueueVisible);
+  const [isQueueVisible,setIsQueueVisible] = useState(false);   
     
   return (
   <div className="w-screen h-screen relative">
@@ -24,7 +23,7 @@ const Home = () => {
           <VerticalNavbar />
         </div>
 
-        <div className="w-[85%] flex flex-col">      
+        <div className="w-[86%] flex flex-col">      
           <div className="w-full h-[11%]">
             <HorizontalNavbar />
           </div>
@@ -34,12 +33,12 @@ const Home = () => {
               <div className="w-[60%] h-full">
                 <TrendingSong />
               </div>
-              <div className="w-[40%] h-full overflow-y-scroll">
+              <div className="w-[40%] h-100 overflow-y-scroll">
                 <RecentlyPlayed />
               </div>
               
               {isQueueVisible && (
-                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-white shadow-lg overflow-scroll">
+                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
                   <Queue isQueueVisible={isQueueVisible} />
                 </div>
               )}

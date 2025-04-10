@@ -241,7 +241,7 @@ export const LikedSongs = () => {
                   </div>
                 )}
                 {isQueueVisible && (
-                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-white shadow-lg overflow-scroll">
+                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
                     <Queue isQueueVisible={isQueueVisible} />
                 </div>
                 )}

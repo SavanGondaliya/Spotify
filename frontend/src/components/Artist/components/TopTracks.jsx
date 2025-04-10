@@ -8,13 +8,13 @@ export const TopTracks = () => {
 
     const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"))
     const [tracks,setTracks] = useState();
+
     const topTracks = () => {
         try {
             console.log("called Top tracks");
             console.log(artistDetails);
             
             const url =  `http://localhost:5000/toptracks?artist_id=${artistDetails.map((artist) => artist.artist_id)}`
-            console.log(url);
             
             axios.get(url,{
                 headers:{

@@ -4,8 +4,10 @@ import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 import { Lyrics } from "../components/User/Playler/Lyrics";
 import { useWebPlayback } from "../components/User/utility/WebPlayBackSDK";
+import MusicLoader from "../components/User/utility/Loader";
 
 export const LyricsPage = () => {
+
   const { player, deviceId } = useWebPlayback();
   const [currentState, setCurrentState] = useState();
 
@@ -26,6 +28,7 @@ export const LyricsPage = () => {
         return;
       }
       setCurrentState(state.track_window.current_track);
+      localStorage.setItem("player_details", JSON.stringify(state));
     });
     return () =>
       player.removeListener("player_state_changed", handlePlayerStateChange);
@@ -51,15 +54,16 @@ export const LyricsPage = () => {
         <Currently />
       </div>
 
-      {/* Lyrics Section */}
       <div className="w-full rounded  p-4 shadow-md">
         {currentState ? (
           <Lyrics
-            artist_name={currentState.artists}
-            song_name={currentState.name}
+            artist_name={currentState?.artists}
+            song_name={currentState?.name}
           />
         ) : (
-          <div className="text-center text-gray-500">Loading...</div>
+          <div className="text-center text-gray-500">
+            <MusicLoader />
+          </div>
         )}
       </div>
     </div>

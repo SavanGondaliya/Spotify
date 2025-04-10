@@ -1,7 +1,6 @@
 import React from "react";
 
 export const AboutSection = ({aboutArtist}) => {
-  console.log(aboutArtist);
   
     return (
       <div className="__about_container__ text-white p-6 mt-6 rounded">

@@ -6,8 +6,6 @@ import { useParams } from "react-router-dom";
 import MusicLoader from "../utility/Loader";
 import "./style.css";
 import Waves from "../../Animations/Waves";
-import LayerWave from "../../Animations/LayerWave";
-import Wave from "../../Animations/Wave";
 import YellowWave from "../../Animations/Yellowave"
 
 export const ArtistDetails = () => {
@@ -122,10 +120,10 @@ export const ArtistDetails = () => {
               onClick={() => handleMusic(artistDetails?.id, "artist")}
               className="cursor-pointer hover:text-indigo-400"
             >
-              {currentState?.paused ? (
-                <i className="ri-pause-circle-fill"></i>
+              {currentState?.paused == false ? (
+                <i className="ri-pause-circle-fill text-2xl"></i>
               ) : (
-                <i className="ri-play-circle-fill"></i>
+                <i className="ri-play-circle-fill text-2xl"></i>
               )}
             </div>
             <div className="cursor-pointer hover:text-indigo-400">
@@ -137,7 +135,7 @@ export const ArtistDetails = () => {
           </div>
           <div className="relative w-full h-auto p-6 bg-[#282870] text-white overflow-hidden rounded-lg shadow-lg __about_artist__">
             {/* Background Wave Animation */}
-            <div className="absolute inset-0 z-0 pointer-events-none scale-200 rotate-330 left-30 top-40">
+            <div className="absolute inset-0 z-0 pointer-events-none scale-200 rotate-330 left-0 top-50">
               <YellowWave />
             </div>
 

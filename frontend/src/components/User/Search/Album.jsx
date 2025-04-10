@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import MusicLoader from "../utility/Loader";
 
 export const Albums = (albums) => {
   return (
@@ -31,7 +32,7 @@ export const Albums = (albums) => {
                 </NavLink>
               ))
             ) : (
-              <div>Loading...</div>
+              <div><MusicLoader /></div>
             )}
           </div>
         </div>

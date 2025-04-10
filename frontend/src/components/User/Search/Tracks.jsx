@@ -18,7 +18,8 @@ export const Tracks = (tracks) => {
             if (!state) {
                 return;
             }                   
-            // setPositionMs(state.position);
+            setPositionMs(state.position);
+            localStorage.setItem("player_details", JSON.stringify(state));
         });
     },[isPlay]); 
 

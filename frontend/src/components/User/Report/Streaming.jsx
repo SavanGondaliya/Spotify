@@ -12,4 +12,3 @@ const StreamingTime = ({ reportData }) => {
   };
   
   export default StreamingTime;
-  

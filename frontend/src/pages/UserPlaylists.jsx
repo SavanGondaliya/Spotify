@@ -8,13 +8,16 @@ import MusicLoader from "../components/User/utility/Loader";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import { PlayerController } from "../components/User/Playler/Controller";
+import { Queue } from "../components/User/Playler/Queue";
 
 export const UserPlaylist = () => {
+
   const session_details = JSON.parse(sessionStorage.getItem("session_details"));
   const [playlists, setPlaylists] = useState();
   const { id } = useParams();
   const [playlistImage, setPlaylistImage] = useState([]);
-
+  const [isQueueVisible,setIsQueueVisible] = useState(false);     
+  
   const getPlaylistImage = async () => {
     try {
       let playlistImageIds = playlists.map(
@@ -25,7 +28,6 @@ export const UserPlaylist = () => {
         const url = `http://localhost:5000/tracks/${imageId}?session_details=${JSON.stringify(
           session_details
         )}`;
-        console.log(url);
 
         return axios
           .get(url, {
@@ -38,15 +40,13 @@ export const UserPlaylist = () => {
             return null;
           })
           .catch((error) => {
-            console.log(error);
-            return null; // Ensure failures don't break Promise.all()
+            return null;
           });
       });
 
       let imageArray = await Promise.all(imageRequests);
 
       setPlaylistImage(imageArray.filter(Boolean));
-      console.log(imageArray);
     } catch (error) {
       console.log(error);
     }
@@ -71,10 +71,8 @@ export const UserPlaylist = () => {
     });
   }, []);
   useEffect(() => {
-
     getPlaylistImage();
   },[playlists])
-
 
   return (
     <div className="w-screen h-screen">
@@ -98,7 +96,7 @@ export const UserPlaylist = () => {
                           to={`/playlist/${playlist?.playlist_id}`}
                           className="bg-indigo-900 p-4 rounded shadow-lg hover:shadow-xl transition duration-300"
                         >
-                          {/* Playlist Image */}
+                    
                           <img
                             className="w-full h-40 object-cover rounded"
                             src={
@@ -127,12 +125,17 @@ export const UserPlaylist = () => {
                     <MusicLoader />
                   )}
                 </div>
+                {isQueueVisible && (
+                  <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
+                      <Queue isQueueVisible={isQueueVisible} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <div className="w-[100%] h-[12%] bg-indigo-400">
-          <PlayerController />
+        <div className="w-full h-[12%] z-100">
+            <PlayerController isQueueVisible={isQueueVisible} setIsQueueVisible={setIsQueueVisible} />
         </div>
       </div>
     </div>

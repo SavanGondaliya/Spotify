@@ -6,6 +6,11 @@ import Songs from './recentsongs';
 import "./admin.css";
 
 const AdminDashboard = () => {
+
+  if(!sessionStorage.getItem("admin_details")){
+    window.location.href = "/auth/admin"
+  }
+
   return (
     <div className="main-page">
       <Sidebar />

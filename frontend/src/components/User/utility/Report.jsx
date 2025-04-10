@@ -8,12 +8,12 @@ import TopSongs from "../Report/Toptracks";
 import StreamingTime from "../Report/Streaming";
 
 const MonthlyReport = ({id}) => {
+  
   const session_details = sessionStorage.getItem("session_details");
   const [page, setPage] = useState(0);
   const [artist, setArtists] = useState([]);
   const [songs, setSongs] = useState([]);
   const [reportData, setReportData] = useState(null);
-
 
   useEffect(() => {
     axios

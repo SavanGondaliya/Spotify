@@ -27,7 +27,7 @@ const RecentlyPlayed = () => {
         );
 
         if (res.status === 200) {
-          setRecentlyPlayed(res.data.items);
+          setRecentlyPlayed(res?.data?.items);
         }
       } catch (error) {
         if (error.name !== "AbortError") {
@@ -56,11 +56,14 @@ const RecentlyPlayed = () => {
       Pause(id, deviceId);
       setIsPlay(null);
     } else {
+      if(id != isPlay){
+        setPositionMs(0)
+      }
       Play(id, deviceId, type, positionMs);
       setIsPlay(id);
-    }
-  }, [isPlay, deviceId, positionMs]);
-
+      }
+    }, [isPlay, deviceId, positionMs]);
+    
   return (
     <div className="w-full max-w-3xl mt-4">
       <h1 className="text-2xl">Recently Played</h1>

@@ -18,7 +18,6 @@ export const AddTrack = ({ visible, setVisible }) => {
       formData.append("track_url", trackUrl);
       formData.append("album_id", albumName);
       formData.append("track_number", trackNumber);
-      console.log([...formData]);
       
       axios
         .post(
@@ -33,7 +32,6 @@ export const AddTrack = ({ visible, setVisible }) => {
         .then((res) => {
           if (res.status === 200) {
             setVisible((prev) => !prev);
-            console.log("song added");
           }
         })
         .catch((error) => {
@@ -86,11 +84,11 @@ export const AddTrack = ({ visible, setVisible }) => {
         </label>
         <input
           id="songTitle"
-          type="text"
+          type="text "
           value={trackName}
           onChange={(e) => setTrackName(e.target.value)}
           placeholder="Enter Track Name"
-          className="p-2 bg-white rounded-md outline-none"
+          className="p-2 text-black rounded-md outline-none"
         />
       </div>
 
@@ -98,7 +96,7 @@ export const AddTrack = ({ visible, setVisible }) => {
         <label className="text-white font-medium">Select Album</label>
         <select
           onChange={(e) => setAlbumName(e.target.value)}
-          className="p-2 bg-white rounded-md outline-none"
+          className="p-2 bg-white text-black rounded-md outline-none"
         >
           {album && album.length > 0 ? (
             album.map((album) => (
@@ -120,7 +118,7 @@ export const AddTrack = ({ visible, setVisible }) => {
         <input
           type="file"
           onChange={(e) => setTrackUrl(e.target.files[0])}
-          className="p-2 bg-white rounded-md outline-none"
+          className="p-2 bg-white text-black rounded-md outline-none"
         />
       </div>
 
@@ -134,7 +132,7 @@ export const AddTrack = ({ visible, setVisible }) => {
           value={trackNumber}
           onChange={(e) => setTrackNumber(e.target.value)}
           placeholder="Enter Track Number"
-          className="p-2 bg-white rounded-md outline-none"
+          className="p-2 bg-white text-black rounded-md outline-none"
         />
       </div>
 

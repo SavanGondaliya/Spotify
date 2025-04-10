@@ -30,7 +30,7 @@ export const TopHollywood = () => {
 
   return (
     <div className="w-full">
-      <div className="text-2xl mx-5">Classic Bollywood</div>
+      <div className="text-2xl mx-5">Hit Hollywood</div>
 
       <div className="overflow-x-auto py-5">
         <div className="grid grid-flow-col auto-cols-max gap-1 px-5">

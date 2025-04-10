@@ -27,7 +27,6 @@ export const setImageFile = async(file,uploadDir) => {
     const tempPath =  file.filepath;
     const newFilename = Date.now() + path.extname(file.originalFilename);
     const newPath = path.join(uploadDir, newFilename);
-    console.log(tempPath,newFilename,newPath);
     
     fs.copyFile(tempPath, newPath, (err) => {
         if (err) {

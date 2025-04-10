@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import '../editForm.css';  // Import the CSS file
+import '../editForm.css';  
 
 const EditUser = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [editedUser, setEditedUser] = useState(location.state || {});
 
-  // ✅ Handle input changes
   const handleChange = (e) => {
     setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle form submit (Update user)
   const handleSubmit = (e) => {
     e.preventDefault();
 

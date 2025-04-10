@@ -7,7 +7,6 @@ export const searchsong = async(song_name) => {
     try {
         
         const url = `https://api.genius.com/search?q=${song_name}`
-        console.log(url);
         
         const response = await axios.get(url,{
             headers:{
@@ -31,7 +30,6 @@ export const fetchLyrics = async(req, res) => {
 
         const {song_name,artist_name} = req.query;
         const songUrl = await searchsong(song_name,artist_name);       
-        console.log(songUrl);
         
         const lyrics = await scrapLyrics(songUrl); 
 
@@ -57,7 +55,6 @@ export const scrapLyrics = async(songUrl) => {
 
         return lyrics || "Lyrics not found.";
     } catch (error) {
-        console.log(error);
         
         return error
     }

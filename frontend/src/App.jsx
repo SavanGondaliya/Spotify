@@ -26,6 +26,7 @@ import ArtistsDashboard from "../src/components/Admin/admin/artist/artistdashboa
 import EditArtist from "../src/components/Admin/admin/artist/editArtist.jsx";
 import EditUser from "../src/components/Admin/admin/user/editUser.jsx";
 import EditMusic from "../src/components/Admin/admin/music/editMusic.jsx";
+import { AdminLogin } from './components/Admin/admin/adminlogin.jsx';
 
 import { CreateAlbum } from './components/Artist/components/CreateAlbum.jsx';
 import { AddTrack } from './components/Artist/components/AddTrack.jsx';
@@ -70,13 +71,13 @@ function App(){
                 </Route>
 
                 {/* Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/artist" element={<ArtistsDashboard />} />
                 <Route path="/admin/music" element={<MusicDashboard />} />
                 <Route path="/admin/user" element={<UsersDashboard />} />
                 <Route path="/admin/music/edit/:id" element={<EditMusic />} />
                 <Route path="/admin/user/edit/:id" element={<EditUser />} />
-                <Route path="/admin/artist/edit/:id" element={<EditArtist />} />
+                <Route path="/auth/admin" element={<AdminLogin />} />
 
                 {/* Artist Routes*/}              
                 <Route path="/album/create" element={<CreateAlbum />} />

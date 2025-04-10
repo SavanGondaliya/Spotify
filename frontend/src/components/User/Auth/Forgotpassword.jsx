@@ -71,7 +71,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-black">
-      <div className="w-full max-w-md bg-[#282870] p-6 rounded-lg shadow-lg">
+      <div className="w-full max-w-md bg-[#282870] p-6 rounded-lg shadow-lg __form_shadow__">
         {step === 1 && (
           <>
             <h2 className="text-white text-2xl font-semibold text-center mb-4">
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
               <input
                 type="email"
                 placeholder="Enter Your Email"
-                className="w-full p-3 bg-white text-black __btn_forgot__ rounded-md outline-0"
+                className="w-full p-3 bg-white text-black __input_shadow__  rounded-md outline-0"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -111,7 +111,7 @@ export default function ForgotPassword() {
               <input
                 type="text"
                 placeholder="Enter OTP"
-                className="w-full p-3 bg-white text-black __btn_forgot__ rounded-md outline-0"
+                className="w-full p-3 bg-white text-black __input_shadow__ rounded-md outline-0"
                 onChange={(e) => setVerifyOtp(e.target.value)}
               />
             </div>
@@ -137,7 +137,7 @@ export default function ForgotPassword() {
               <input
                 type="password"
                 placeholder="New Password"
-                className="w-full p-3 bg-white text-black __btn_forgot__ rounded-md outline-0"
+                className="w-full p-3 bg-white text-black __input_shadow__ rounded-md outline-0"
                 onChange={(e) => setNewPassword(e.target.value)}
               />
             </div>
@@ -145,7 +145,7 @@ export default function ForgotPassword() {
               <input
                 type="password"
                 placeholder="New Password"
-                className="w-full p-3 bg-white text-black __btn_forgot__ rounded-md outline-0"
+                className="w-full p-3 bg-white text-black __input_shadow__ rounded-md outline-0"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
@@ -172,7 +172,14 @@ export default function ForgotPassword() {
       <style>
         {`
           .__btn_forgot__ {
-            box-shadow: 5px 5px 0px #4949bf;
+            background-color : #f2c178;
+            box-shadow: 3px 3px 0px #935d07;
+          }
+          .__input_shadow__{
+            box-shadow : 3px 3px 0px #4949bf;
+          }
+          .__form_shadow__{
+            box-shadow: 5px 5px 0px #4949bf
           }
         `}
       </style>

@@ -1,12 +1,12 @@
 import axios from "axios";
 import React from "react";
 import {useState,useEffect} from "react";
+import MusicLoader from "../../User/utility/Loader";
 
 export const ArtistTracks = () => {
 
     const artistDetails = JSON.parse(sessionStorage.getItem("artistDetails"));
     const [trackDetails,setTrackDetails] = useState([]);
-    console.log(artistDetails);
     
     const getTrackDetails = () => {
         const url = `http://localhost:5000/${artistDetails[0]?.artist_id}/tracks`
@@ -50,7 +50,9 @@ export const ArtistTracks = () => {
                         </div>
                     ))
                 ):(
-                    <div>Loading...</div>
+                    <div>
+                        <MusicLoader />
+                    </div>
                 )
             }
             </div>

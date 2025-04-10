@@ -3,6 +3,7 @@ import React,{ useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import  {useWebPlayback}  from "../utility/WebPlayBackSDK";
 import "./style.css";
+import MusicLoader from "../utility/Loader";
 
 export const NewArtist = () => {
 
@@ -26,32 +27,48 @@ export const NewArtist = () => {
   }, [player,deviceId]);
   
   return (
-    <div>
-      <div className="flex flex-col justify-center  items-center  px-5 py-5">
-        <div className="flex w-fit h-fit py-5">
+    <div className="w-full">
+      <div className="text-2xl mx-5">New Artist</div>
+
+      <div className="overflow-x-auto py-5">
+        <div className="grid grid-flow-col auto-cols-max gap-1 px-5">
           {newArtist && newArtist.length > 0 ? (
             newArtist.map((artist) => (
-              <NavLink to={`http://localhost:5173/artist/${artist.artist_id}`} key={artist.artist_id} className="w-full h-full flex flex-col justify-center items-center rounded_image hover_card">
-                <div className="mx-5 py-5">
-                  <div className="w-full h-full">
+              <NavLink
+                to={`/artist/${artist.artist_id}`}
+                key={artist.artist_id}
+                className="flex flex-col items-center hover_card"
+              >
+                <div className="gap-5 p-5 flex flex-col items-center">
+                  <div className="relative w-[120px] h-[120px]">
                     <img
-                      className="w-20 h-20  object-cover shadow-lg album_shadow rounded_image"
-                      src={`${artist?.image}`}
+                      className="w-full h-full object-cover shadow-lg __artist_image__ rounded-full"
+                      src={artist.image}
                       alt=""
                     />
                   </div>
-                  <div className="w-full h-full text-amber-100 my-2">
-                    <h1 className="text-center">{artist.artist_name}</h1>
-                    <h1 className="text-center">Artist</h1>
+                  <div className="text-amber-100 text-center">
+                    <h1>{artist.artist_name}</h1>
+                    <h1>Artist</h1>
                   </div>
                 </div>
               </NavLink>
             ))
           ) : (
-            <div>Loading...</div>
+            <div>
+              <MusicLoader />
+            </div>
           )}
         </div>
       </div>
+
+      <style>
+        {`
+      .__artist_image__ {
+        box-shadow: 5px 5px 0px #4949bf;
+      }
+    `}
+      </style>
     </div>
   );
 };

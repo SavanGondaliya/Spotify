@@ -21,8 +21,8 @@ export const CreatePlaylist = ({ addPlaylist }) => {
       );
 
       if (response.status === 200) {
-        await addPlaylist(); // Ensure the playlist list updates first
-        setPlaylistName(""); // Clear input fields
+        await addPlaylist(); 
+        setPlaylistName(""); 
         setplaylistBio("");
         setPlaylistStatus(false);
       }
@@ -35,9 +35,9 @@ export const CreatePlaylist = ({ addPlaylist }) => {
     <div className="w-full h-full flex flex-col rounded bg-indigo-800 p-6 playlist">
       
       <div className="w-full flex flex-col md:flex-row rounded gap-6">
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center ">
           <img
-            className="w-25 h-25 bg-indigo-900 object-cover shadow-lg rounded-md __create_playlist__ text-black"
+            className="w-full h-full bg-indigo-900 object-cover shadow-lg rounded-md __create_playlist__ text-black"
             src={PlaylistBase64}
             alt="Playlist Cover"
           />

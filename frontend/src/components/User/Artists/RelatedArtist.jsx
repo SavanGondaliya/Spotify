@@ -2,7 +2,6 @@ import React,{useEffect,useState} from "react";
 import { useWebPlayback } from "../utility/WebPlayBackSDK";
 import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
-import { div } from "framer-motion/client";
 
 export const RelatedArtist = () => {
 

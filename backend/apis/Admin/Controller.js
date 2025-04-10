@@ -1,5 +1,6 @@
 import conn from "../../index.js"
 import { countAlbum,countArtist,countUser,countSongs } from "./helper.js";
+import { generateRandomId } from "../Artist/helper.js";
 
 export const getUsers = async(req,res) => {
     try {
@@ -72,16 +73,13 @@ export const updateArtist = async(req, res) => {
 
 export const deleteArtist = async(req, res) => {
     try {
-        console.log('called.');
                 
         const { id } = req.params;
-        console.log(id);
+
         const sql = "DELETE FROM tblartist WHERE artist_id = ?";
-        console.log(sql);
         
         conn.query(sql, [id], (err, result) => {
           if (err) return res.status(500).json({ error: err.message });
-          console.log(result);
           
           res.json({ message: "Artist deleted successfully" });
         });       
@@ -153,5 +151,45 @@ export const getProjectPartner = async(req,res) => {
 
     } catch (error) {
         return res.status(500).send({message:error.message});
+    }
+}
+
+export const adminLogin = async(req,res) => {
+    try {
+
+        const {admin,password} = req.body;
+
+        const query = `SELECT * from tbladmin where name = ? and password = ?`
+
+        conn.query(query,[admin,password],(err,results) => {
+            if(!err && results.length > 0 ){
+                return res.status(200).send(results)
+            }   
+            return res.status(400).send({message: 'Wrong Credentials'});
+        });
+
+    } catch (error) {
+        return res.status(500).send({message: error.message})
+    }
+}
+
+export const addAdmin = async(req,res) => {
+    try {   
+
+        const admin_id = generateRandomId();
+        const {name,password,} = req.body;
+
+        const query = "INSERT INTO tbladmin (admin_id,name,password)  VALUES(?,?,?);";
+        
+        conn.query(query,[admin_id,name,password],(err) => {
+            if(!err){
+                return res.status(200).send({sucess : true});
+            }
+            console.log(err);
+            return res.status(400).send({success : false});
+        });
+
+    } catch (error) {
+        return res.status(500).send({message : error.message});
     }
 }

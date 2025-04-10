@@ -23,14 +23,6 @@ export const FeaturedAlbum = () => {
 
       if (response.status === 200) {
         setFeaturedAlbums(response.data);
-        caches.open("featured-album").then((cache) => {
-          cache.put(
-            "/featuredAlbum",
-            new Response(JSON.stringify({ featuredAlbum: featuredAlbums }), {
-              headers: { "Content-type": "application/json" },
-            })
-          );
-        });
       }
     } catch (error) {
       return error;

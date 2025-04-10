@@ -91,7 +91,6 @@ const MusicTable = () => {
               <td>{song.artist_name}</td>
               <td>{songDuration(song.duration)}</td>
               <td className="action-buttons">
-                <button className="edit-btn" onClick={() => handleEdit(song)}>Edit</button>
                 <button className="delete-btn" onClick={() => handleDelete(song.song_id)}>Delete</button>
               </td>
             </tr>

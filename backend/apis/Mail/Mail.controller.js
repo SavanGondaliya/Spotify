@@ -14,11 +14,11 @@ const transporter = nodemailer.createTransport({
 
 export const RegistrationMail = async (req, res) => {
   try {
-    const { name, email, dob, password, gender } = JSON.parse(
+    const { name, email, password,gender  } = JSON.parse(
       req.query.userDetails
     );
     const verifyDetails = CryptoJS.AES.encrypt(
-      JSON.stringify({ name: name, email: email, password: password }),
+      JSON.stringify({ name: name, email: email, password: password,gender: gender }),
       "session"
     ).toString();
 
@@ -39,17 +39,24 @@ export const RegistrationMail = async (req, res) => {
               <title>Welcome to MusicApp</title>
 
           </head>
-          <body style="font-family: 'teko', sans-serif; margin: 0; padding: 0;">
-              <div class="container" style="max-width: 600px; margin: 20px auto; background: #4949bf; padding: 20px; border-radius: 5px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); text-align: center;">
-                  <div class="header" style="background: #f2c178; color: white; padding: 20px; font-size: 24px; font-weight: bold; border-radius: 5px;">Welcome to Noizee, ${name}!</div>
-                  <div class="content" style="width: 100%; color: #333; text-align: center;">
-                      <p>We're excited to have you on board. Get ready to explore your favorite tracks, create playlists, and enjoy a personalized music experience.</p>
-                      <a href="http://localhost:5173/verification?verifyDetails=${verifyDetails}" class="btn" style="display: inline-block; padding: 12px 20px; margin-top: 15px; background: #f2c178; color: white; text-decoration: none; font-weight: bold; border-radius: 5px;">Verify Your Account</a>
+ <body style="font-family: 'teko', sans-serif; margin: 0; padding: 0;">
+    <div class="container"
+        style="max-width: 600px; margin: 20px auto; background: #4949bf; box-shadow: 5px 5px 0px #282870; padding: 20px; border-radius: 5px; text-align: center;">
+        <div class="header" style="background: #ffba53; box-shadow: 2px 2px 0px 1px #935d07;
+ color: rgb(27, 27, 27); padding: 20px; font-size: 24px; font-weight: bold; border-radius: 5px; height: 30px;">Welcome to NOIZEE, ${name}!
+        </div>
+        <div class="content" style="width: 100%; color: #ffffff; text-align: center;">
+            <p>Before you dive into endless beats and curated playlists, let’s secure your account. Verify your email now and unlock your personalized music experience!</p>
+            <a href="http://localhost:5173/verification?verifyDetails=${verifyDetails}" class="btn"
+                style="display: inline-block; padding: 12px 20px; margin-top: 15px; background: #ffba53; box-shadow: 2px 2px 0px 1px #935d07; 
+          color: rgb(27, 27, 27); text-decoration: none; font-weight: bold; border-radius: 5px;">Verify
+                          Your Account</a>
                   </div>
                   <div id="lottie-container"></div>
-                  <div class="footer" style="margin-top: 20px; font-size: 12px; color: #333; font-weight: bold;">&copy; 2025 Noizee. All rights reserved.</div>
+                  <div class="footer" style="margin-top: 20px; font-size: 12px; color: #ffffff; font-weight: bold;">&copy; 2025
+                      Noizee. All rights reserved.</div>
               </div>
-          </body>
+
           </html>`,
     };
 
@@ -82,20 +89,16 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-
-
-export const optEmail = async(req,res) => {
+export const optEmail = async (req, res) => {
   try {
-  
-  
-  const {receiver} = req.query;
-  const {otp} = req.query;
-  
-  const mailOptions = {
-        from: "savangondaliya0@gmail.com",
-        to: `${receiver}`,
-        subject: "Welcome!",
-        html: `<!DOCTYPE html>
+    const { receiver } = req.query;
+    const { otp } = req.query;
+
+    const mailOptions = {
+      from: "savangondaliya0@gmail.com",
+      to: `${receiver}`,
+      subject: "Welcome!",
+      html: `<!DOCTYPE html>
           <html lang="en">
             <head>
               <meta charset="UTF-8">
@@ -110,17 +113,18 @@ export const optEmail = async(req,res) => {
             <body style="font-family: 'teko', sans-serif; margin: 0; padding: 0;">
                 Your Authentication OTP is ${otp}
             </body>
-           </html>`};
-            
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.error("Error sending email:", error);
-              return res.status(400).json({ success: false });
-            } else {
-            return res.status(200).json({ success: true });
-          }
-  });
+           </html>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(400).json({ success: false });
+      } else {
+        return res.status(200).json({ success: true });
+      }
+    });
   } catch (error) {
-    return res.status(500).send()
+    return res.status(500).send();
   }
-}
+};

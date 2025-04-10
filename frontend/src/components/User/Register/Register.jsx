@@ -4,6 +4,7 @@ import querystring from "querystring";
 import axios from "axios";
 import Waves from "../../Animations/Wave";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
 
@@ -14,6 +15,7 @@ const Register = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const navigate = useNavigate();
 
   const userDetails = {
     name: name,
@@ -64,16 +66,15 @@ const Register = () => {
         redirect_uri: redirect_uri,
         state: state,
       });
-    window.open("http://localhost:5173/verification", "_parent");
+      setTimeout(() => {
+        window.open("http://localhost:5173/verification", "_parent");
+      }, 2000);
   };
-
-
 
   const login = async () => {
 
     if(loginName == ""|| loginPassword == ""){
       console.log("Every Field Should be filled");
-      
     }
 
     axios
@@ -90,14 +91,13 @@ const Register = () => {
         }
       )
       .then((response) => {
-        console.log(response.status);
 
         if (response.status === 200) {
           sessionStorage.setItem(
             "session_details",
             JSON.stringify(response.data)
           );
-          window.location.href = "/";
+          navigate("/",{replace:true})
         }
       })
       .catch((error) => {
@@ -145,7 +145,7 @@ const Register = () => {
             </p>
           </div>
 
-          <div className="have-account flex left-1 justify-center gap-10 my-4 mx-8">
+          <div className="have-account flex left-1 justify-center gap-10 my-4 mx-12">
             <div className="info-item text-center">
               <p className="text-white mb-2">Already have an account?</p>
               <div
@@ -242,7 +242,7 @@ const Register = () => {
                 <div className="space-y-1">
                   <label className="block font-semibold">Gender</label>
                   <select
-                    className="w-full p-3 __input_shadows__ bg-white outline-0 rounded"
+                    className="w-35 p-3 __input_shadows__ bg-white outline-0 rounded"
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >

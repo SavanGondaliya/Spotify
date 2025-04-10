@@ -66,7 +66,6 @@ export const Currently = () => {
 
   const PlayRandom = async () => {
     try {
-      console.log("called...");
 
       axios
         .get(`http://localhost:5000/local/tracks`, {

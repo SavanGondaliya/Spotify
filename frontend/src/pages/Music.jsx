@@ -34,7 +34,6 @@ export const Tracks = () => {
 
   const getTracks = () => {
     const url = `http://localhost:5000/music?session_details=${session_details}`;
-    console.log(url);
 
     try {
       axios
@@ -213,7 +212,7 @@ export const Tracks = () => {
                         <div className="w-1/12 text-center">
                           {savedTracks?.includes(track.id) ? (
                             <i
-                              className="ri-check-fill text-xl cursor-pointer"
+                              className="ri-checkbox-circle-fill text-xl cursor-pointer"
                               onClick={async () => {
                                 await removeFromLibrary(track.id);
                                 setSavedTracks((prev) =>
@@ -257,7 +256,7 @@ export const Tracks = () => {
                   )}
                 </div>
                 {isQueueVisible && (
-                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-white shadow-lg overflow-scroll">
+                <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
                     <Queue isQueueVisible={isQueueVisible} />
                 </div>
                 )}

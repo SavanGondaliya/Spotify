@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
-import { useParams,NavLink } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import VerticalNavbar from "../components/User/Navbar/VerticalNavbar";
 import HorizontalNavbar from "../components/User/Navbar/HorizontalNavbar";
 import { PlayerController } from "../components/User/Playler/Controller";
@@ -10,17 +10,19 @@ import { getUserPlaylist } from "../components/User/utility/SongManipulation";
 import UserTopTracks from "../components/User/Profile/TopTracks";
 import { Profile } from "../components/User/Profile/Profile";
 import UserReports from "../components/User/Profile/Reports";
+import { Queue } from "../components/User/Playler/Queue";
 
 export const ProfilePage = () => {
   const [user, setUser] = useState([]);
   const { id } = useParams();
-  const [userPlaylists,setPlaylists] = useState([]);  
+  const [userPlaylists, setPlaylists] = useState([]);
   const [activePlaylist, setActivePlaylist] = useState(null);
-    const playlists = async () => {
-      let playlist = await getUserPlaylist();
-      setPlaylists(playlist);
-    };
-  
+  const [isQueueVisible,setIsQueueVisible] = useState(false);
+  const playlists = async () => {
+    let playlist = await getUserPlaylist();
+    setPlaylists(playlist);
+  };
+
   useEffect(() => {
     axios
       .get(`http://localhost:5000/user/profile/${id}`, {
@@ -40,7 +42,7 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     playlists();
-  },[]);
+  }, []);
 
   return (
     <div className="w-screen h-screen">
@@ -55,14 +57,13 @@ export const ProfilePage = () => {
                 <HorizontalNavbar />
               </div>
               <div className="flex px-4 flex-col  w-325 h-[88%] overflow-y-scroll">
-                
                 <div>
-                  <Profile userDetails={user}/>
+                  <Profile userDetails={user} />
                 </div>
                 <div class="mt-8 mx-35">
                   <h2 class="text-xl font-semibold">Monthly Reports</h2>
                   <div class="flex space-x-8 mt-4">
-                    <UserReports/>
+                    <UserReports />
                   </div>
                 </div>
 
@@ -70,7 +71,7 @@ export const ProfilePage = () => {
                   <h2 class="text-xl font-semibold">
                     Your top tracks this month
                   </h2>
-                  <UserTopTracks/>
+                  <UserTopTracks />
                 </div>
 
                 <div class="mt-8 mx-35">
@@ -93,13 +94,19 @@ export const ProfilePage = () => {
                     ))}
                   </div>
                 </div>
+                {isQueueVisible && (
+                  <div className="fixed right-0 top-17 h-[89%] w-[400px] bg-[#0c0925] shadow-lg overflow-scroll">
+                      <Queue isQueueVisible={isQueueVisible} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <div className="w-[100%] h-[12%] bg-indigo-400">
-          <PlayerController />
+        <div className="w-full h-[12%] z-100">
+            <PlayerController isQueueVisible={isQueueVisible} setIsQueueVisible={setIsQueueVisible} />
         </div>
+       
       </div>
     </div>
   );

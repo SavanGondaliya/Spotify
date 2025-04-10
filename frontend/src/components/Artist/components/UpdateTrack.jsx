@@ -28,13 +28,14 @@ export const UpdateTrack = ({ setVisible, refresh, track }) => {
     const updateTrack = () => {
         try {
             const formData = new FormData();
+            
             formData.append("track_id", trackId);
             formData.append("track_name", trackName);
             formData.append("track_url", trackUrl);
             formData.append("album_id", albumName);
             formData.append("track_number", trackNumber);
             formData.append("duration", trackDuration);
-            console.log([...formData])
+        
             axios.put(`http://localhost:5000/track/update/${artist_id}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             }).then((res) => {

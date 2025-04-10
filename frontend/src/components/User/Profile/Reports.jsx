@@ -46,7 +46,7 @@ const UserReports = () => {
     },[]);
     
     return(
-        <div className="px-5">
+        <div className="px-5 flex gap-10">
             {
                 Array.isArray(reports) ? (
                     reports.map((report) => (

@@ -55,7 +55,6 @@ const UserTopTracks = () => {
     useEffect(() => {
         getTopTracksIds();
     },[]);
-    console.log(topTrack);
     
     useEffect(() => {
       if(topTrackIds){

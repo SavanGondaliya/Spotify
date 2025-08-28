@@ -16,7 +16,7 @@ dotenv.config();
 export let conn = mysql.createConnection({
   host : "localhost",
   user : "root",
-  password : "savan_33",
+  password : process.env.PASSWORD,
   database : process.env.DATABASE_NAME
 });
 
